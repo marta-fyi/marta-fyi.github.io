@@ -1,0 +1,2203 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="A product design case study about teaching AI to compose useful collaborative spaces on Miro’s infinite canvas." />
+  <title>Components and composition — Marta Domingo</title>
+  <style>
+    :root {
+      --text: #111111;
+      --secondary: #6e6e73;
+      --line: #d2d2d7;
+      --surface: #f5f5f7;
+      --blue: #0066cc;
+      --page: 1120px;
+      --reading: 760px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 32px; }
+    body {
+      margin: 0;
+      background: #fff;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+      font-size: 17px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    img { display: block; width: 100%; }
+
+    .site-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      width: min(calc(100% - 40px), var(--page));
+      margin: 0 auto;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+    }
+
+    .site-header a { color: var(--text); }
+    .site-header span:last-child { color: var(--secondary); text-align: right; }
+    main { padding-bottom: 120px; }
+
+    .intro {
+      width: min(calc(100% - 40px), var(--page));
+      margin: 0 auto;
+      padding: 120px 0 76px;
+    }
+
+    .meta, .section-label, figcaption { color: var(--secondary); font-size: 13px; }
+    .meta { margin: 0 0 48px; font-variant-numeric: tabular-nums; }
+    h1, h2, h3, p, blockquote { margin-top: 0; }
+
+    h1 {
+      max-width: 1040px;
+      margin-bottom: 36px;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+      font-size: clamp(58px, 8.6vw, 112px);
+      font-weight: 500;
+      line-height: .96;
+      letter-spacing: -.055em;
+    }
+
+    .dek {
+      max-width: 720px;
+      margin-bottom: 46px;
+      font-size: clamp(23px, 2.7vw, 34px);
+      line-height: 1.24;
+      letter-spacing: -.025em;
+    }
+
+    .author { margin: 0; color: var(--secondary); font-size: 14px; }
+    .author strong { color: var(--text); font-weight: 600; }
+
+    .tldr {
+      display: grid;
+      grid-template-columns: 150px minmax(0, 1fr);
+      gap: 40px;
+      width: min(calc(100% - 40px), var(--page));
+      margin: 0 auto 76px;
+      padding: 30px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .tldr > h2 {
+      margin: 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0;
+    }
+
+    .tldr-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .tldr-item { padding-right: 34px; }
+    .tldr-item + .tldr-item { padding-left: 34px; border-left: 1px solid var(--line); }
+    .tldr-item h3 {
+      margin: 0 0 12px;
+      color: var(--secondary);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    .tldr-item p { margin: 0; font-size: 18px; line-height: 1.5; }
+
+    .hero-image, .wide-figure {
+      width: min(calc(100% - 40px), var(--page));
+      margin: 0 auto;
+    }
+
+    .hero-image img, .wide-figure img { border: 1px solid var(--line); }
+    figcaption { margin-top: 12px; line-height: 1.4; }
+
+    .project-overview {
+      width: min(calc(100% - 40px), var(--page));
+      margin: 96px auto 120px;
+    }
+
+    .overview-intro {
+      display: flex;
+      justify-content: space-between;
+      gap: 32px;
+      align-items: baseline;
+      margin-bottom: 18px;
+    }
+
+    .overview-intro .section-label { margin: 0; }
+    .overview-intro p { margin: 0; color: var(--secondary); font-size: 13px; }
+
+    .overview-canvas {
+      padding: 50px;
+      border: 1px solid var(--line);
+      background-color: #f4f5f5;
+      background-image: radial-gradient(#cfd2d7 1px, transparent 1px);
+      background-size: 16px 16px;
+      font-family: "Noto Sans", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    .overview-frame {
+      position: relative;
+      padding: 38px;
+      border: 1px solid #d9dce2;
+      background: #fff;
+      box-shadow: 0 6px 16px rgba(17, 17, 17, .07);
+    }
+
+    .overview-frame::before {
+      content: "Project map";
+      position: absolute;
+      top: -28px;
+      left: 0;
+      color: #747b8b;
+      font-size: 13px;
+    }
+
+    .overview-frame > h2 {
+      margin-bottom: 10px;
+      font-size: clamp(34px, 4vw, 48px);
+    }
+
+    .overview-summary {
+      max-width: 700px;
+      margin-bottom: 36px;
+      color: var(--secondary);
+      font-size: 15px;
+    }
+
+    .overview-kicker {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 14px;
+      color: #596174;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+    }
+
+    .overview-flow {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 44px minmax(0, 1fr) 44px minmax(0, 1fr);
+      align-items: stretch;
+      margin-bottom: 48px;
+    }
+
+    .overview-canvas + .overview-canvas { margin-top: 28px; }
+    .overview-canvas--example .overview-flow { margin-bottom: 0; }
+
+    .flow-arrow {
+      display: grid;
+      place-items: center;
+      color: #252a35;
+      font-size: 28px;
+    }
+
+    .approach-stage { display: flex; min-width: 0; flex-direction: column; }
+    .stage-heading { min-height: 116px; margin: 0 0 14px; }
+    .stage-heading span {
+      display: block;
+      margin-bottom: 4px;
+      color: #747b8b;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+    .stage-heading h3 { margin: 0; font-size: 20px; }
+    .stage-heading p {
+      margin: 7px 0 0;
+      color: #747b8b;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .stage-artifact {
+      flex: 1;
+      min-height: 288px;
+      padding: 24px;
+      box-shadow: 0 4px 10px rgba(17, 17, 17, .08);
+    }
+    .stage-artifact p { margin-bottom: 15px; font-size: 13px; line-height: 1.42; }
+    .stage-artifact p:last-child { margin-bottom: 0; }
+    .stage-artifact strong { font-weight: 700; }
+    .artifact-title { display: block; margin-bottom: 22px; font-size: 14px; font-weight: 700; }
+
+    .sticky-artifact { background: #8ee6ad; }
+
+    .doc-artifact {
+      border: 1px solid #d9dce2;
+      background: #fff;
+    }
+    .doc-artifact .doc-label {
+      display: block;
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e2e3e5;
+      color: #747b8b;
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+    .doc-artifact ul { margin: 14px 0 0; padding-left: 19px; font-size: 13px; line-height: 1.45; }
+    .doc-artifact li + li { margin-top: 9px; }
+
+    .markdown-artifact {
+      overflow-wrap: anywhere;
+      border: 1px solid #10005d;
+      background: #10005d;
+      color: #fff;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 11px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+    }
+    .markdown-artifact .comment { color: #aeb6ff; }
+    .markdown-artifact .key { color: #ff6eb4; }
+    .markdown-artifact .value { color: #ffe46b; }
+
+    .process-heading {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 24px;
+      margin: 0 0 16px;
+    }
+    .process-heading h3 { margin: 0; font-size: 22px; }
+    .process-heading p { margin: 0; color: #747b8b; font-size: 13px; }
+
+    .overview-timeline {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .process-card {
+      min-height: 245px;
+      padding: 22px;
+      border: 1px solid #e2e3e5;
+      background: #fffef8;
+      box-shadow: 0 4px 10px rgba(17, 17, 17, .06);
+    }
+
+    .step-number {
+      display: inline-block;
+      margin-bottom: 30px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: #f1f2f3;
+      color: #596174;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .process-card h3 { margin: 0 0 10px; font-size: 20px; }
+    .process-card p { margin: 0; font-size: 13px; line-height: 1.45; }
+
+    .index {
+      width: min(calc(100% - 40px), var(--reading));
+      margin: 96px auto 120px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .index h2 {
+      margin: 0;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: 0;
+    }
+
+    .index ol {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0 32px;
+      margin: 0;
+      padding: 16px 0 20px;
+      list-style: none;
+      counter-reset: index;
+    }
+
+    .index li { counter-increment: index; display: flex; gap: 14px; padding: 7px 0; }
+    .index li::before {
+      content: "0" counter(index);
+      color: var(--secondary);
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+    }
+    .index a { font-size: 15px; }
+
+    .section {
+      width: min(calc(100% - 40px), var(--reading));
+      margin: 0 auto;
+      padding: 96px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .section-label { display: block; margin-bottom: 40px; font-variant-numeric: tabular-nums; }
+    h2 {
+      margin-bottom: 34px;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+      font-size: clamp(38px, 5vw, 56px);
+      font-weight: 500;
+      line-height: 1.06;
+      letter-spacing: -.04em;
+    }
+
+    h3 { margin: 46px 0 15px; font-size: 22px; font-weight: 600; line-height: 1.2; letter-spacing: -.02em; }
+    p { margin-bottom: 25px; }
+    .lead { font-size: 23px; line-height: 1.45; letter-spacing: -.015em; }
+
+    blockquote {
+      margin: 54px 0;
+      padding-left: 24px;
+      border-left: 2px solid var(--text);
+      font-size: 30px;
+      line-height: 1.25;
+      letter-spacing: -.025em;
+    }
+
+    .facts {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      margin: 54px 0 0;
+      padding: 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+    .fact { min-height: 125px; padding: 20px 18px 22px 0; }
+    .fact + .fact { padding-left: 18px; border-left: 1px solid var(--line); }
+    .fact dt { margin-bottom: 10px; font-size: 30px; font-weight: 500; line-height: 1; }
+    .fact dd { margin: 0; color: var(--secondary); font-size: 13px; line-height: 1.4; }
+
+    .scope-overview {
+      width: min(calc(100% - 40px), var(--page));
+      margin: 0 auto 120px;
+    }
+
+    .scope-canvas {
+      padding: 50px;
+      border: 1px solid var(--line);
+      background-color: #f4f5f5;
+      background-image: radial-gradient(#cfd2d7 1px, transparent 1px);
+      background-size: 16px 16px;
+      font-family: "Noto Sans", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    .scope-frame {
+      position: relative;
+      padding: 38px;
+      border: 1px solid #d9dce2;
+      background: #fff;
+      box-shadow: 0 6px 16px rgba(17, 17, 17, .07);
+    }
+
+    .scope-frame::before {
+      content: "System architecture";
+      position: absolute;
+      top: -28px;
+      left: 0;
+      color: #747b8b;
+      font-size: 13px;
+    }
+
+    .scope-heading {
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(240px, .8fr);
+      gap: 40px;
+      align-items: end;
+      margin-bottom: 34px;
+    }
+
+    .scope-heading h2 { margin: 0; font-size: clamp(34px, 4vw, 48px); }
+    .scope-heading p { margin: 0; color: var(--secondary); font-size: 14px; }
+
+    .scope-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .scope-card {
+      min-height: 575px;
+      padding: 24px;
+      border: 1px solid #d9dce2;
+      background: #fff;
+      box-shadow: 0 4px 10px rgba(17, 17, 17, .07);
+    }
+
+    .scope-number {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .scope-number strong { font-size: 56px; font-weight: 500; line-height: 1; letter-spacing: -.05em; }
+    .scope-number span { color: var(--secondary); font-size: 13px; }
+    .scope-card h3 { margin: 0 0 10px; font-size: 22px; }
+    .scope-card > p { margin: 0 0 22px; color: var(--secondary); font-size: 13px; line-height: 1.45; }
+
+    .use-case-stack { display: grid; gap: 10px; }
+    .use-case {
+      min-height: 68px;
+      padding: 14px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 3px 7px rgba(17, 17, 17, .08);
+    }
+    .use-case:nth-child(1) { background: #ffe46b; }
+    .use-case:nth-child(2) { background: #8eddf2; }
+    .use-case:nth-child(3) { background: #ff9ba0; }
+    .use-case small { display: block; margin-top: 4px; font-size: 11px; font-weight: 400; line-height: 1.35; }
+
+    .scope-rationale {
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid #e1e3e6;
+      color: #343944;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .lens-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .lens {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 52px;
+      padding: 10px;
+      border: 1px solid #e0e2e6;
+      background: #fafafa;
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.25;
+    }
+    .lens:last-child { grid-column: 1 / -1; }
+    .lens::before { content: ""; flex: 0 0 10px; width: 10px; height: 10px; border-radius: 50%; background: #4968ff; }
+    .lens:nth-child(2)::before { background: #ff9ba0; }
+    .lens:nth-child(3)::before { background: #ffe46b; }
+    .lens:nth-child(4)::before { background: #8eddf2; }
+    .lens:nth-child(5)::before { background: #8ee6ad; }
+    .lens:nth-child(6)::before { background: #c8a8ff; }
+    .lens:nth-child(7)::before { background: #ffad69; }
+
+    .loop-track { display: grid; justify-items: stretch; }
+    .loop-node {
+      padding: 10px 12px;
+      border: 1px solid #d9dce2;
+      background: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(17, 17, 17, .05);
+    }
+    .loop-node.output { border-color: #4968ff; background: #eef1ff; }
+    .loop-arrow { height: 24px; color: #596174; font-size: 17px; line-height: 24px; text-align: center; }
+    .loop-return {
+      margin-top: 14px;
+      padding: 10px 12px;
+      border: 1px dashed #9270ed;
+      color: #6645b8;
+      font-size: 11px;
+      line-height: 1.35;
+      text-align: center;
+    }
+
+    .scope-footer {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .scope-footer p {
+      margin: 0;
+      padding: 13px 15px;
+      background: #f3f4f5;
+      color: #343944;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .wide-figure { margin-top: 16px; margin-bottom: 16px; }
+    .figure-gap { margin-bottom: 112px; }
+
+    .example {
+      margin: 50px 0 0;
+      padding: 30px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+    .example-label { display: block; margin-bottom: 28px; color: var(--secondary); font-size: 13px; }
+    .example h3 { margin-top: 0; }
+    code {
+      display: block;
+      margin-top: 28px;
+      padding: 18px 20px;
+      background: var(--surface);
+      color: var(--text);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+      line-height: 1.55;
+      overflow-wrap: anywhere;
+    }
+
+    details { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    summary {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 20px 0;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      list-style: none;
+    }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; font-weight: 400; }
+    details[open] summary::after { content: "−"; }
+    .details-content { padding: 0 0 22px; color: var(--secondary); font-size: 15px; }
+    .details-content ul { margin: 0; padding-left: 20px; }
+    .details-content li + li { margin-top: 7px; }
+
+    .rubric, .result-list {
+      margin: 42px 0 0;
+      padding: 0;
+      list-style: none;
+      border-top: 1px solid var(--line);
+    }
+    .rubric li {
+      display: grid;
+      grid-template-columns: 210px 1fr;
+      gap: 28px;
+      padding: 18px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .rubric strong, .result-list strong { font-size: 15px; font-weight: 600; }
+    .rubric span, .result-list span:last-child { color: var(--secondary); font-size: 15px; }
+
+    .dimension-gallery {
+      width: min(calc(100% - 40px), var(--page));
+      margin: -50px auto 120px;
+      font-family: "Noto Sans", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    .dimension-case { padding: 52px 0; border-top: 1px solid var(--line); }
+    .dimension-case:last-child { border-bottom: 1px solid var(--line); }
+
+    .dimension-header {
+      display: grid;
+      grid-template-columns: 52px minmax(220px, .75fr) minmax(0, 1.25fr);
+      gap: 22px;
+      align-items: start;
+      margin-bottom: 24px;
+    }
+
+    .dimension-number { color: var(--secondary); font-size: 13px; font-variant-numeric: tabular-nums; }
+    .dimension-header h3 { margin: 0; font-size: 24px; }
+    .dimension-header p { margin: 0; color: var(--secondary); font-size: 15px; }
+
+    .output-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .state-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 9px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .state-label::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: #e75a5a; }
+    .good-output .state-label::before { background: #28a96b; }
+
+    .mini-canvas {
+      min-height: 330px;
+      padding: 28px;
+      border: 1px solid #d9dce2;
+      background-color: #f4f5f5;
+      background-image: radial-gradient(#cfd2d7 1px, transparent 1px);
+      background-size: 16px 16px;
+    }
+
+    .mini-frame {
+      position: relative;
+      min-height: 272px;
+      padding: 21px;
+      border: 1px solid #d9dce2;
+      background: #fff;
+      box-shadow: 0 6px 16px rgba(17, 17, 17, .07);
+      overflow: hidden;
+    }
+
+    .mini-frame::before {
+      content: attr(data-frame);
+      position: absolute;
+      top: 8px;
+      left: 10px;
+      color: #7b8190;
+      font-size: 10px;
+    }
+
+    .mini-stage { position: relative; height: 220px; margin-top: 12px; }
+    .tiny-sticky {
+      width: 48px;
+      height: 48px;
+      padding: 7px;
+      background: #ffe46b;
+      box-shadow: 0 2px 5px rgba(17, 17, 17, .1);
+      color: #242424;
+      font-size: 8px;
+      line-height: 1.2;
+    }
+    .tiny-sticky.coral { background: #ff9ba0; }
+    .tiny-sticky.cyan { background: #8eddf2; }
+    .tiny-sticky.mint { background: #8ee6ad; }
+    .tiny-sticky.lilac { background: #c8a8ff; }
+
+    .existing-cluster {
+      position: absolute;
+      display: grid;
+      grid-template-columns: repeat(2, 48px);
+      gap: 7px;
+      padding: 9px;
+      border: 1px dashed #949baa;
+    }
+    .existing-cluster::after { content: "Existing work"; position: absolute; bottom: -20px; left: 0; color: #6e7481; font-size: 9px; }
+    .ai-frame-object {
+      position: absolute;
+      width: 145px;
+      min-height: 105px;
+      padding: 28px 14px 14px;
+      border: 2px solid #4968ff;
+      background: rgba(238, 241, 255, .92);
+      color: #1d2854;
+      font-size: 11px;
+      font-weight: 600;
+      text-align: center;
+      box-shadow: 0 3px 8px rgba(17, 17, 17, .07);
+    }
+    .ai-frame-object::before { content: "AI frame"; position: absolute; top: 7px; left: 9px; color: #4968ff; font-size: 9px; font-weight: 500; }
+    .collision { position: absolute; padding: 4px 7px; background: #ff9ba0; color: #5e1f24; font-size: 9px; font-weight: 700; }
+    .bad-safety .existing-cluster { left: 15%; top: 82px; }
+    .bad-safety .ai-frame-object { left: 34%; top: 42px; transform: rotate(-2deg); }
+    .bad-safety .collision { left: 43%; top: 126px; }
+    .good-safety .existing-cluster { left: 3%; top: 80px; }
+    .good-safety .ai-frame-object { right: 2%; top: 50px; }
+    .safe-anchor { position: absolute; left: 47%; top: 105px; color: #596174; font-size: 25px; }
+
+    .messy-lifecycle .tiny-sticky { position: absolute; }
+    .messy-lifecycle .tiny-sticky:nth-child(1) { left: 6%; top: 38px; }
+    .messy-lifecycle .tiny-sticky:nth-child(2) { left: 29%; top: 88px; transform: rotate(4deg); }
+    .messy-lifecycle .tiny-sticky:nth-child(3) { left: 52%; top: 25px; }
+    .messy-lifecycle .tiny-sticky:nth-child(4) { left: 70%; top: 112px; transform: rotate(-3deg); }
+    .messy-lifecycle .tiny-sticky:nth-child(5) { left: 16%; top: 155px; }
+    .floating-instruction { position: absolute; right: 8%; top: 52px; width: 105px; padding: 10px; border: 1px solid #d9dce2; background: #fff; font-size: 9px; }
+
+    .lifecycle-zones { display: grid; grid-template-columns: .8fr 1.35fr .8fr; gap: 7px; height: 205px; }
+    .life-zone { padding: 13px 9px; border: 1px solid #d9dce2; background: #fafafa; }
+    .life-zone strong { display: block; margin-bottom: 12px; font-size: 11px; }
+    .life-zone p { margin: 0; color: #5f6674; font-size: 9px; line-height: 1.35; }
+    .life-zone .tiny-sticky { display: inline-block; width: 35px; height: 35px; margin: 3px 1px; }
+    .zone-arrow { position: absolute; top: 95px; color: #596174; font-size: 16px; }
+    .zone-arrow.one { left: 27%; }
+    .zone-arrow.two { right: 25%; }
+
+    .density-grid { display: grid; grid-template-columns: repeat(5, 34px); gap: 5px; justify-content: center; padding-top: 26px; }
+    .density-grid .tiny-sticky { width: 34px; height: 34px; }
+    .density-warning { margin-top: 18px; color: #a33c43; font-size: 10px; text-align: center; }
+    .calm-entry { display: grid; place-items: center; height: 200px; }
+    .calm-prompt { width: 185px; padding: 14px; border: 1px solid #d9dce2; background: #fff; font-size: 11px; text-align: center; box-shadow: 0 2px 5px rgba(17,17,17,.05); }
+    .calm-space { display: flex; gap: 22px; margin-top: 25px; justify-content: center; }
+    .calm-space .tiny-sticky { width: 42px; height: 42px; }
+
+    .fake-tools, .working-tools { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding-top: 42px; }
+    .fake-tool { min-height: 125px; padding: 20px 12px; border: 1px solid #d9dce2; background: #fafafa; color: #757b86; text-align: center; }
+    .fake-tool strong { display: block; margin-bottom: 15px; font-size: 22px; font-weight: 400; }
+    .fake-tool span { font-size: 9px; }
+    .working-tool { min-height: 125px; padding: 15px; border: 1px solid #b9c4ff; background: #f3f5ff; }
+    .working-tool strong { display: block; margin-bottom: 12px; font-size: 13px; }
+    .tool-state { margin-bottom: 12px; color: #424b5d; font-size: 10px; }
+    .tool-action { display: inline-block; padding: 6px 10px; background: #273049; color: #fff; font-size: 9px; }
+
+    .retro-mini { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; padding-top: 30px; }
+    .retro-column { min-height: 165px; padding: 10px 7px; border: 1px solid #d9dce2; background: #fafafa; }
+    .retro-column strong { display: block; margin-bottom: 9px; font-size: 9px; }
+    .retro-column .tiny-sticky { width: 100%; height: 50px; margin-bottom: 6px; }
+    .empty-sticky { color: transparent; }
+    .contribution-prompt { margin-top: 10px; color: #4f5665; font-size: 9px; text-align: center; }
+
+    .delivery-cloud { position: relative; height: 180px; margin-top: 20px; }
+    .delivery-cloud .tiny-sticky { position: absolute; }
+    .delivery-cloud .tiny-sticky:nth-child(1) { left: 20%; top: 30px; }
+    .delivery-cloud .tiny-sticky:nth-child(2) { left: 38%; top: 67px; }
+    .delivery-cloud .tiny-sticky:nth-child(3) { left: 56%; top: 25px; }
+    .delivery-cloud .tiny-sticky:nth-child(4) { left: 67%; top: 96px; }
+    .dead-end { position: absolute; bottom: 10px; left: 24%; right: 24%; padding: 7px; border: 1px dashed #e75a5a; color: #a33c43; font-size: 9px; text-align: center; }
+    .delivery-path { display: grid; grid-template-columns: 1fr 22px 1fr 22px 1fr; align-items: center; gap: 3px; height: 205px; }
+    .delivery-step { min-height: 105px; padding: 13px 9px; border: 1px solid #d9dce2; background: #fafafa; font-size: 10px; }
+    .delivery-step strong { display: block; margin-bottom: 7px; font-size: 11px; }
+    .delivery-step.action { border-color: #72c99b; background: #edfff5; }
+    .delivery-arrow { color: #596174; text-align: center; }
+
+    .style-chaos { position: relative; height: 205px; padding-top: 20px; }
+    .chaos-object { position: absolute; padding: 10px; font-size: 10px; text-align: center; box-shadow: 0 2px 5px rgba(17,17,17,.08); }
+    .chaos-object.one { left: 4%; top: 20px; width: 135px; border-radius: 28px; background: #c8a8ff; font-family: Georgia, serif; font-size: 16px; }
+    .chaos-object.two { right: 5%; top: 57px; width: 95px; background: #ffe46b; transform: rotate(7deg); text-transform: uppercase; }
+    .chaos-object.three { left: 27%; bottom: 10px; width: 165px; border: 3px double #e75a5a; background: #8eddf2; font-family: ui-monospace, monospace; }
+    .coherent-pattern { padding-top: 30px; }
+    .coherent-title { margin-bottom: 18px; padding-bottom: 10px; border-bottom: 1px solid #d9dce2; font-size: 14px; font-weight: 600; }
+    .coherent-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .coherent-object { min-height: 92px; padding: 13px; border: 1px solid #d9dce2; background: #fafafa; font-size: 10px; }
+    .coherent-object strong { display: block; margin-bottom: 8px; font-size: 11px; }
+    .coherent-object .tiny-sticky { display: inline-block; width: 34px; height: 34px; margin-right: 4px; }
+
+    .dimension-rule {
+      margin: 14px 0 0;
+      padding-left: 12px;
+      border-left: 2px solid #4968ff;
+      color: #343944;
+      font-size: 13px;
+    }
+
+    .live-figure { font-family: "Noto Sans", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif; }
+    .board-canvas-large {
+      padding: 50px;
+      border: 1px solid #d9dce2;
+      background-color: #f4f5f5;
+      background-image: radial-gradient(#cfd2d7 1px, transparent 1px);
+      background-size: 16px 16px;
+    }
+    .board-frame-large {
+      position: relative;
+      padding: 34px;
+      border: 1px solid #d9dce2;
+      background: #fff;
+      box-shadow: 0 6px 16px rgba(17, 17, 17, .07);
+    }
+    .board-frame-large::before {
+      content: attr(data-frame);
+      position: absolute;
+      top: -27px;
+      left: 0;
+      color: #7b8190;
+      font-size: 12px;
+    }
+    .board-frame-large > h3 { margin: 0 0 28px; font-size: 28px; }
+    .board-object {
+      padding: 16px;
+      border: 1px solid #d9dce2;
+      background: #fff;
+      color: #1f2430;
+      font-size: 13px;
+      line-height: 1.35;
+      box-shadow: 0 3px 8px rgba(17, 17, 17, .06);
+    }
+    .board-object strong { display: block; margin-bottom: 5px; font-size: 15px; }
+    .board-arrow { display: grid; place-items: center; color: #333947; font-size: 28px; }
+    .board-tag { display: inline-block; padding: 7px 11px; border: 1px solid #4968ff; color: #3153e9; font-size: 11px; font-weight: 600; }
+    .board-sticky {
+      min-height: 72px;
+      padding: 14px;
+      background: #ffe46b;
+      color: #242424;
+      font-size: 12px;
+      font-weight: 600;
+      box-shadow: 0 3px 7px rgba(17, 17, 17, .1);
+    }
+    .board-sticky.coral { background: #ff9ba0; }
+    .board-sticky.cyan { background: #8eddf2; }
+    .board-sticky.mint { background: #8ee6ad; }
+    .board-sticky.lilac { background: #c8a8ff; }
+
+    .quality-flow { display: grid; grid-template-columns: .78fr 34px .95fr 34px 1.35fr; align-items: center; gap: 8px; }
+    .quality-request {
+      width: 100%;
+      appearance: none;
+      color: #1f2430;
+      font: inherit;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 120ms ease, background-color 120ms ease, transform 120ms ease;
+    }
+    .quality-request:hover { border-color: #4968ff; background: #f8f9ff; }
+    .quality-request:active { transform: translateY(1px); }
+    .quality-request:focus-visible { outline: 3px solid rgba(73, 104, 255, .28); outline-offset: 3px; }
+    .quality-request:disabled { cursor: wait; }
+    .quality-request::before { content: "□"; display: block; margin-bottom: 7px; color: #515968; font-size: 26px; }
+    .quality-ai { border: 2px solid #4968ff; background: #f0f3ff; text-align: center; }
+    .quality-ai::before { content: "✦"; display: block; margin-bottom: 5px; color: #3153e9; font-size: 24px; }
+    .quality-ai.is-loading::before { animation: quality-pulse 360ms ease-in-out infinite alternate; }
+    .quality-ai span, .quality-request span { display: block; margin-top: 4px; color: #687080; font-size: 10px; }
+    .quality-outputs { display: grid; gap: 7px; }
+    .component-output {
+      display: grid;
+      grid-template-columns: 74px minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+      min-height: 72px;
+      padding: 9px 12px;
+      border: 1px solid #d9dce2;
+      border-radius: 8px;
+      background: #fff;
+    }
+    .component-output strong { font-size: 11px; }
+    .component-sample { display: block; position: relative; margin: 0 auto; }
+    .component-sample.sticky {
+      width: 48px;
+      height: 48px;
+      border-radius: 2px;
+      background: #ffe46b;
+      box-shadow: 0 3px 7px rgba(17, 17, 17, .12);
+    }
+    .component-sample.frame {
+      width: 64px;
+      height: 44px;
+      border: 1px solid #9ca3af;
+      border-radius: 6px;
+      background: #fff;
+    }
+    .component-sample.frame::before {
+      content: "Retro";
+      position: absolute;
+      top: 5px;
+      left: 6px;
+      color: #596174;
+      font-size: 7px;
+      font-weight: 600;
+    }
+    .component-sample.connector { width: 64px; height: 22px; }
+    .component-sample.connector::before {
+      content: "";
+      position: absolute;
+      top: 10px;
+      left: 4px;
+      width: 50px;
+      border-top: 2px solid #3153e9;
+    }
+    .component-sample.connector::after {
+      content: "›";
+      position: absolute;
+      top: -5px;
+      right: 2px;
+      color: #3153e9;
+      font-size: 28px;
+      line-height: 1;
+    }
+    .quality-scenario {
+      display: grid;
+      grid-template-columns: 74px minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+      min-height: 72px;
+      padding: 9px;
+      border: 1px solid #d9dce2;
+      border-radius: 8px;
+      background: #fff;
+    }
+    .quality-scenario strong { display: block; font-size: 11px; }
+    .quality-scenario span { display: block; margin-top: 2px; color: #687080; font-size: 9px; }
+    .quality-result { min-height: 110px; transition: opacity 120ms ease, transform 120ms ease; }
+    .quality-result.is-changing { opacity: .35; transform: translateY(2px); }
+    .quality-result .scenario-preview { height: 64px; }
+    .scenario-preview {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3px;
+      height: 48px;
+      padding: 5px;
+      border: 1px solid #cfd3db;
+      border-radius: 5px;
+      background: #fafafa;
+    }
+    .scenario-preview i { display: block; min-width: 0; background: #ffe46b; border-radius: 2px; }
+    .scenario-preview i:nth-child(2) { background: #ff9ba0; }
+    .scenario-preview i:nth-child(3) { background: #8eddf2; }
+    .scenario-preview i:nth-child(4) { background: #8ee6ad; }
+    .scenario-preview.crowded { grid-template-columns: repeat(4, 1fr); gap: 2px; padding: 3px; }
+    .scenario-preview.crowded i:nth-child(n+5) { background: #c8a8ff; }
+    .scenario-preview.incomplete i:nth-child(2), .scenario-preview.incomplete i:nth-child(3) { visibility: hidden; }
+    .scenario-preview.staged { grid-template-columns: .7fr 1.6fr .7fr; }
+    .scenario-preview.staged i { border: 1px dashed #9aa1af; background: transparent; }
+    .scenario-preview.staged i:nth-child(2) { border: 0; background: linear-gradient(#ffe46b 0 30%, transparent 30% 35%, #ff9ba0 35% 65%, transparent 65% 70%, #8eddf2 70%); }
+    .scenario-preview.neutral i { visibility: hidden; }
+
+    @keyframes quality-pulse {
+      from { opacity: .35; transform: scale(.86); }
+      to { opacity: 1; transform: scale(1.08); }
+    }
+
+    .quality-guidance {
+      display: grid;
+      grid-template-columns: minmax(0, .9fr) 28px minmax(0, 1.1fr) 28px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      margin-top: 22px;
+      padding-top: 20px;
+      border-top: 1px solid #d9dce2;
+    }
+    .guidance-sources { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+    .guidance-chip { padding: 11px 9px; border: 1px solid #d9dce2; border-radius: 7px; background: #fff; font-size: 10px; font-weight: 600; text-align: center; }
+    .guidance-rule { padding: 13px; border: 2px solid #4968ff; border-radius: 8px; background: #f0f3ff; text-align: center; }
+    .guidance-rule strong, .guidance-result strong { display: block; font-size: 11px; }
+    .guidance-rule span, .guidance-result span { display: block; margin-top: 3px; color: #687080; font-size: 9px; }
+    .guidance-result { padding: 13px; border: 1px solid #d9dce2; border-radius: 8px; background: #fff; text-align: center; }
+    .quality-note { display: flex; justify-content: space-between; gap: 20px; align-items: center; margin-top: 16px; color: #687080; font-size: 12px; }
+
+    .board-canvas-large.retro-demo {
+      position: relative;
+      min-height: 520px;
+      padding: 94px 42px 34px;
+      overflow: hidden;
+    }
+    .retro-run {
+      position: absolute;
+      z-index: 3;
+      top: 26px;
+      left: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-width: 150px;
+      min-height: 42px;
+      padding: 10px 16px;
+      transform: translateX(-50%);
+      border: 1px solid #3153e9;
+      border-radius: 8px;
+      background: #3153e9;
+      color: #fff;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(49, 83, 233, .2);
+      transition: background-color 120ms ease, box-shadow 120ms ease;
+    }
+    .retro-run:hover { background: #2448d8; }
+    .retro-run:active { transform: translate(-50%, 1px); }
+    .retro-run:focus-visible { outline: 3px solid rgba(73, 104, 255, .28); outline-offset: 3px; }
+    .retro-run:disabled { cursor: wait; opacity: .92; }
+    .retro-run-icon { font-size: 16px; line-height: 1; }
+    .retro-run:not(.is-loading):not(.has-run) { animation: retro-invite 3.4s ease-in-out infinite; }
+    .retro-run:not(.is-loading):not(.has-run) .retro-run-icon { animation: retro-invite-sparkle 3.4s ease-in-out infinite; }
+    .retro-run.is-loading .retro-run-icon { animation: retro-spin 420ms linear infinite; }
+
+    .retro-stage {
+      display: grid;
+      grid-template-columns: minmax(0, 650px) 145px;
+      gap: 24px;
+      align-items: center;
+      justify-content: center;
+      min-height: 380px;
+      opacity: 1;
+      transition: opacity 120ms ease, transform 160ms ease;
+    }
+    .retro-stage[hidden] { display: none; }
+    .retro-stage.is-loading { opacity: 0; }
+    .retro-stage.is-entering { opacity: 0; transform: translateY(5px); }
+
+    .retro-output-board {
+      min-height: 330px;
+      padding: 22px;
+      border: 1px solid #d9dce2;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 6px 16px rgba(17, 17, 17, .09);
+    }
+    .retro-board-title { font-size: 18px; font-weight: 600; }
+    .retro-board-subtitle { margin-top: 3px; color: #747b8b; font-size: 10px; }
+    .retro-columns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 20px; }
+    .retro-column { min-height: 220px; padding: 12px; border: 1px solid #d9dce2; border-radius: 8px; background: #fafafa; }
+    .retro-column > strong { display: block; margin-bottom: 10px; font-size: 11px; }
+    .retro-sticky { min-height: 43px; margin-bottom: 7px; padding: 9px; border-radius: 5px; background: #ffe46b; font-size: 9px; box-shadow: 0 2px 5px rgba(17, 17, 17, .1); }
+    .retro-sticky.coral { background: #ff9ba0; }
+    .retro-sticky.cyan { background: #8eddf2; }
+    .retro-sticky.mint { background: #8ee6ad; }
+    .retro-sticky.lilac { background: #c8a8ff; }
+    .retro-sticky.empty { border: 1px dashed #9aa1af; background: #fff; color: #747b8b; box-shadow: none; }
+
+    .retro-side-note {
+      display: grid;
+      place-items: center;
+      min-height: 120px;
+      padding: 18px;
+      transform: rotate(2deg);
+      border-radius: 7px;
+      background: #ff9ba0;
+      color: #242424;
+      font-size: 17px;
+      font-weight: 700;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(17, 17, 17, .12);
+    }
+    .retro-side-note.yellow { background: #ffe46b; }
+    .retro-side-note.cyan { background: #8eddf2; }
+    .retro-side-note.lilac { background: #c8a8ff; }
+    .retro-side-note.mint { background: #8ee6ad; }
+
+    .retro-decorative {
+      position: relative;
+      min-height: 235px;
+      margin-top: 18px;
+      overflow: hidden;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #c8a8ff, #8eddf2 48%, #ffe46b);
+    }
+    .retro-decorative::before { content: "✦  ✺  ✦"; position: absolute; top: 24px; left: 30px; color: #fff; font-size: 42px; letter-spacing: 22px; }
+    .retro-decorative .retro-sticky { position: absolute; right: 38px; bottom: 34px; width: 120px; transform: rotate(-4deg); }
+
+    .retro-collision { position: relative; min-height: 238px; margin-top: 18px; }
+    .retro-collision-frame { position: absolute; width: 62%; min-height: 165px; padding: 16px; border: 2px solid #4968ff; border-radius: 9px; background: rgba(240, 243, 255, .92); }
+    .retro-collision-frame:first-child { top: 12px; left: 8%; }
+    .retro-collision-frame:last-child { right: 5%; bottom: 5px; border-color: #e75a5a; background: rgba(255, 232, 233, .92); }
+    .retro-collision-frame strong { font-size: 11px; }
+
+    .retro-scatter { position: relative; min-height: 238px; margin-top: 18px; }
+    .retro-scatter .retro-sticky { position: absolute; width: 105px; }
+    .retro-scatter .retro-sticky:nth-child(1) { top: 10px; left: 7%; transform: rotate(-5deg); }
+    .retro-scatter .retro-sticky:nth-child(2) { top: 86px; left: 39%; transform: rotate(4deg); }
+    .retro-scatter .retro-sticky:nth-child(3) { top: 25px; right: 4%; transform: rotate(7deg); }
+    .retro-scatter .retro-sticky:nth-child(4) { bottom: 6px; left: 18%; transform: rotate(3deg); }
+    .retro-scatter .retro-sticky:nth-child(5) { right: 16%; bottom: 18px; transform: rotate(-4deg); }
+
+    .retro-tool { margin-top: 10px; padding: 8px; border: 1px solid #4968ff; border-radius: 6px; color: #3153e9; font-size: 9px; font-weight: 600; text-align: center; }
+
+    @keyframes retro-invite {
+      0%, 68%, 100% { box-shadow: 0 4px 10px rgba(49, 83, 233, .2); }
+      79% { box-shadow: 0 4px 10px rgba(49, 83, 233, .2), 0 0 0 5px rgba(49, 83, 233, .1); }
+      90% { box-shadow: 0 4px 10px rgba(49, 83, 233, .2); }
+    }
+    @keyframes retro-invite-sparkle {
+      0%, 68%, 100% { transform: scale(1) rotate(0); }
+      79% { transform: scale(1.16) rotate(8deg); }
+      90% { transform: scale(1) rotate(0); }
+    }
+    @keyframes retro-spin { to { transform: rotate(360deg); } }
+
+    .process-flow { display: grid; grid-template-columns: 1fr 24px 1fr 24px 1fr 24px 1fr 24px 1fr; align-items: stretch; }
+    .process-step { height: 100%; min-height: 165px; padding: 18px 14px; text-align: center; }
+    .process-step .step-number { display: block; margin-bottom: 20px; color: #737a88; font-size: 11px; }
+    .process-step.philosophy-step { background: #ffe46b; border-color: #ffe46b; }
+    .process-step.example-step { background: #ff9ba0; border-color: #ff9ba0; }
+    .process-step.behavior-step { background: #8eddf2; border-color: #8eddf2; }
+    .process-step.learn-step { background: #8ee6ad; border-color: #8ee6ad; }
+    .process-loop { display: block; margin-top: 24px; padding-top: 18px; border-top: 1px dashed #9270ed; color: #6645b8; font-size: 12px; }
+
+    .stagehand-title { margin: 0 0 20px; font-size: 24px; }
+    .stagehand-comparison { align-items: stretch; }
+    .stagehand-comparison > div { min-width: 0; }
+    .stagehand-comparison .mini-canvas { min-height: 388px; }
+    .stagehand-comparison .mini-frame { min-height: 330px; }
+    .stagehand-panel > h4 { margin: 18px 0 18px; font-size: 19px; }
+    .scenario-columns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
+    .scenario-column { min-height: 205px; padding: 10px; border: 1px solid #d9dce2; background: #fafafa; }
+    .scenario-column strong { display: block; margin-bottom: 10px; font-size: 10px; }
+    .scenario-column .board-sticky { min-height: 46px; margin-bottom: 6px; padding: 8px; font-size: 8px; }
+    .scenario-column.crowded .board-sticky:nth-child(2) { transform: rotate(3deg); }
+    .scenario-column.crowded .board-sticky:nth-child(3) { transform: translate(8px, -4px) rotate(-2deg); }
+    .scenario-tag { display: block; width: fit-content; margin: 16px auto 0; padding: 7px 10px; font-size: 11px; font-weight: 600; }
+    .scenario-tag.bad { background: #ffb3b6; color: #692328; }
+    .scenario-tag.good { background: #a2edc0; color: #17482f; }
+    .entry-exit { display: grid; grid-template-columns: .75fr 1.6fr .75fr; gap: 7px; }
+    .entry-exit .scenario-column { min-height: 205px; }
+    .entry-exit .scenario-column p { margin: 0 0 10px; font-size: 9px; line-height: 1.35; }
+
+    .grammar-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+    .grammar-card { min-height: 230px; padding: 14px; border: 1px solid #d9dce2; background: #fff; overflow: hidden; }
+    .grammar-card h4 { min-height: 38px; margin: 0 0 10px; font-size: 16px; line-height: 1.2; }
+    .grammar-stage { display: grid; place-items: center; min-height: 150px; }
+    .pattern-sequence { display: flex; align-items: center; gap: 4px; }
+    .pattern-sequence .tiny-sticky { width: 30px; height: 30px; }
+    .pattern-arrow { color: #343944; font-size: 14px; }
+    .pattern-accumulation { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .pattern-accumulation .tiny-sticky { width: 28px; height: 28px; }
+    .accumulation-arrow { height: 13px; color: #343944; font-size: 12px; line-height: 13px; }
+    .accumulation-base { display: flex; gap: 5px; }
+    .pattern-exploration { position: relative; width: 112px; height: 112px; }
+    .pattern-exploration::before { content: ""; position: absolute; left: 55px; top: 13px; height: 86px; border-left: 1px solid #596174; }
+    .pattern-exploration::after { content: ""; position: absolute; left: 13px; top: 55px; width: 86px; border-top: 1px solid #596174; }
+    .pattern-exploration .center { position: absolute; z-index: 2; left: 39px; top: 39px; display: grid; place-items: center; width: 34px; height: 34px; background: #8eddf2; font-weight: 700; }
+    .pattern-exploration .tiny-sticky { position: absolute; z-index: 2; width: 26px; height: 26px; }
+    .pattern-exploration .n { left: 43px; top: 0; }.pattern-exploration .s { left: 43px; bottom: 0; }
+    .pattern-exploration .w { left: 0; top: 43px; }.pattern-exploration .e { right: 0; top: 43px; }
+    .pattern-distance { display: grid; grid-template-columns: 42px 1fr 48px; gap: 5px; align-items: center; width: 128px; }
+    .distance-question { padding: 7px 5px; background: #8ee6ad; font-size: 8px; line-height: 1.2; }
+    .distance-line { border-top: 1px dashed #596174; color: #596174; font-size: 7px; line-height: 1.15; text-align: center; }
+    .distance-work { display: grid; grid-template-columns: repeat(2, 20px); gap: 3px; }
+    .distance-work .tiny-sticky { width: 20px; height: 20px; }
+    .pattern-respect { display: grid; grid-template-columns: 66px 14px 42px; gap: 5px; align-items: center; }
+    .respect-cluster { position: relative; display: grid; grid-template-columns: repeat(2, 24px); gap: 4px; padding: 7px; border: 1px dashed #949baa; }
+    .respect-cluster::after { content: "Existing"; position: absolute; left: 0; right: 0; bottom: -14px; color: #6e7481; font-size: 7px; text-align: center; }
+    .respect-cluster .tiny-sticky { width: 24px; height: 24px; }
+    .respect-ai { padding: 7px 4px; background: #c8a8ff; font-size: 7px; line-height: 1.2; text-align: center; }
+    .grammar-note { display: flex; gap: 14px; align-items: center; margin-top: 22px; padding-top: 16px; border-top: 1px solid #d9dce2; font-size: 14px; }
+
+    .result-list li {
+      display: grid;
+      grid-template-columns: 40px 220px 1fr;
+      gap: 24px;
+      padding: 24px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .result-list .number { color: var(--secondary); font-size: 13px; }
+    .caveat { margin-top: 40px; color: var(--secondary); font-size: 14px; }
+
+    footer {
+      width: min(calc(100% - 40px), var(--page));
+      margin: 0 auto;
+      padding: 28px 0 64px;
+      border-top: 1px solid var(--line);
+      color: var(--secondary);
+      font-size: 13px;
+    }
+    footer a { float: right; }
+
+    /* Compact editorial article layout, informed by the Figma Learn reference. */
+    :root {
+      --page: 1180px;
+      --reading: 760px;
+      --blue: #0b63ce;
+    }
+
+    body { font-size: 16px; line-height: 1.5; }
+    .site-header { padding: 17px 0; }
+
+    .intro { padding: 56px 0 36px; }
+    .meta { margin-bottom: 22px; }
+    h1 {
+      max-width: 900px;
+      margin-bottom: 22px;
+      font-size: clamp(46px, 6vw, 72px);
+      font-weight: 600;
+      line-height: 1.02;
+      letter-spacing: -.045em;
+    }
+    .dek { max-width: 760px; margin-bottom: 26px; font-size: clamp(20px, 2.2vw, 26px); line-height: 1.3; }
+
+    .tldr { grid-template-columns: 105px minmax(0, 1fr); gap: 28px; margin-bottom: 42px; padding: 22px 0; }
+    .tldr-item { padding-right: 26px; }
+    .tldr-item + .tldr-item { padding-left: 26px; }
+    .tldr-item p { font-size: 16px; line-height: 1.45; }
+
+    .hero-image { margin-bottom: 48px; }
+    .context-summary {
+      width: min(calc(100% - 40px), var(--reading));
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 32px;
+      margin: -8px auto 56px;
+    }
+    .context-block {
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+    }
+    .context-label {
+      display: block;
+      margin-bottom: 9px;
+      color: var(--secondary);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    .context-block p { margin: 0; font-size: 17px; line-height: 1.5; }
+    .board-canvas-large { padding: 32px; }
+    .board-frame-large { padding: 24px; }
+    .board-frame-large > h3 { margin-bottom: 22px; font-size: 24px; }
+    .quality-note { margin-top: 18px; }
+
+    .project-overview { margin: 0 auto 64px; }
+    .overview-intro { display: none; }
+    .overview-canvas { padding: 32px; }
+    .overview-frame { padding: 28px; }
+    .overview-frame > h2 { margin-bottom: 8px; font-size: 36px; }
+    .overview-summary { margin-bottom: 26px; }
+    .overview-flow { margin-bottom: 34px; }
+    .stage-heading { min-height: 108px; margin-bottom: 11px; }
+    .stage-heading h3 { font-size: 18px; }
+    .stage-artifact { min-height: 250px; padding: 20px; }
+    .artifact-title { margin-bottom: 16px; }
+    .doc-artifact .doc-label { margin-bottom: 14px; }
+    .process-heading { margin-bottom: 12px; }
+    .process-heading h3 { font-size: 19px; }
+    .process-card { min-height: 180px; padding: 18px; }
+    .step-number { margin-bottom: 16px; }
+    .process-card h3 { margin-bottom: 7px; font-size: 18px; }
+
+    /* Visual containers stay unlabeled; the content inside carries the meaning. */
+    .overview-frame::before,
+    .scope-frame::before,
+    .board-frame-large::before,
+    .mini-frame::before { content: none; display: none; }
+
+    .overview-canvas,
+    .scope-canvas,
+    .board-canvas-large,
+    .mini-canvas { border-radius: 16px; }
+
+    .overview-frame,
+    .scope-frame,
+    .board-frame-large,
+    .mini-frame { border-radius: 12px; }
+
+    .stage-artifact,
+    .process-card,
+    .scope-card,
+    .use-case,
+    .board-object,
+    .process-step,
+    .scenario-column,
+    .grammar-card,
+    .fake-tool,
+    .working-tool,
+    .delivery-step,
+    .calm-prompt,
+    .coherent-object,
+    .ai-frame-object { border-radius: 8px; }
+
+    .board-sticky,
+    .tiny-sticky,
+    .scenario-tag,
+    .board-tag,
+    .tool-state,
+    .tool-action { border-radius: 6px; }
+
+    .article-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 860px) 250px;
+      gap: 48px;
+      align-items: start;
+      width: min(calc(100% - 40px), var(--page));
+      margin: 0 auto 72px;
+    }
+
+    .article-column { grid-column: 1; grid-row: 1; min-width: 0; }
+    .article-column > .section,
+    .article-column > .hero-image,
+    .article-column > .wide-figure,
+    .article-column > .scope-overview,
+    .article-column > .project-overview,
+    .article-column > .dimension-gallery { width: 100%; }
+
+    .index {
+      grid-column: 2;
+      grid-row: 1;
+      position: sticky;
+      top: 18px;
+      width: auto;
+      margin: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      overflow: hidden;
+    }
+    .index h2 { padding: 15px 16px; font-size: 16px; }
+    .index ol { display: block; padding: 8px 16px 14px; }
+    .index li { gap: 10px; padding: 6px 0; }
+    .index li::before { width: 18px; font-size: 11px; }
+    .index a { font-size: 14px; }
+
+    .section { padding: 48px 0; }
+    .article-column > .section:first-child { padding-top: 0; border-top: 0; }
+    .section-label { margin-bottom: 18px; }
+    h2 { margin-bottom: 22px; font-size: clamp(30px, 3.4vw, 40px); line-height: 1.1; letter-spacing: -.03em; }
+    h3 { margin: 32px 0 12px; font-size: 20px; }
+    p { margin-bottom: 16px; }
+    .lead { font-size: 19px; line-height: 1.45; }
+
+    .key-point {
+      margin: 22px 0;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      background: #f7f7f7;
+      font-size: 17px;
+      line-height: 1.45;
+    }
+
+    .narrative-emphasis {
+      margin: 24px 0 0;
+      padding-left: 18px;
+      border-left: 2px solid #4968ff;
+      font-size: 19px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .landing-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 34px;
+    }
+
+    .landing-card {
+      min-height: 220px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #f7f7f7;
+    }
+
+    .landing-card:last-child { background: #fff; }
+    .landing-card h3 { margin: 0 0 14px; font-size: 19px; }
+    .landing-card p { margin: 0; font-size: 16px; line-height: 1.5; }
+
+    .system-contains { margin-top: 28px; padding: 20px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .system-contains h3 { margin: 0 0 12px; }
+    .system-contains ul { columns: 2; margin: 0; padding-left: 20px; }
+    .system-contains li { margin-bottom: 6px; break-inside: avoid; }
+
+    .scope-overview { margin-bottom: 50px; }
+    .scope-canvas { padding: 28px; }
+    .scope-frame { padding: 26px; }
+    .scope-heading { gap: 24px; margin-bottom: 24px; }
+    .scope-heading h2 { font-size: 34px; }
+    .scope-card { min-height: 455px; padding: 18px; }
+    .scope-number { margin-bottom: 14px; }
+    .scope-number strong { font-size: 46px; }
+    .scope-card h3 { font-size: 19px; }
+    .scope-card > p { margin-bottom: 16px; }
+    .use-case { min-height: 58px; padding: 11px 13px; }
+    .scope-rationale { margin-top: 16px; padding-top: 14px; }
+    .loop-node { padding: 8px 10px; }
+    .loop-arrow { height: 18px; line-height: 18px; }
+
+    .wide-figure { margin-top: 0; margin-bottom: 0; }
+    .figure-gap { margin-bottom: 58px; }
+    .article-column .board-canvas-large { padding: 26px; }
+    .article-column .board-frame-large { padding: 20px; }
+    .article-column .grammar-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    .dimension-gallery { margin-top: -18px; margin-bottom: 64px; }
+    .dimension-case { padding: 34px 0; }
+    .dimension-header { margin-bottom: 18px; }
+    .mini-canvas { min-height: 292px; padding: 20px; }
+    .mini-frame { min-height: 250px; padding: 18px; }
+    .dimension-rule { margin-top: 10px; }
+
+    .result-list li { padding: 18px 0; }
+    .caveat { margin-top: 26px; }
+    footer { padding: 22px 0 42px; }
+
+    @media (max-width: 1050px) {
+      .article-layout { display: block; margin-bottom: 56px; }
+      .index { position: static; width: 100%; margin: 0 0 48px; }
+      .index ol { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 20px; }
+    }
+
+    @media (max-width: 700px) {
+      .site-header { padding: 16px 0; }
+      .site-header span { display: none; }
+      .intro { padding: 40px 0 28px; }
+      .tldr { grid-template-columns: 1fr; gap: 18px; margin-bottom: 36px; padding: 18px 0; }
+      .tldr-grid { grid-template-columns: 1fr; }
+      .tldr-item { padding: 0; }
+      .tldr-item + .tldr-item { margin-top: 18px; padding: 18px 0 0; border-top: 1px solid var(--line); border-left: 0; }
+      .meta { margin-bottom: 18px; }
+      h1 { font-size: 44px; }
+      .dek { font-size: 20px; }
+      .context-summary { grid-template-columns: 1fr; gap: 24px; margin-bottom: 44px; }
+      .context-block p { font-size: 16px; }
+      .article-layout { display: block; margin-bottom: 48px; }
+      .index { position: static; width: 100%; margin: 0 0 36px; }
+      .project-overview { margin: 0 auto 48px; }
+      .overview-canvas { padding: 30px 12px 18px; }
+      .overview-frame { padding: 20px 14px; }
+      .overview-frame > h2 { font-size: 29px; }
+      .overview-kicker { display: block; }
+      .overview-kicker span:last-child { display: block; margin-top: 4px; }
+      .overview-flow { grid-template-columns: 1fr; margin-bottom: 30px; }
+      .flow-arrow { height: 34px; transform: rotate(90deg); }
+      .stage-heading { min-height: 0; margin-bottom: 14px; }
+      .stage-artifact { min-height: 0; }
+      .process-heading { display: block; }
+      .process-heading p { margin-top: 4px; }
+      .overview-timeline { grid-template-columns: 1fr; }
+      .process-card { min-height: 0; }
+      .index ol { grid-template-columns: 1fr; }
+      .section { padding: 40px 0; }
+      .section-label { margin-bottom: 14px; }
+      h2 { font-size: 30px; }
+      .lead { font-size: 18px; }
+      .key-point { margin: 18px 0; padding: 14px; font-size: 16px; }
+      .narrative-emphasis { font-size: 17px; }
+      .landing-grid { grid-template-columns: 1fr; }
+      .landing-card { min-height: 0; }
+      .system-contains ul { columns: 1; }
+      .facts { grid-template-columns: 1fr; }
+      .fact { min-height: 0; padding: 18px 0; }
+      .fact + .fact { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); }
+      .scope-overview { margin-bottom: 44px; }
+      .scope-canvas { padding: 30px 12px 18px; }
+      .scope-frame { padding: 20px 14px; }
+      .scope-heading { grid-template-columns: 1fr; gap: 12px; }
+      .scope-heading h2 { font-size: 32px; }
+      .scope-grid, .scope-footer { grid-template-columns: 1fr; }
+      .scope-card { min-height: 0; }
+      .rubric li, .result-list li { grid-template-columns: 1fr; gap: 7px; }
+      .dimension-gallery { margin-top: -16px; margin-bottom: 48px; }
+      .dimension-case { padding: 28px 0; }
+      .dimension-header { grid-template-columns: 36px 1fr; gap: 10px; }
+      .dimension-header p { grid-column: 2; }
+      .output-pair { grid-template-columns: 1fr; gap: 28px; }
+      .mini-canvas { min-height: 310px; padding: 18px; }
+      .mini-frame { min-height: 272px; padding: 17px; }
+      .bad-safety .existing-cluster { left: 4%; }
+      .bad-safety .ai-frame-object { left: 32%; }
+      .lens-grid { grid-template-columns: 1fr; }
+      .lens:last-child { grid-column: auto; }
+      .board-canvas-large { padding: 30px 12px 18px; }
+      .board-frame-large { padding: 20px 14px; }
+      .board-frame-large > h3 { font-size: 23px; }
+      .quality-flow, .quality-guidance, .process-flow, .grammar-grid { grid-template-columns: 1fr; }
+      .quality-flow > .board-arrow, .quality-guidance > .board-arrow, .process-flow > .board-arrow { height: 38px; transform: rotate(90deg); }
+      .quality-scenario { grid-template-columns: 82px minmax(0, 1fr); }
+      .board-canvas-large.retro-demo { min-height: 680px; padding: 92px 16px 24px; }
+      .retro-stage { grid-template-columns: 1fr; gap: 18px; min-height: 560px; }
+      .retro-output-board { min-height: 350px; padding: 16px; }
+      .retro-columns { gap: 6px; }
+      .retro-column { min-height: 235px; padding: 8px; }
+      .retro-side-note { justify-self: end; min-height: 76px; width: 150px; font-size: 14px; }
+      .quality-note, .process-loop, .grammar-note { display: block; }
+      .quality-note .board-tag, .process-loop .board-tag, .grammar-note .board-tag { margin-top: 10px; }
+      .process-step { height: auto; min-height: 0; }
+      .stagehand-comparison .mini-canvas { min-height: 370px; }
+      .stagehand-comparison .mini-frame { min-height: 330px; }
+      .grammar-card { min-height: 230px; }
+      .wide-figure { width: 100%; }
+      .wide-figure figcaption { padding-inline: 20px; }
+      footer a { float: none; display: block; margin-top: 12px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .quality-ai.is-loading::before { animation: none; }
+      .quality-result, .quality-request { transition: none; }
+      .retro-run:not(.is-loading):not(.has-run),
+      .retro-run:not(.is-loading):not(.has-run) .retro-run-icon,
+      .retro-run.is-loading .retro-run-icon { animation: none; }
+      .retro-stage { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a href="#top">Marta Domingo</a>
+    <span>Miro Design Platform / Case study, 2026</span>
+  </header>
+
+  <main id="top">
+    <header class="intro">
+      <p class="meta">Marta Domingo / Miro Design Platform / Case study, 2026</p>
+      <h1>Components and composition</h1>
+      <p class="dek">Teaching AI to make space for people on an infinite canvas.</p>
+    </header>
+
+    <div class="article-layout">
+    <nav class="index" aria-label="In this article">
+      <h2>In this article</h2>
+      <ol>
+        <li><a href="#components">Components</a></li>
+        <li><a href="#composition">Composition</a></li>
+        <li><a href="#example">One example</a></li>
+        <li><a href="#system">From fix to system</a></li>
+        <li><a href="#evaluation">Seven checks</a></li>
+        <li><a href="#result">Where it landed</a></li>
+      </ol>
+    </nav>
+
+    <div class="article-column">
+
+    <section class="section" id="components">
+      <span class="section-label">01 / Components</span>
+      <h2>Components come from the design system</h2>
+      <p class="lead">Ask AI to build something on a Miro board, and the design system MCP answers the first question: what is this actually supposed to look like?</p>
+      <p>The right sticky yellow, the right frame corners, the right connector, the right icon meaning the right thing. Made machine-readable, this is what lets a prompt produce a real, on-brand Miro object instead of a plausible-looking approximation—the same problem every design-system MCP solves, whether it’s Indeed’s buttons or New York State’s form fields.</p>
+      <p class="narrative-emphasis">That’s necessary. It’s not what this case study is about.</p>
+    </section>
+
+    <figure class="wide-figure figure-gap live-figure" aria-labelledby="component-layer-title">
+      <div class="board-canvas-large">
+        <div class="board-frame-large">
+          <h3 id="component-layer-title">The component layer answers what each object is</h3>
+          <div class="quality-flow">
+            <div class="board-object quality-request"><strong>Create a retrospective</strong><span>A request for a Miro board</span></div>
+            <div class="board-arrow" aria-hidden="true">→</div>
+            <div class="board-object quality-ai"><strong>Design system MCP</strong><span>Selects the correct component vocabulary</span></div>
+            <div class="board-arrow" aria-hidden="true">→</div>
+            <div class="quality-outputs">
+              <div class="component-output"><span class="component-sample sticky" aria-hidden="true"></span><strong>Sticky note</strong></div>
+              <div class="component-output"><span class="component-sample frame" aria-hidden="true"></span><strong>Frame</strong></div>
+              <div class="component-output"><span class="component-sample connector" aria-hidden="true"></span><strong>Connector</strong></div>
+            </div>
+          </div>
+          <div class="quality-note"><span>The objects are recognizably Miro.</span><span class="board-tag">Component identity: solved</span></div>
+        </div>
+      </div>
+      <figcaption>The design system makes the component vocabulary machine-readable. It does not compose the board.</figcaption>
+    </figure>
+
+    <section class="section" id="composition">
+      <span class="section-label">02 / Composition</span>
+      <h2>Composition is the problem</h2>
+      <p class="lead">Every other design-system MCP gets to treat composition as already solved, because its components live inside a screen.</p>
+      <p>A grid, a set of breakpoints, an edge—something underneath the component library decides where things go once the right component is picked. A button doesn’t need to know how far it sits from the next button; the layout system already handled that.</p>
+      <p>Miro’s canvas has no layout system underneath it. There’s no grid, no breakpoint, no edge. Handing AI the right components doesn’t tell it where they belong, how many of them should exist right now, or whether it’s allowed to place something on top of work a person already left there.</p>
+      <p>Composition—position, density, pacing, whitespace, sequence—isn’t inherited from anywhere on an infinite canvas. It has to be designed on purpose, as its own layer.</p>
+      <p class="narrative-emphasis">That gap is the actual subject of this case study.</p>
+    </section>
+
+    <figure class="hero-image live-figure figure-gap" aria-labelledby="retro-demo-title">
+      <h3 class="stagehand-title" id="retro-demo-title">The same prompt can produce very different compositions</h3>
+      <div class="board-canvas-large retro-demo" id="retro-demo">
+        <button class="retro-run" id="run-retrospective" type="button">
+          <span class="retro-run-icon" aria-hidden="true">✦</span>
+          <span id="retro-run-label" aria-live="polite">Create a Retro</span>
+        </button>
+
+        <div class="retro-stage" id="retro-stage" aria-live="polite" aria-atomic="true" hidden>
+          <div id="retro-output"></div>
+          <aside class="retro-side-note" id="retro-side-note"></aside>
+        </div>
+      </div>
+      <figcaption>The prompt and component library stay the same. Position, density, pacing, and readiness do not.</figcaption>
+    </figure>
+
+    <section class="section" id="example">
+      <span class="section-label">03 / One example</span>
+      <h2>One example, worked through in full</h2>
+      <p class="lead">The clearest place to see the problem was a retrospective.</p>
+      <p>A retro is a container for honesty: people show up to say what went well, what didn’t, and what to change. The components were never the issue—the AI could already place a perfectly on-brand sticky note. The issue was composition: it would fill the container before anyone arrived, with plausible-sounding feedback no one on the team had actually said.</p>
+      <p>So the first composition rule was simple: leave the stickies empty. I wrote it three ways, each more specific than the last.</p>
+    </section>
+
+    <section class="project-overview" id="overview" aria-labelledby="overview-title">
+      <div class="overview-intro">
+        <span class="section-label">The rule, translated</span>
+        <p>One idea at three levels of specificity</p>
+      </div>
+
+      <div class="overview-canvas overview-canvas--example" role="group" aria-label="Do not invent session content example">
+        <div class="overview-frame">
+          <h2 id="overview-title">Leave the stickies empty so teams can speak up</h2>
+          <p class="overview-summary">A retro is a container for honesty. Creating one means making it easy to show up, so the system should respect the room before placing anything.</p>
+
+          <div class="overview-flow">
+            <article class="approach-stage">
+              <header class="stage-heading">
+                <span>Step 01</span>
+                <h3>Principle</h3>
+                <p>Clear enough for a team to agree on and use as a shared standard.</p>
+              </header>
+              <div class="stage-artifact sticky-artifact">
+                <p><strong>Intent</strong><br />Generated boards should be usable immediately.</p>
+                <p><strong>AI should</strong><br />Create empty contribution areas for participatory work unless asked otherwise.</p>
+                <p><strong>AI should not</strong><br />Fill workshops with fake participant responses.</p>
+              </div>
+            </article>
+
+            <div class="flow-arrow" aria-hidden="true">→</div>
+
+            <article class="approach-stage">
+              <header class="stage-heading">
+                <span>Step 02</span>
+                <h3>Rule</h3>
+                <p>Specific enough to check against a real board.</p>
+              </header>
+              <div class="stage-artifact doc-artifact">
+                <span class="doc-label">Interaction rule</span>
+                <span class="artifact-title">Do not invent session content</span>
+                <ul>
+                  <li>Leave participant contribution areas empty by default.</li>
+                  <li>Only add sample content when the prompt asks for it.</li>
+                  <li>Clearly label any sample as an example.</li>
+                  <li>Never fabricate summaries, votes, or participant input.</li>
+                </ul>
+              </div>
+            </article>
+
+            <div class="flow-arrow" aria-hidden="true">→</div>
+
+            <article class="approach-stage">
+              <header class="stage-heading">
+                <span>Step 03</span>
+                <h3>Spec</h3>
+                <p>Specific enough for engineering to build.</p>
+              </header>
+              <div class="stage-artifact markdown-artifact"><span class="comment"># do_not_invent_session_content</span>
+
+<span class="key">sticky_notes:</span>
+  <span class="key">default_content:</span> <span class="value">empty</span>
+
+<span class="key">sample_content:</span>
+  <span class="key">allowed:</span> <span class="value">only_if_requested</span>
+  <span class="key">label:</span> <span class="value">required</span>
+
+<span class="key">participant_input:</span>
+  <span class="key">generate:</span> <span class="value">false</span></div>
+            </article>
+          </div>
+        </div>
+      </div>
+
+      <section class="section" id="change">
+        <span class="section-label">The composition change</span>
+        <h2>The components did not change. The composition did.</h2>
+        <p>Before this rule, a generated retro could arrive already “finished”—three tidy columns of feedback nobody had said, built entirely out of correctly styled components. It looked like a retro. It wasn’t one.</p>
+        <p>After the rule, the same prompt produces a board with a clear entry, an empty middle where people add their own thinking, and an exit where the team votes and decides.</p>
+      </section>
+
+      <figure class="wide-figure figure-gap live-figure">
+        <h3 class="stagehand-title">From completing the work to preparing the work</h3>
+        <div class="output-pair stagehand-comparison">
+          <div class="bad-output">
+            <div class="state-label">Before — AI fills the board</div>
+            <div class="mini-canvas">
+              <section class="mini-frame stagehand-panel" aria-label="Before: retrospective filled with invented feedback">
+                <h4>AI completes the activity</h4>
+                <div class="scenario-columns">
+                  <div class="scenario-column crowded"><strong>Went well</strong><div class="board-sticky">Great teamwork</div><div class="board-sticky cyan">Fast delivery</div><div class="board-sticky mint">Clear goals</div></div>
+                  <div class="scenario-column crowded"><strong>To improve</strong><div class="board-sticky coral">More focus</div><div class="board-sticky">Fewer meetings</div><div class="board-sticky cyan">Plan earlier</div></div>
+                  <div class="scenario-column crowded"><strong>Actions</strong><div class="board-sticky mint">Share notes</div><div class="board-sticky coral">Add reviews</div><div class="board-sticky lilac">Follow up</div></div>
+                </div>
+                <span class="scenario-tag bad">Participation is displaced</span>
+              </section>
+            </div>
+          </div>
+
+          <div class="good-output">
+            <div class="state-label">After — AI stages participation</div>
+            <div class="mini-canvas">
+              <section class="mini-frame stagehand-panel" aria-label="After: retrospective prepared for participant input">
+                <h4>AI prepares the activity</h4>
+                <div class="entry-exit">
+                  <div class="scenario-column"><strong>Entry</strong><p>Share the purpose and instructions.</p></div>
+                  <div class="scenario-column"><strong>Work</strong><p>Participants add their own reflections.</p><div class="board-sticky"></div><div class="board-sticky coral"></div><div class="board-sticky cyan"></div></div>
+                  <div class="scenario-column"><strong>Exit</strong><p>Vote, decide, and name next actions.</p></div>
+                </div>
+                <span class="scenario-tag good">People remain the authors</span>
+              </section>
+            </div>
+          </div>
+        </div>
+        <figcaption>A perfectly on-brand retro becomes useful only when its composition leaves room for the team.</figcaption>
+      </figure>
+
+      <section class="section" id="system">
+        <span class="section-label">04 / From fix to system</span>
+        <h2>Deciding it had to work everywhere, not just here</h2>
+        <p class="lead">One good composition rule for one use case is a fix, not a system.</p>
+        <p>So I tested the same three-step translation—principle, rule, spec—against two more situations chosen on purpose: ideation workshops, which need room for wide-open thinking rather than just honesty, and project reviews, which need evidence and a decision rather than just contribution.</p>
+      </section>
+
+      <div class="overview-canvas overview-canvas--process" id="process" role="group" aria-labelledby="process-title">
+        <div class="overview-frame">
+          <div class="process-heading">
+            <h3 id="process-title">From one rule to a system</h3>
+            <p>Four steps for turning composition judgment into shared infrastructure</p>
+          </div>
+          <div class="overview-timeline">
+            <article class="process-card">
+              <span class="step-number">Step 01</span>
+              <h3>Define the principle.</h3>
+              <p>Name the collaborative behavior the generated board needs to protect.</p>
+            </article>
+            <article class="process-card">
+              <span class="step-number">Step 02</span>
+              <h3>Make it checkable.</h3>
+              <p>Translate the principle into defaults, constraints, and exceptions.</p>
+            </article>
+            <article class="process-card">
+              <span class="step-number">Step 03</span>
+              <h3>Test for transfer.</h3>
+              <p>Run the same method across situations with different participation needs.</p>
+            </article>
+            <article class="process-card">
+              <span class="step-number">Step 04</span>
+              <h3>Feed failures back.</h3>
+              <p>Use weak outputs to revise the principles, rules, specs, and checks.</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scope-overview" aria-labelledby="scope-title">
+      <div class="scope-canvas">
+        <div class="scope-frame">
+          <div class="scope-heading">
+            <h2 id="scope-title">Three situations. Seven checks. One learning loop.</h2>
+            <p>The scope was deliberately wide enough to test whether the method transferred, but narrow enough to inspect each failure.</p>
+          </div>
+
+          <div class="scope-grid">
+            <article class="scope-card">
+              <h3>Three starting contexts</h3>
+              <p>Each situation needed a different kind of participation and a different kind of ending.</p>
+              <div class="use-case-stack">
+                <div class="use-case">Retrospectives<small>Reflection, contribution, grouping, and action.</small></div>
+                <div class="use-case">Ideation workshops<small>Prompts, divergent creation, clustering, and selection.</small></div>
+                <div class="use-case">Project reviews<small>Context, evidence, discussion, and decisions.</small></div>
+              </div>
+              <div class="scope-rationale"><strong>Why these three:</strong> different enough to expose whether a composition rule transferred beyond the retro.</div>
+            </article>
+
+            <article class="scope-card">
+              <h3>Seven composition checks</h3>
+              <p>Each check names a failure of arrangement, pacing, participation, or delivery—not component identity.</p>
+              <div class="lens-grid" aria-label="Seven evaluation dimensions">
+                <div class="lens">Spatial safety</div>
+                <div class="lens">Lifecycle clarity</div>
+                <div class="lens">Psychological density</div>
+                <div class="lens">Interactive integrity</div>
+                <div class="lens">Content authenticity</div>
+                <div class="lens">Output delivery</div>
+                <div class="lens">Product-language fit</div>
+              </div>
+              <div class="scope-rationale"><strong>The point:</strong> a perfectly on-brand sticky note can still sit inside a board that fails all seven.</div>
+            </article>
+
+            <article class="scope-card">
+              <h3>One learning loop</h3>
+              <p>A failed output became evidence about the system—not simply a board to repair by hand.</p>
+              <div class="loop-track" aria-label="Continuous system-learning loop">
+                <div class="loop-node">Design decisions</div>
+                <div class="loop-arrow" aria-hidden="true">↓</div>
+                <div class="loop-node">Examples and rules</div>
+                <div class="loop-arrow" aria-hidden="true">↓</div>
+                <div class="loop-node output">Generated board</div>
+                <div class="loop-arrow" aria-hidden="true">↓</div>
+                <div class="loop-node">Evaluate the artifact</div>
+                <div class="loop-arrow" aria-hidden="true">↓</div>
+                <div class="loop-node">Update rules and examples</div>
+                <div class="loop-return">↺ Feed the learning back into the composition rules</div>
+              </div>
+            </article>
+          </div>
+
+          <div class="scope-footer">
+            <p><strong>Contexts:</strong> retrospective, ideation, and project review.</p>
+            <p><strong>Checks:</strong> seven ways composition can fail even when components are correct.</p>
+            <p><strong>Learning:</strong> each failure updates the shared rules.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="space">
+      <span class="section-label">Composition beyond the retro</span>
+      <h2>The failures were about arrangement, not identity</h2>
+      <p class="lead">The method held up across all three situations, and it surfaced composition failures the first rule never touched—problems no component library could catch.</p>
+      <p>A board built entirely from correct components could still collide with existing sticky notes, crowd the canvas until nothing was left to focus on, contain a decorative timer instead of a working one, or end a workshop in an unstructured pile with no decision attached.</p>
+      <p>On an infinite canvas, position carries meaning. I defined a spatial grammar for hierarchy, direction, proximity, contextual anchors, tool placement, whitespace, and growth. New work should attach to meaningful context—not merely the nearest empty coordinates—and human-authored work should be preserved before AI-created material is reflowed.</p>
+    </section>
+
+    <figure class="wide-figure figure-gap live-figure">
+      <div class="board-canvas-large">
+        <div class="board-frame-large" data-frame="Spatial patterns">
+          <h3>A spatial grammar for collaborative AI</h3>
+          <div class="grammar-grid">
+            <section class="grammar-card">
+              <h4>Sequence</h4>
+              <div class="grammar-stage"><div class="pattern-sequence"><div class="tiny-sticky"></div><span class="pattern-arrow">→</span><div class="tiny-sticky"></div><span class="pattern-arrow">→</span><div class="tiny-sticky"></div></div></div>
+            </section>
+            <section class="grammar-card">
+              <h4>Accumulation</h4>
+              <div class="grammar-stage"><div class="pattern-accumulation"><div class="tiny-sticky coral"></div><span class="accumulation-arrow">↓</span><div class="tiny-sticky coral"></div><span class="accumulation-arrow">↓</span><div class="accumulation-base"><div class="tiny-sticky coral"></div><div class="tiny-sticky coral"></div><div class="tiny-sticky coral"></div></div></div></div>
+            </section>
+            <section class="grammar-card">
+              <h4>Exploration</h4>
+              <div class="grammar-stage"><div class="pattern-exploration"><div class="tiny-sticky cyan n"></div><div class="tiny-sticky cyan s"></div><div class="tiny-sticky cyan w"></div><div class="tiny-sticky cyan e"></div><div class="center">?</div></div></div>
+            </section>
+            <section class="grammar-card">
+              <h4>Distance</h4>
+              <div class="grammar-stage"><div class="pattern-distance"><div class="distance-question">Strategic question</div><div class="distance-line">space to contribute</div><div class="distance-work"><div class="tiny-sticky lilac"></div><div class="tiny-sticky lilac"></div><div class="tiny-sticky lilac"></div><div class="tiny-sticky lilac"></div></div></div></div>
+            </section>
+            <section class="grammar-card">
+              <h4>Respect existing work</h4>
+              <div class="grammar-stage"><div class="pattern-respect"><div class="respect-cluster"><div class="tiny-sticky"></div><div class="tiny-sticky coral"></div><div class="tiny-sticky cyan"></div><div class="tiny-sticky mint"></div></div><span class="pattern-arrow">←</span><div class="respect-ai">AI suggestion</div></div></div>
+            </section>
+          </div>
+          <div class="grammar-note"><span>Space encodes order, attention, and ownership.</span><span class="board-tag">Layout is behavior</span></div>
+        </div>
+      </div>
+      <figcaption>Direction, distance, and whitespace became product semantics.</figcaption>
+    </figure>
+
+    <section class="section" id="evaluation">
+      <span class="section-label">05 / Evaluation</span>
+      <h2>Seven checks, all about composition</h2>
+      <p class="lead">Seven checks came out of the failures—every one of them a composition question, not a components question.</p>
+      <p>A perfectly on-brand sticky note can still fail all seven. When an output failed, I asked what it revealed about the system: an unclear principle, an over-broad rule, a conflict, or a missing exception.</p>
+    </section>
+
+    <div class="dimension-gallery" aria-label="Seven output evaluation dimensions with bad and good examples">
+      <article class="dimension-case">
+        <div class="dimension-header">
+          <span class="dimension-number">01</span>
+          <h3>Spatial safety</h3>
+          <p>A new object should preserve existing work and attach to meaningful context without collisions.</p>
+        </div>
+        <div class="output-pair">
+          <div class="bad-output">
+            <div class="state-label">Bad output — overwrites the workspace</div>
+            <div class="mini-canvas">
+              <div class="mini-frame" data-frame="Retrospective board">
+                <div class="mini-stage bad-safety">
+                  <div class="existing-cluster">
+                    <div class="tiny-sticky">Idea A</div><div class="tiny-sticky coral">Idea B</div>
+                    <div class="tiny-sticky cyan">Idea C</div><div class="tiny-sticky mint">Idea D</div>
+                  </div>
+                  <div class="ai-frame-object">New AI-generated activity</div>
+                  <span class="collision">Collision</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="good-output">
+            <div class="state-label">Good output — preserves and extends</div>
+            <div class="mini-canvas">
+              <div class="mini-frame" data-frame="Retrospective board">
+                <div class="mini-stage good-safety">
+                  <div class="existing-cluster">
+                    <div class="tiny-sticky">Idea A</div><div class="tiny-sticky coral">Idea B</div>
+                    <div class="tiny-sticky cyan">Idea C</div><div class="tiny-sticky mint">Idea D</div>
+                  </div>
+                  <span class="safe-anchor" aria-hidden="true">→</span>
+                  <div class="ai-frame-object">New activity in a safe adjacent area</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="dimension-rule"><strong>Decision rule:</strong> protect human-authored content first; reflow AI-created material before moving existing work.</p>
+      </article>
+
+      <article class="dimension-case">
+        <div class="dimension-header">
+          <span class="dimension-number">02</span>
+          <h3>Lifecycle clarity</h3>
+          <p>A participant should be able to see how to enter the activity, contribute, and reach an ending.</p>
+        </div>
+        <div class="output-pair">
+          <div class="bad-output">
+            <div class="state-label">Bad output — everything appears at once</div>
+            <div class="mini-canvas">
+              <div class="mini-frame" data-frame="Workshop">
+                <div class="mini-stage messy-lifecycle">
+                  <div class="tiny-sticky">Prompt</div><div class="tiny-sticky coral">Idea</div>
+                  <div class="tiny-sticky cyan">Vote</div><div class="tiny-sticky mint">Action</div>
+                  <div class="tiny-sticky lilac">Note</div>
+                  <div class="floating-instruction">Instructions, voting, and outcomes are mixed together.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="good-output">
+            <div class="state-label">Good output — the activity has a path</div>
+            <div class="mini-canvas">
+              <div class="mini-frame" data-frame="Workshop">
+                <div class="mini-stage">
+                  <span class="zone-arrow one" aria-hidden="true">→</span><span class="zone-arrow two" aria-hidden="true">→</span>
+                  <div class="lifecycle-zones">
+                    <div class="life-zone"><strong>Entry</strong><p>Goal and instructions</p></div>
+                    <div class="life-zone"><strong>Work</strong><div class="tiny-sticky"></div><div class="tiny-sticky coral"></div><div class="tiny-sticky cyan"></div></div>
+                    <div class="life-zone"><strong>Exit</strong><p>Vote, decide, and close</p></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="dimension-rule"><strong>Decision rule:</strong> express entry, participation, and completion as distinct spatial phases.</p>
+      </article>
+
+      <article class="dimension-case">
+        <div class="dimension-header">
+          <span class="dimension-number">03</span>
+          <h3>Psychological density</h3>
+          <p>The amount of visible content should match what people need to think about in the current phase.</p>
+        </div>
+        <div class="output-pair">
+          <div class="bad-output">
+            <div class="state-label">Bad output — the starting state feels finished</div>
+            <div class="mini-canvas">
+              <div class="mini-frame" data-frame="Opening the session">
+                <div class="density-grid">
+                  <div class="tiny-sticky"></div><div class="tiny-sticky coral"></div><div class="tiny-sticky cyan"></div><div class="tiny-sticky mint"></div><div class="tiny-sticky lilac"></div>
+                  <div class="tiny-sticky coral"></div><div class="tiny-sticky cyan"></div><div class="tiny-sticky mint"></div><div class="tiny-sticky lilac"></div><div class="tiny-sticky"></div>
+                  <div class="tiny-sticky cyan"></div><div class="tiny-sticky mint"></div><div class="tiny-sticky lilac"></div><div class="tiny-sticky"></div><div class="tiny-sticky coral"></div>
+                </div>
+                <div class="density-warning">No focal point · no room to begin</div>
+              </div>
+            </div>
+          </div>
+          <div class="good-output">
+            <div class="state-label">Good output — attention starts in one place</div>
+            <div class="mini-canvas">
+              <div class="mini-frame" data-frame="Opening the session">
+                <div class="calm-entry">
+                  <div class="calm-prompt">Start here: add one reflection about the last sprint.
+                    <div class="calm-space"><div class="tiny-sticky"></div><div class="tiny-sticky coral"></div><div class="tiny-sticky cyan"></div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="dimension-rule"><strong>Decision rule:</strong> begin with low density and let the board accumulate complexity through participation.</p>
+      </article>
+
+      <article class="dimension-case">
+        <div class="dimension-header">
+          <span class="dimension-number">04</span>
+          <h3>Interactive integrity</h3>
+          <p>If an activity requires timing, voting, or another action, the output should contain a working tool—not a picture of one.</p>
+        </div>
+        <div class="output-pair">
+          <div class="bad-output">
+            <div class="state-label">Bad output — decoration imitates function</div>
+            <div class="mini-canvas">
+              <div class="mini-frame" data-frame="Workshop tools">
+                <div class="fake-tools">
+                  <div class="fake-tool"><strong>05:00</strong><span>Static text styled as a timer</span></div>
+                  <div class="fake-tool"><strong>● ● ●</strong><span>Dots styled as voting</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="good-output">
+            <div class="state-label">Good output — the tools perform the action</div>
+            <div class="mini-canvas">
+              <div class="mini-frame" data-frame="Workshop tools">
+                <div class="working-tools">
+                  <div class="working-tool"><strong>Timer</strong><div class="tool-state">5 minutes · ready</div><span class="tool-action">Start timer</span></div>
+                  <div class="working-tool"><strong>Voting</strong><div class="tool-state">3 votes per person</div><span class="tool-action">Open voting</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="dimension-rule"><strong>Decision rule:</strong> use native interactive objects whenever the activity depends on their behavior.</p>
+      </article>
+
+      <article class="dimension-case">
+        <div class="dimension-header">
+          <span class="dimension-number">05</span>
+          <h3>Content authenticity</h3>
+          <p>The AI can prepare contribution areas, but it should not pretend that participants have already contributed.</p>
+        </div>
+        <div class="output-pair">
+          <div class="bad-output">
+            <div class="state-label">Bad output — fabricates the team’s voice</div>
+            <div class="mini-canvas">
+              <div class="mini-frame" data-frame="Retrospective">
+                <div class="retro-mini">
+                  <div class="retro-column"><strong>Went well</strong><div class="tiny-sticky">Great teamwork</div><div class="tiny-sticky cyan">Fast delivery</div></div>
+                  <div class="retro-column"><strong>Improve</strong><div class="tiny-sticky coral">More focus</div><div class="tiny-sticky">Fewer meetings</div></div>
+                  <div class="retro-column"><strong>Actions</strong><div class="tiny-sticky mint">Plan earlier</div><div class="tiny-sticky lilac">Share notes</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="good-output">
+            <div class="state-label">Good output — leaves authorship with people</div>
+            <div class="mini-canvas">
+              <div class="mini-frame" data-frame="Retrospective">
+                <div class="retro-mini">
+                  <div class="retro-column"><strong>Went well</strong><div class="tiny-sticky empty-sticky">Empty</div><div class="tiny-sticky cyan empty-sticky">Empty</div></div>
+                  <div class="retro-column"><strong>Improve</strong><div class="tiny-sticky coral empty-sticky">Empty</div><div class="tiny-sticky empty-sticky">Empty</div></div>
+                  <div class="retro-column"><strong>Actions</strong><div class="tiny-sticky mint empty-sticky">Empty</div><div class="tiny-sticky lilac empty-sticky">Empty</div></div>
+                </div>
+                <div class="contribution-prompt">Participants add their own reflections here.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="dimension-rule"><strong>Decision rule:</strong> contribution areas default to empty unless the prompt explicitly requests labeled example content.</p>
+      </article>
+
+      <article class="dimension-case">
+        <div class="dimension-header">
+          <span class="dimension-number">06</span>
+          <h3>Output delivery</h3>
+          <p>A collaborative activity should move the team toward a decision, commitment, or next action.</p>
+        </div>
+        <div class="output-pair">
+          <div class="bad-output">
+            <div class="state-label">Bad output — stops at conversation</div>
+            <div class="mini-canvas">
+              <div class="mini-frame" data-frame="Workshop result">
+                <div class="delivery-cloud">
+                  <div class="tiny-sticky">Idea</div><div class="tiny-sticky coral">Idea</div><div class="tiny-sticky cyan">Idea</div><div class="tiny-sticky mint">Idea</div>
+                  <div class="dead-end">Workshop ends with an unstructured cluster</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="good-output">
+            <div class="state-label">Good output — converts discussion into action</div>
+            <div class="mini-canvas">
+              <div class="mini-frame" data-frame="Workshop result">
+                <div class="delivery-path">
+                  <div class="delivery-step"><strong>Evidence</strong>Grouped ideas and observations</div>
+                  <span class="delivery-arrow">→</span>
+                  <div class="delivery-step"><strong>Decision</strong>What the team agrees to do</div>
+                  <span class="delivery-arrow">→</span>
+                  <div class="delivery-step action"><strong>Action</strong>Owner · due date · next step</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="dimension-rule"><strong>Decision rule:</strong> include an explicit destination for decisions, owners, and follow-up actions.</p>
+      </article>
+
+      <article class="dimension-case">
+        <div class="dimension-header">
+          <span class="dimension-number">07</span>
+          <h3>Product-language fit</h3>
+          <p>The generated board should use a coherent hierarchy, component vocabulary, tone, and visual rhythm.</p>
+        </div>
+        <div class="output-pair">
+          <div class="bad-output">
+            <div class="state-label">Bad output — every object speaks differently</div>
+            <div class="mini-canvas">
+              <div class="mini-frame" data-frame="Project review">
+                <div class="style-chaos">
+                  <div class="chaos-object one">Main objective</div>
+                  <div class="chaos-object two">IMPORTANT</div>
+                  <div class="chaos-object three">random_component_style()</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="good-output">
+            <div class="state-label">Good output — the system feels related</div>
+            <div class="mini-canvas">
+              <div class="mini-frame" data-frame="Project review">
+                <div class="coherent-pattern">
+                  <div class="coherent-title">Project review</div>
+                  <div class="coherent-row">
+                    <div class="coherent-object"><strong>Evidence</strong><div class="tiny-sticky"></div><div class="tiny-sticky cyan"></div></div>
+                    <div class="coherent-object"><strong>Decision</strong><div class="tiny-sticky coral"></div><div class="tiny-sticky mint"></div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="dimension-rule"><strong>Decision rule:</strong> reuse established components and hierarchy; vary expression only where the use case requires it.</p>
+      </article>
+    </div>
+
+    <section class="section" id="result">
+      <span class="section-label">06 / Outcome</span>
+      <h2>Where it landed</h2>
+      <div class="landing-grid">
+        <article class="landing-card">
+          <h3>What exists now</h3>
+          <p>A way to test composition the same way the design system already tests components—not by taste, but against a specific, checkable rule. Components answer whether an object is recognizably Miro. Composition answers whether the board is recognizably good: usable immediately, honest about what people actually said, and respectful of what was already there.</p>
+        </article>
+        <article class="landing-card">
+          <h3>What’s still open</h3>
+          <p>How much this changed the real failure rate of generated boards in production, and whether the same three-step method holds as new use cases get added. That’s the next thing to measure, not a claim being made yet.</p>
+        </article>
+      </div>
+    </section>
+    </div>
+    </div>
+  </main>
+
+  <footer>
+    Marta Domingo / Miro Design Platform / Components and composition
+    <a href="#top">Back to top</a>
+  </footer>
+
+  <script>
+    (() => {
+      const trigger = document.getElementById("run-retrospective");
+      const label = document.getElementById("retro-run-label");
+      const stage = document.getElementById("retro-stage");
+      const output = document.getElementById("retro-output");
+      const note = document.getElementById("retro-side-note");
+
+      const scenarios = [
+        {
+          note: "Overfilled",
+          tone: "coral",
+          markup: "<div class=\"retro-output-board\"><div class=\"retro-board-title\">Retrospective</div><div class=\"retro-board-subtitle\">The board arrives already completed.</div><div class=\"retro-columns\"><div class=\"retro-column\"><strong>Went well</strong><div class=\"retro-sticky\">Great teamwork</div><div class=\"retro-sticky cyan\">Fast delivery</div><div class=\"retro-sticky mint\">Clear goals</div><div class=\"retro-sticky lilac\">Good energy</div></div><div class=\"retro-column\"><strong>To improve</strong><div class=\"retro-sticky coral\">More focus</div><div class=\"retro-sticky\">Fewer meetings</div><div class=\"retro-sticky cyan\">Plan earlier</div><div class=\"retro-sticky mint\">Share context</div></div><div class=\"retro-column\"><strong>Actions</strong><div class=\"retro-sticky mint\">Share notes</div><div class=\"retro-sticky coral\">Add reviews</div><div class=\"retro-sticky lilac\">Follow up</div><div class=\"retro-sticky\">Set owners</div></div></div></div>"
+        },
+        {
+          note: "Incomplete",
+          tone: "yellow",
+          markup: "<div class=\"retro-output-board\"><div class=\"retro-board-title\">Retrospective</div><div class=\"retro-board-subtitle\">Add your reflections.</div><div class=\"retro-columns\"><div class=\"retro-column\"><strong>Went well</strong><div class=\"retro-sticky empty\">Empty</div><div class=\"retro-sticky empty\">Empty</div></div><div class=\"retro-column\"><strong>To improve</strong><div class=\"retro-sticky empty\">Empty</div><div class=\"retro-sticky empty\">Empty</div></div></div></div>"
+        },
+        {
+          note: "Too decorative",
+          tone: "lilac",
+          markup: "<div class=\"retro-output-board\"><div class=\"retro-board-title\">Team Retro ✦</div><div class=\"retro-decorative\"><div class=\"retro-sticky\">Add one thought</div></div></div>"
+        },
+        {
+          note: "Objects collide",
+          tone: "coral",
+          markup: "<div class=\"retro-output-board\"><div class=\"retro-board-title\">Retrospective</div><div class=\"retro-collision\"><div class=\"retro-collision-frame\"><strong>Existing team notes</strong></div><div class=\"retro-collision-frame\"><strong>New AI activity</strong></div></div></div>"
+        },
+        {
+          note: "No clear flow",
+          tone: "cyan",
+          markup: "<div class=\"retro-output-board\"><div class=\"retro-board-title\">Retrospective</div><div class=\"retro-scatter\"><div class=\"retro-sticky\">Prompt</div><div class=\"retro-sticky coral\">Vote</div><div class=\"retro-sticky cyan\">Idea</div><div class=\"retro-sticky mint\">Action</div><div class=\"retro-sticky lilac\">Discuss</div></div></div>"
+        },
+        {
+          note: "Well staged",
+          tone: "mint",
+          markup: "<div class=\"retro-output-board\"><div class=\"retro-board-title\">Retrospective</div><div class=\"retro-board-subtitle\">Move from reflection to a clear next step.</div><div class=\"retro-columns\"><div class=\"retro-column\"><strong>1 · Start</strong><div class=\"retro-sticky empty\">Read the prompt</div><div class=\"retro-tool\">Timer · 5 min</div></div><div class=\"retro-column\"><strong>2 · Reflect</strong><div class=\"retro-sticky empty\">Add your thought</div><div class=\"retro-sticky empty\">Add your thought</div></div><div class=\"retro-column\"><strong>3 · Decide</strong><div class=\"retro-tool\">Vote</div><div class=\"retro-tool\">Create action</div></div></div></div>"
+        }
+      ];
+
+      let currentIndex = -1;
+
+      trigger.addEventListener("click", () => {
+        trigger.disabled = true;
+        trigger.classList.add("is-loading");
+        trigger.setAttribute("aria-busy", "true");
+        label.textContent = "AI generating result…";
+        stage.classList.add("is-loading");
+
+        window.setTimeout(() => {
+          const available = scenarios
+            .map((_, index) => index)
+            .filter((index) => index !== currentIndex);
+          currentIndex = available[Math.floor(Math.random() * available.length)];
+
+          const scenario = scenarios[currentIndex];
+          output.innerHTML = scenario.markup;
+          note.textContent = scenario.note;
+          note.className = "retro-side-note " + scenario.tone;
+
+          stage.hidden = false;
+          stage.classList.remove("is-loading");
+          stage.classList.add("is-entering");
+          window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(() => stage.classList.remove("is-entering"));
+          });
+
+          label.textContent = "Create again";
+          trigger.classList.add("has-run");
+          trigger.classList.remove("is-loading");
+          trigger.setAttribute("aria-busy", "false");
+          trigger.disabled = false;
+        }, 420);
+      });
+    })();
+  </script>
+</body>
+</html>
