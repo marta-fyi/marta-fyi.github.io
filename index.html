@@ -115,6 +115,8 @@
   /* Vita ------------------------------------------------------------------ */
 
   .vita {
+    /* Size to content: the space above the footer stops being leftover slack. */
+    min-height: 0;
     align-items: flex-start;
   }
 
@@ -210,6 +212,7 @@
   /* Footer --------------------------------------------------------------- */
 
   footer {
+    margin-top: clamp(6rem, 18vh, 12rem);
     display: flex;
     align-items: center;
     gap: 2.5rem;
@@ -234,6 +237,12 @@
     text-underline-offset: 0.18em;
   }
 
+  .cv {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
   .glyph {
     width: 0.9em;
     height: 0.9em;
@@ -250,6 +259,9 @@
 
   .copy:hover .copy-glyph,
   .copy:focus-visible .copy-glyph { opacity: 0.55; }
+
+  /* Persistent, unlike the copy glyph: worth knowing a link hands you a file. */
+  .arrow-glyph { opacity: 0.55; }
 
   .copy[data-copied] .copy-glyph { display: none; }
   .copy[data-copied] .done-glyph { display: block; opacity: 0.55; }
@@ -273,7 +285,7 @@
     .groups { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
     .entries { justify-content: flex-start; }
     .run:has(.roles li + li) { flex: 0; }
-    footer { padding: 0; }
+    footer { margin-top: 2rem; padding: 0; }
   }
 </style>
 </head>
@@ -411,6 +423,12 @@
       </svg>
     </button>
     <a href="https://www.linkedin.com/in/marta-domingo/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+    <a class="cv" href="/assets/marta-domingo-cv.pdf" type="application/pdf" download>
+      CV
+      <svg class="glyph arrow-glyph" viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M8 3v8M4.5 7.5 8 11l3.5-3.5"/>
+      </svg>
+    </a>
     <span class="sr-only" role="status" aria-live="polite"></span>
   </footer>
 

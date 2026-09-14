@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Marta Domingo — CV</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* Source for assets/marta-domingo-cv.pdf -- regenerate with tools/build-cv.sh.
+     Two columns because one A4 page cannot hold this much at a readable size in
+     a single measure: the sidebar absorbs the short records so Experience gets
+     the full height. Ink on white -- a full-bleed tint prints heavy. */
+
+  @page {
+    size: A4;
+    margin: 11mm 13mm;
+  }
+
+  :root {
+    --ink: #1C1C1E;
+    --ink-60: rgba(28, 28, 30, 0.58);
+    --ink-45: rgba(28, 28, 30, 0.45);
+    --rule: rgba(28, 28, 30, 0.14);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body { margin: 0; padding: 0; background: #fff; }
+
+  body {
+    font-family: 'Archivo', system-ui, -apple-system, sans-serif;
+    font-weight: 400;
+    font-size: 8.5pt;
+    line-height: 1.4;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  main { max-width: 182mm; margin: 0 auto; padding: 14mm; }
+  @media print { main { max-width: none; margin: 0; padding: 0; } }
+
+  /* Header ---------------------------------------------------------------- */
+
+  header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8mm;
+    margin-bottom: 4mm;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 14pt;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+  }
+
+  .contact { margin: 1.5mm 0 0; font-size: 8pt; color: var(--ink-60); }
+  .contact a { color: inherit; text-decoration: none; }
+
+  header img {
+    width: 19mm;
+    height: 19mm;
+    flex: none;
+    object-fit: contain;
+  }
+
+  .profile {
+    margin: 0 0 5mm;
+    font-size: 8.5pt;
+    line-height: 1.5;
+    text-wrap: pretty;
+  }
+
+  /* Two columns ----------------------------------------------------------- */
+
+  .cols {
+    display: grid;
+    grid-template-columns: 46mm 1fr;
+    gap: 0 7mm;
+    align-items: start;
+  }
+
+  section { margin-bottom: 4mm; }
+  section:last-child { margin-bottom: 0; }
+
+  h2 {
+    margin: 0 0 2.5mm;
+    padding-bottom: 1.2mm;
+    border-bottom: 1px solid var(--rule);
+    font-size: 8.5pt;
+    font-weight: 500;
+  }
+
+  .skills { margin: 0; color: var(--ink-60); }
+
+  /* Sidebar records: title, then org and dates beneath. */
+  .rec { margin-bottom: 3mm; break-inside: avoid; }
+  .rec:last-child { margin-bottom: 0; }
+
+  .rec h3 {
+    margin: 0;
+    font-size: 8.5pt;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  .rec p {
+    margin: 0.3mm 0 0;
+    font-size: 8pt;
+    color: var(--ink-60);
+  }
+
+  .rec .dates { color: var(--ink-45); font-variant-numeric: tabular-nums; }
+
+  /* Experience: dates ride on the title line to free up the measure. */
+  .role { margin-bottom: 2mm; }
+  .role:last-child { margin-bottom: 0; }
+
+  .role-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 4mm;
+    break-after: avoid;
+  }
+
+  .role-head h3 {
+    margin: 0;
+    font-size: 9pt;
+    font-weight: 500;
+  }
+
+  .role-head .dates {
+    flex: none;
+    font-size: 8pt;
+    color: var(--ink-45);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .duties {
+    margin: 1mm 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 7.5pt;
+    line-height: 1.3;
+  }
+
+  .duties li {
+    position: relative;
+    padding-left: 3.2mm;
+    margin-bottom: 0.2mm;
+    text-wrap: pretty;
+  }
+
+  .duties li::before {
+    content: "–";
+    position: absolute;
+    left: 0;
+    color: var(--ink-45);
+  }
+</style>
+</head>
+<body>
+<main>
+
+<main>
+
+  <header>
+    <div>
+      <h1>Marta Domingo</h1>
+      <p class="contact">
+        Barcelona &middot;
+        <a href="mailto:hello@marta.fyi">hello@marta.fyi</a> &middot;
+        <a href="https://www.linkedin.com/in/marta-domingo/">LinkedIn</a> &middot;
+        <a href="https://marta.fyi/">marta.fyi</a>
+      </p>
+    </div>
+    <img src="/assets/mark-square.png" alt="">
+  </header>
+
+  <p class="profile">I&rsquo;m a hands-on design lead who enjoys moving between shaping product direction, working through complex interaction problems and helping teams do their best work. At Miro, I lead design for core collaboration experiences used by more than 100 million people, staying close to the work from early framing through detailed experience decisions. Previously at HP, I designed and led work across early-stage innovation, product experiences, platforms and design systems. I care about thoughtful strategy, strong craft and creating an environment where people can grow and make confident decisions.</p>
+
+  <div class="cols">
+
+    <div>
+      <section>
+        <h2>Core skills</h2>
+        <p class="skills">Product design &middot; Interaction design &middot; Prototyping &middot; AI-enabled experiences &middot; Design systems &middot; Growth &middot; Experimentation &middot; Platform design</p>
+      </section>
+
+      <section>
+        <h2>Lecturer at</h2>
+        <div class="rec">
+          <h3>ELISAVA &mdash; Master&rsquo;s Programme Director, Strategic Design and Innovation</h3>
+          <p class="dates">2023&ndash;2025</p>
+        </div>
+        <div class="rec">
+          <h3>BAU &mdash; Lecturer, Master&rsquo;s in Experience Design</h3>
+          <p class="dates">2021&ndash;2025</p>
+        </div>
+        <div class="rec">
+          <h3>Massana School of Art and Design &mdash; Academic Adviser</h3>
+          <p class="dates">2021</p>
+        </div>
+        <div class="rec">
+          <h3>IED &mdash; Lecturer, Master&rsquo;s in Interaction Design</h3>
+          <p class="dates">2020</p>
+        </div>
+        <div class="rec">
+          <h3>ELISAVA &mdash; Lecturer, Undergraduate Degree in Design</h3>
+          <p class="dates">2016&ndash;2021</p>
+        </div>
+      </section>
+
+      <section>
+        <h2>Background</h2>
+        <div class="rec">
+          <h3>MPhil, Contemporary Philosophy</h3>
+          <p>Universitat Oberta de Catalunya &middot; <span class="dates">2023&ndash;2026</span></p>
+        </div>
+        <div class="rec">
+          <h3>MBA, Business Administration</h3>
+          <p>EAE Business School &middot; <span class="dates">2020&ndash;2022</span></p>
+        </div>
+        <div class="rec">
+          <h3>MA, Advanced Studies in Art History</h3>
+          <p>University of Barcelona &middot; <span class="dates">2015&ndash;2016</span></p>
+        </div>
+        <div class="rec">
+          <h3>Bachelor&rsquo;s Degree, Product Design</h3>
+          <p>ELISAVA &middot; <span class="dates">2011&ndash;2015</span></p>
+        </div>
+        <div class="rec">
+          <h3>Experience Design Programme</h3>
+          <p>KAOSPILOT &middot; <span class="dates">2019</span></p>
+        </div>
+      </section>
+    </div>
+
+    <div>
+      <section>
+        <h2>Experience</h2>
+        <div class="role">
+          <div class="role-head">
+            <h3>Miro &mdash; Design Manager</h3>
+            <p class="dates">2025&ndash;Present</p>
+          </div>
+          <ul class="duties">
+            <li>Lead design for core collaboration experiences used by more than 100 million people.</li>
+          <li>Stay close to the product work, partnering with designers and product teams to frame problems, explore directions and refine key interactions.</li>
+          <li>Explore how AI can support the design process and create more useful product experiences.</li>
+          <li>Shape design quality through critique, detailed feedback and clear experience standards.</li>
+          <li>Create frameworks and ways of working that help teams make strong, independent design decisions.</li>
+          <li>Support design leads and individual contributors while continuing to contribute to product direction and craft.</li>
+          <li>Work closely with Product, Engineering and senior leadership to connect strategic priorities with the experience delivered to users.</li>
+          </ul>
+        </div>
+        <div class="role">
+          <div class="role-head">
+            <h3>HP &mdash; Design Lab Lead</h3>
+            <p class="dates">2024&ndash;2025</p>
+          </div>
+          <ul class="duties">
+            <li>Led the Design Lab while contributing directly to the exploration and development of early product ideas.</li>
+          <li>Worked with multidisciplinary teams to frame opportunities, create concepts and explore new markets and customer needs.</li>
+          <li>Used prototypes and experiments to turn early customer signals into clearer product directions.</li>
+          <li>Translated research and design exploration into evidence that supported go/no-go investment decisions.</li>
+          <li>Made discovery cycles faster and more focused by helping teams test the most important assumptions early.</li>
+          <li>Connected hands-on exploration with product strategy, ensuring that decisions remained grounded in real customer needs.</li>
+          </ul>
+        </div>
+        <div class="role">
+          <div class="role-head">
+            <h3>HP &mdash; Product Design Lead</h3>
+            <p class="dates">2021&ndash;2023</p>
+          </div>
+          <ul class="duties">
+            <li>Led the move towards design at scale while remaining closely involved in the design system&rsquo;s foundations, patterns and product application.</li>
+          <li>Worked directly with design teams to evolve the system, contributing to an approximately 40% increase in component reuse.</li>
+          <li>Designed shared standards for quality, consistency and usability, reducing design-system update cycles by approximately 25%.</li>
+          <li>Partnered with designers and engineers to turn recurring product needs into reusable components and practical guidance.</li>
+          <li>Defined ways to measure adoption and understand where the system was&mdash;or was not&mdash;helping teams.</li>
+          <li>Combined systems thinking with detailed product work to help teams design and ship with greater speed and confidence.</li>
+          </ul>
+        </div>
+        <div class="role">
+          <div class="role-head">
+            <h3>HP &mdash; Senior Product Designer</h3>
+            <p class="dates">2019&ndash;2021</p>
+          </div>
+          <ul class="duties">
+            <li>Combined hands-on product design with leadership across multiple product lines and platform initiatives.</li>
+          <li>Led a team of four designers while continuing to shape concepts, interaction patterns and key product decisions.</li>
+          <li>Worked through complex product problems with Design, Product and Engineering from early framing to delivery.</li>
+          <li>Reduced late-stage rework by bringing disciplines together earlier and making design ownership clearer.</li>
+          <li>Helped unify more than ten applications used by approximately 36,000 companies.</li>
+          <li>Designed shared platform principles, patterns and frameworks that created a more consistent experience across products.</li>
+          </ul>
+        </div>
+        <div class="role">
+          <div class="role-head">
+            <h3>HP &mdash; Product Designer</h3>
+            <p class="dates">2017&ndash;2019</p>
+          </div>
+          <ul class="duties">
+            <li>Explored and designed early product concepts, helping teams learn before committing to development.</li>
+          <li>Created prototypes and tested key assumptions to reduce uncertainty around new opportunities.</li>
+          <li>Planned and ran user experiments that shaped longer-term product strategy.</li>
+          <li>Used insights from both successful and discontinued concepts to guide future product decisions.</li>
+          <li>Helped establish an experimentation-first approach focused on making, testing and learning quickly.</li>
+          <li>Worked closely with Product, Engineering and Research to turn customer needs into tangible product ideas.</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+  </div>
+
+</main>
+</body>
+</html>
