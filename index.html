@@ -7,11 +7,13 @@
 <meta name="description" content="Marta Domingo is a designer based in Barcelona. Design Manager for Core Experiences at Miro.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #F2F2F7;
     --ink: #1C1C1E;
+    --ink-60: rgba(28, 28, 30, 0.58);
+    --ink-45: rgba(28, 28, 30, 0.45);
     --gutter: 5vw;
   }
 
@@ -42,11 +44,10 @@
     width: 50%;
   }
 
-  p {
+  .lede {
     margin: 0;
-    font-size: 1.5rem;
+    font-size: 1rem;
     line-height: 1.35;
-    letter-spacing: -0.015em;
     text-wrap: pretty;
   }
 
@@ -62,22 +63,238 @@
     text-decoration-color: rgba(28, 28, 30, 0.35);
   }
 
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Vita ------------------------------------------------------------------ */
+
+  .vita {
+    align-items: flex-start;
+  }
+
+  .vita .col {
+    width: 100%;
+  }
+
+  /* Columns stretch to the tallest, then each list spreads its rows so all
+     three bottom out at the same line. */
+  .groups {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: stretch;
+    gap: 4rem;
+  }
+
+  .group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .group h2 {
+    margin: 0 0 1.75rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+  }
+
+  .entries {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1.875rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .dates {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--ink-45);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .group h3 {
+    margin: 0.15rem 0 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  .sub {
+    margin: 0.15rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--ink-60);
+  }
+
+  /* A company is named once, with its roles on a line of continuity below. */
+  .run {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .run:has(.roles li + li) {
+    flex: 1;
+  }
+
+  .org {
+    margin: 0 0 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--ink-60);
+  }
+
+  .roles {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Only a run of two or more roles needs the line. */
+  .roles:has(li + li) {
+    padding-left: 0.875rem;
+    border-left: 1px solid rgba(28, 28, 30, 0.16);
+  }
+
+  @media (max-width: 1000px) {
+    .groups { grid-template-columns: repeat(2, 1fr); gap: 3.5rem; }
+  }
+
   @media (max-width: 700px) {
     .col { width: 100%; }
-    p { font-size: 1.25rem; }
+    .groups { grid-template-columns: 1fr; gap: 3rem; align-items: start; }
+    .run:has(.roles li + li) { flex: 0; }
   }
 </style>
 </head>
 <body>
+  <h1 class="sr-only">Marta Domingo</h1>
+
   <section>
     <div class="col">
-      <p>Marta Domingo is a designer based in Barcelona. Currently at Miro, working as a Design Manager for Core Experiences. Previously at HP, leading the Design Lab.</p>
+      <p class="lede">Marta Domingo is a designer based in Barcelona. Currently at Miro, working as a Design Manager for Core Experiences. Previously at HP, leading the Design Lab.</p>
     </div>
   </section>
 
   <section>
     <div class="col">
-      <p>Some recent work on her portfolio includes <a href="https://miro.com/" target="_blank" rel="noopener noreferrer">Miro Aura Product Language</a> and <a href="https://www.hp.com/us-en/printers/large-format/printos.html" target="_blank" rel="noopener noreferrer">HP Production Hub</a>.</p>
+      <p class="lede">Some recent work on her portfolio includes <a href="https://miro.com/" target="_blank" rel="noopener noreferrer">Miro Aura Product Language</a> and <a href="https://www.hp.com/us-en/printers/large-format/printos.html" target="_blank" rel="noopener noreferrer">HP Production Hub</a>.</p>
+    </div>
+  </section>
+
+  <section class="vita">
+    <div class="col">
+      <div class="groups">
+
+        <div class="group">
+          <h2>Experience</h2>
+          <ul class="entries">
+            <li class="run">
+              <p class="org">Miro</p>
+              <ul class="roles">
+                <li>
+                  <p class="dates">2025 &rarr; Present</p>
+                  <h3>Design Manager</h3>
+                </li>
+              </ul>
+            </li>
+            <li class="run">
+              <p class="org">HP</p>
+              <ul class="roles">
+                <li>
+                  <p class="dates">2024 &rarr; 2025</p>
+                  <h3>Design Lab Lead</h3>
+                </li>
+                <li>
+                  <p class="dates">2019 &rarr; 2023</p>
+                  <h3>Product Design Lead</h3>
+                </li>
+                <li>
+                  <p class="dates">2017 &rarr; 2019</p>
+                  <h3>Product Designer</h3>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="group">
+          <h2>Lecturer at</h2>
+          <ul class="entries">
+            <li>
+              <p class="dates">2023 &rarr; 2025</p>
+              <h3>Director of Master in Strategic Design and Innovation</h3>
+              <p class="sub">ELISAVA</p>
+            </li>
+            <li>
+              <p class="dates">2021 &rarr; 2025</p>
+              <h3>Lecturer at Master in Experience Design</h3>
+              <p class="sub">BAU</p>
+            </li>
+            <li>
+              <p class="dates">2021</p>
+              <h3>Academic advisor for DHB and Barcelona Activa Project</h3>
+              <p class="sub">Massana</p>
+            </li>
+            <li>
+              <p class="dates">2020</p>
+              <h3>Lecturer at Master in Interaction Design</h3>
+              <p class="sub">IED</p>
+            </li>
+            <li>
+              <p class="dates">2016 &rarr; 2021</p>
+              <h3>Lecturer at Undergraduate Degree in Design</h3>
+              <p class="sub">ELISAVA</p>
+            </li>
+          </ul>
+        </div>
+
+        <div class="group">
+          <h2>Background</h2>
+          <ul class="entries">
+            <li>
+              <p class="dates">2023 &rarr; 2026</p>
+              <h3>Master&rsquo;s degree (MPhil) Contemporary Philosophy</h3>
+              <p class="sub">UOC</p>
+            </li>
+            <li>
+              <p class="dates">2020 &rarr; 2022</p>
+              <h3>Master&rsquo;s degree (MBA) Business Administration</h3>
+              <p class="sub">EAE</p>
+            </li>
+            <li>
+              <p class="dates">2015 &rarr; 2016</p>
+              <h3>Master&rsquo;s degree (MA) Advanced Studies in Art History</h3>
+              <p class="sub">UB</p>
+            </li>
+            <li>
+              <p class="dates">2011 &rarr; 2015</p>
+              <h3>Undergraduate Degree, Product Design</h3>
+              <p class="sub">ELISAVA</p>
+            </li>
+            <li>
+              <p class="dates">2019</p>
+              <h3>Program, Experience Design</h3>
+              <p class="sub">KAOSPILOT</p>
+            </li>
+          </ul>
+        </div>
+
+      </div>
     </div>
   </section>
 </body>
