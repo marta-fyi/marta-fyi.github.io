@@ -66,6 +66,30 @@
     text-decoration-color: rgba(28, 28, 30, 0.35);
   }
 
+  /* Mark floating in the corner, its rotation driven by scroll position. */
+  .spinner {
+    position: fixed;
+    top: 6vh;
+    right: var(--gutter);
+    width: 88px;
+    height: 88px;
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(720deg); }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: scroll()) {
+      .spinner {
+        animation: spin linear both;
+        animation-timeline: scroll(root block);
+      }
+    }
+  }
+
   .sr-only {
     position: absolute;
     width: 1px;
@@ -180,12 +204,14 @@
   @media (max-width: 700px) {
     .col { width: 100%; }
     .groups { grid-template-columns: 1fr; gap: 3rem; align-items: start; }
+    .spinner { width: 68px; height: 68px; }
     .run:has(.roles li + li) { flex: 0; }
   }
 </style>
 </head>
 <body>
   <h1 class="sr-only">Marta Domingo</h1>
+  <img class="spinner" src="/assets/spinner.png" alt="" aria-hidden="true">
 
   <section>
     <div class="col">
@@ -300,5 +326,24 @@
       </div>
     </div>
   </section>
+
+  <script>
+    // Browsers without scroll-driven animations get the same rotation from JS.
+    if (!CSS.supports('animation-timeline: scroll()') &&
+        !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const mark = document.querySelector('.spinner');
+      let pending = false;
+      const turn = () => {
+        pending = false;
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = max > 0 ? window.scrollY / max : 0;
+        mark.style.transform = `rotate(${progress * 720}deg)`;
+      };
+      window.addEventListener('scroll', () => {
+        if (!pending) { pending = true; requestAnimationFrame(turn); }
+      }, { passive: true });
+      turn();
+    }
+  </script>
 </body>
 </html>
