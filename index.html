@@ -3,494 +3,82 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>marta domingo</title>
-<meta name="description" content="Marta Domingo — designer of products, teams and systems.">
-<link rel="stylesheet" href="style.css">
-<!-- Set before paint: the search box is hidden unless scripting is available. -->
-<script>document.documentElement.className = 'js';</script>
+<title>Marta Domingo</title>
+<meta name="description" content="Marta Domingo is a designer based in Barcelona. Design Manager for Core Experiences at Miro.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F2F2F7;
+    --ink: #1C1C1E;
+    --gutter: 5vw;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+  }
+
+  body {
+    font-family: 'Archivo', system-ui, -apple-system, sans-serif;
+    font-weight: 400;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  section {
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    padding: 6vh var(--gutter);
+  }
+
+  .col {
+    width: 50%;
+  }
+
+  p {
+    margin: 0;
+    font-size: 1.5rem;
+    line-height: 1.35;
+    letter-spacing: -0.015em;
+    text-wrap: pretty;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+    transition: text-decoration-color 0.3s ease;
+  }
+
+  a:hover {
+    text-decoration-color: rgba(28, 28, 30, 0.35);
+  }
+
+  @media (max-width: 700px) {
+    .col { width: 100%; }
+    p { font-size: 1.25rem; }
+  }
+</style>
 </head>
-
-<!--
-  Interaction, all of it:
-    · View / Order  — radios + :has(). No script.
-    · Clicking a square — opens a pop-up via :target. No script. Each card links
-      to #slug; the matching .modal shows. The back button closes it.
-    · Random and Search — the only two things needing script, at the foot of this
-      file. CSS has no source of randomness and can't match text. Without them,
-      Random behaves as Featured and the search box stays hidden.
-
-  The grid items are the <li>, not the <a class="card"> inside. data-sec and the
-  --o-* ranks must live on the <li>, or sorting silently does nothing and
-  filtering leaves empty cells behind. Every card needs all three ranks.
-
-  Experience and Teaching are each one square holding the whole list, and both
-  sit in the experience section — Teaching is not its own View option. The
-  Experience text is Marta's own wording, verbatim, American spellings included
-  — do not "fix" organization/prioritization.
-
-  20XX means there is no date for it yet.
--->
-
 <body>
-
-<div class="page">
-
-  <div class="titlerow">
-    <h1 class="title">marta domingo</h1>
-
-    <div class="titletools">
-      <span class="searchcount" id="searchcount" aria-live="polite"></span>
-
-      <label class="search">
-        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
-          <circle cx="5.5" cy="5.5" r="4" stroke="currentColor" stroke-width="1.3"/>
-          <path d="M8.6 8.6L12 12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-        </svg>
-        <input type="search" id="search" placeholder="Search" aria-label="Search this site"
-               autocomplete="off" spellcheck="false">
-      </label>
-
-      <details class="more">
-      <summary>More</summary>
-      <ul>
-        <li><a href="#">LinkedIn</a></li>
-        <li><a href="#">GitHub</a></li>
-        <li><a href="#">CV</a></li>
-      </ul>
-      </details>
+  <section>
+    <div class="col">
+      <p>Marta Domingo is a designer based in Barcelona. Currently at Miro, working as a Design Manager for Core Experiences. Previously at HP, leading the Design Lab.</p>
     </div>
-  </div>
+  </section>
 
-  <div class="controls">
-
-    <section class="info">
-      <h2>Info</h2>
-      <p class="bio">Designer of products, teams and systems.</p>
-      <dl>
-        <dt>Based</dt><dd>Barcelona</dd>
-        <dt>Now</dt><dd>Design Manager, Miro</dd>
-        <dt>Email</dt><dd><a href="mailto:martadomingorod@gmail.com">martadomingorod@gmail.com</a></dd>
-      </dl>
-    </section>
-
-    <nav class="view" role="group" aria-labelledby="view-h">
-      <h2 id="view-h">View</h2>
-      <ul class="optlist">
-      <li><input class="control-input" type="radio" name="view" id="view-all" checked><label for="view-all">All</label></li>
-      <li><input class="control-input" type="radio" name="view" id="view-currently"><label for="view-currently">Currently</label></li>
-      <li><input class="control-input" type="radio" name="view" id="view-projects"><label for="view-projects">Projects</label></li>
-      <li><input class="control-input" type="radio" name="view" id="view-experience"><label for="view-experience">Experience</label></li>
-      <li><input class="control-input" type="radio" name="view" id="view-about"><label for="view-about">About</label></li>
-      </ul>
-    </nav>
-
-    <nav class="order" role="group" aria-labelledby="order-h">
-      <h2 id="order-h">Order</h2>
-      <ul class="optlist">
-      <li><input class="control-input" type="radio" name="order" id="order-featured" checked><label for="order-featured">Featured</label></li>
-      <li><input class="control-input" type="radio" name="order" id="order-new"><label for="order-new">Newest first</label></li>
-      <li><input class="control-input" type="radio" name="order" id="order-old"><label for="order-old">Oldest first</label></li>
-      <li><input class="control-input" type="radio" name="order" id="order-az"><label for="order-az">Alphabetical</label></li>
-      <li><input class="control-input" type="radio" name="order" id="order-random"><label for="order-random">Random</label></li>
-      </ul>
-    </nav>
-
-  </div>
-
-  <main id="results">
-    <p class="noresults">No matches.</p>
-    <ul class="grid" id="grid">
-      <li data-sec="currently"
-          style="--o-new:1;--o-old:6;--o-az:3">
-        <a class="card" href="#now">
-          <span class="t">Now</span>
-          <span class="m"><b>Miro</b><span>What I’m working on</span><span>2026</span></span>
-        </a>
-      </li>
-      <li data-sec="projects"
-          style="--o-new:4;--o-old:3;--o-az:4">
-        <a class="card" href="#project-01">
-          <span class="t">Project 01</span>
-          <span class="m"><b>Miro</b><span>0 visuals</span><span>20XX</span></span>
-        </a>
-      </li>
-      <li data-sec="projects"
-          style="--o-new:5;--o-old:2;--o-az:5">
-        <a class="card" href="#project-02">
-          <span class="t">Project 02</span>
-          <span class="m"><b>Miro</b><span>0 visuals</span><span>20XX</span></span>
-        </a>
-      </li>
-      <li data-sec="projects"
-          style="--o-new:6;--o-old:1;--o-az:6">
-        <a class="card" href="#project-03">
-          <span class="t">Project 03</span>
-          <span class="m"><b>HP</b><span>0 visuals</span><span>20XX</span></span>
-        </a>
-      </li>
-      <li data-sec="experience"
-          style="--o-new:2;--o-old:5;--o-az:2">
-        <a class="card" href="#experience">
-          <span class="t">Experience</span>
-          <span class="m"><b>Miro · HP</b><span>Five roles</span><span>2017 → present</span></span>
-        </a>
-      </li>
-      <!-- Teaching sits in the experience section: one square, no View option. -->
-      <li data-sec="experience" data-accent="red"
-          style="--o-new:3;--o-old:4;--o-az:7">
-        <a class="card" href="#teaching">
-          <span class="t">Teaching</span>
-          <span class="m"><b>Elisava · BAU · Massana · IED</b><span>Four schools</span><span>20XX</span></span>
-        </a>
-      </li>
-      <li data-sec="about"
-          style="--o-new:7;--o-old:7;--o-az:1">
-        <a class="card" href="#about">
-          <span class="t">About</span>
-          <span class="m"><b>Barcelona</b><span>Designer of products, teams and systems</span></span>
-        </a>
-      </li>
-    </ul>
-  </main>
-
-</div>
-
-<!-- Pop-ups. Hidden until their id is the URL target. -->
-  <div class="modal" id="now" role="dialog" aria-modal="true" aria-labelledby="now-h">
-    <a class="backdrop" href="#grid" aria-label="Close"></a>
-    <div class="sheet">
-
-      <div class="pane">
-        <ul class="visuals">
-          <li><figure><div class="frame" data-label="Visual"></div><figcaption>Caption</figcaption></figure></li>
-          <li><figure><div class="frame" data-label="Visual"></div><figcaption>Caption</figcaption></figure></li>
-        </ul>
-      </div>
-
-      <aside class="side">
-        <nav class="sidenav">
-          <a href="#about" aria-label="Previous">‹</a>
-          <a href="#project-01" aria-label="Next">›</a>
-          <a href="#grid" aria-label="Close">×</a>
-        </nav>
-        <h2 id="now-h">Now</h2>
-        <p class="desc">A short note on what has my attention at the moment.</p>
-        <dl class="facts">
-          <dt>Where</dt><dd>Miro</dd>
-          <dt>When</dt><dd>2026</dd>
-        </dl>
-      </aside>
-
+  <section>
+    <div class="col">
+      <p>Some recent work on her portfolio includes <a href="https://miro.com/" target="_blank" rel="noopener noreferrer">Miro Aura Product Language</a> and <a href="https://www.hp.com/us-en/printers/large-format/printos.html" target="_blank" rel="noopener noreferrer">HP Production Hub</a>.</p>
     </div>
-  </div>
-  <div class="modal" id="project-01" role="dialog" aria-modal="true" aria-labelledby="project-01-h">
-    <a class="backdrop" href="#grid" aria-label="Close"></a>
-    <div class="sheet">
-
-      <div class="pane">
-        <ul class="visuals">
-          <li><figure><div class="frame" data-label="Visual"></div><figcaption>Caption</figcaption></figure></li>
-          <li><figure><div class="frame" data-label="Visual"></div><figcaption>Caption</figcaption></figure></li>
-        </ul>
-      </div>
-
-      <aside class="side">
-        <nav class="sidenav">
-          <a href="#now" aria-label="Previous">‹</a>
-          <a href="#project-02" aria-label="Next">›</a>
-          <a href="#grid" aria-label="Close">×</a>
-        </nav>
-        <h2 id="project-01-h">Project 01</h2>
-        <p class="desc">One or two sentences on what the problem was, what you did, and what you would do differently.</p>
-        <dl class="facts">
-          <dt>Where</dt><dd>Miro</dd>
-          <dt>Role</dt><dd>—</dd>
-          <dt>When</dt><dd>20XX</dd>
-        </dl>
-      </aside>
-
-    </div>
-  </div>
-  <div class="modal" id="project-02" role="dialog" aria-modal="true" aria-labelledby="project-02-h">
-    <a class="backdrop" href="#grid" aria-label="Close"></a>
-    <div class="sheet">
-
-      <div class="pane">
-        <ul class="visuals">
-          <li><figure><div class="frame" data-label="Visual"></div><figcaption>Caption</figcaption></figure></li>
-          <li><figure><div class="frame" data-label="Visual"></div><figcaption>Caption</figcaption></figure></li>
-        </ul>
-      </div>
-
-      <aside class="side">
-        <nav class="sidenav">
-          <a href="#project-01" aria-label="Previous">‹</a>
-          <a href="#project-03" aria-label="Next">›</a>
-          <a href="#grid" aria-label="Close">×</a>
-        </nav>
-        <h2 id="project-02-h">Project 02</h2>
-        <p class="desc">One or two sentences on what the problem was, what you did, and what you would do differently.</p>
-        <dl class="facts">
-          <dt>Where</dt><dd>Miro</dd>
-          <dt>Role</dt><dd>—</dd>
-          <dt>When</dt><dd>20XX</dd>
-        </dl>
-      </aside>
-
-    </div>
-  </div>
-  <div class="modal" id="project-03" role="dialog" aria-modal="true" aria-labelledby="project-03-h">
-    <a class="backdrop" href="#grid" aria-label="Close"></a>
-    <div class="sheet">
-
-      <div class="pane">
-        <ul class="visuals">
-          <li><figure><div class="frame" data-label="Visual"></div><figcaption>Caption</figcaption></figure></li>
-          <li><figure><div class="frame" data-label="Visual"></div><figcaption>Caption</figcaption></figure></li>
-        </ul>
-      </div>
-
-      <aside class="side">
-        <nav class="sidenav">
-          <a href="#project-02" aria-label="Previous">‹</a>
-          <a href="#experience" aria-label="Next">›</a>
-          <a href="#grid" aria-label="Close">×</a>
-        </nav>
-        <h2 id="project-03-h">Project 03</h2>
-        <p class="desc">One or two sentences on what the problem was, what you did, and what you would do differently.</p>
-        <dl class="facts">
-          <dt>Where</dt><dd>HP</dd>
-          <dt>Role</dt><dd>—</dd>
-          <dt>When</dt><dd>20XX</dd>
-        </dl>
-      </aside>
-
-    </div>
-  </div>
-  <div class="modal" id="experience" role="dialog" aria-modal="true" aria-labelledby="experience-h">
-    <a class="backdrop" href="#grid" aria-label="Close"></a>
-    <div class="sheet">
-
-      <div class="pane">
-        <ul class="roles">
-          <li class="role">
-            <h3>Design Manager</h3>
-            <p class="org"><a href="https://miro.com" rel="noopener">Miro <span aria-hidden="true">↗</span></a> · 2025 – Present</p>
-            <p class="lead">Leading design for core product experiences supporting collaboration for 100M+ users.</p>
-            <ul class="bullets">
-              <li>Lead design for AI-native product experiences, defining the standards and rules that turn generative output into production-ready collaboration workflows.</li>
-              <li>Build the design infrastructure that enables AI across the organization, spanning systems, tooling, evaluation frameworks, and rapid prototyping environments.</li>
-              <li>Establish product-wide design quality through craft leadership, end-to-end UX direction, and scalable review and governance practices.</li>
-            </ul>
-          </li>
-          <li class="role">
-            <h3>Head of Advanced Design</h3>
-            <p class="org"><a href="https://www.hp.com" rel="noopener">HP <span aria-hidden="true">↗</span></a> · 2024 – 2025</p>
-            <p class="lead">Led the Design Lab, connecting early exploration with product strategy and reducing downstream risk.</p>
-            <ul class="bullets">
-              <li>Led multiple teams exploring new markets and product opportunities.</li>
-              <li>Translated early user signals into validated product directions that informed portfolio decisions.</li>
-              <li>Shortened discovery cycles ahead of significant product investment.</li>
-            </ul>
-          </li>
-          <li class="role">
-            <h3>Design Systems Lead</h3>
-            <p class="org"><a href="https://www.hp.com" rel="noopener">HP <span aria-hidden="true">↗</span></a> · 2023</p>
-            <p class="lead">Managed the shift from product-focused design teams to design at scale operations.</p>
-            <ul class="bullets">
-              <li>Led the design and ops of the design system, improving adoption and contributing to a ~40% increase in reuse.</li>
-              <li>Streamlined operations and created shared standards for quality, consistency, and usability, reducing update cycles by ~25%.</li>
-              <li>Defined targets and tracked system impact, helping teams ship faster and more confidently, with improvements in delivery speed and efficiency across product teams.</li>
-            </ul>
-          </li>
-          <li class="role">
-            <h3>Senior Product Designer</h3>
-            <p class="org"><a href="https://www.hp.com" rel="noopener">HP <span aria-hidden="true">↗</span></a> · 2019 – 2023</p>
-            <p class="lead">Led product design across web, mobile, and device experiences, first owning delivery and later expanding into platform-level leadership.</p>
-            <ul class="bullets">
-              <li>Led a team of four designers across multiple product lines, owning design quality, prioritization, and final decisions while shipping multiple products and major iterations under real delivery constraints.</li>
-              <li>Unified a fragmented ecosystem of more than ten applications serving ~36K companies by defining shared platform principles, patterns, and decision frameworks, improving cross-team alignment.</li>
-            </ul>
-          </li>
-          <li class="role">
-            <h3>Product Designer</h3>
-            <p class="org"><a href="https://www.hp.com" rel="noopener">HP <span aria-hidden="true">↗</span></a> · 2017 – 2019</p>
-            <p class="lead">Worked as a designer focused on early exploration, prototyping, and user research to inform future product directions before delivery commitments.</p>
-            <ul class="bullets">
-              <li>Prototyped and tested early concepts to validate assumptions and reduce uncertainty before downstream investment.</li>
-              <li>Ran user experiments that informed later product strategy, even when original concepts did not ship.</li>
-              <li>Helped establish an experimentation-first approach that prioritized speed, signal, and early decision-making.</li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-
-      <aside class="side">
-        <nav class="sidenav">
-          <a href="#project-03" aria-label="Previous">‹</a>
-          <a href="#teaching" aria-label="Next">›</a>
-          <a href="#grid" aria-label="Close">×</a>
-        </nav>
-        <h2 id="experience-h">Experience</h2>
-        <p class="desc">Product design, then the systems around it, then the teams. Five roles across Miro and HP.</p>
-        <dl class="facts">
-          <dt>Where</dt><dd>Miro · HP</dd>
-          <dt>Roles</dt><dd>Five</dd>
-          <dt>When</dt><dd>2017 → present</dd>
-        </dl>
-      </aside>
-
-    </div>
-  </div>
-  <!-- Teaching: the four schools as one block, same shape as Experience. -->
-  <div class="modal" id="teaching" role="dialog" aria-modal="true" aria-labelledby="teaching-h">
-    <a class="backdrop" href="#grid" aria-label="Close"></a>
-    <div class="sheet">
-
-      <div class="pane">
-        <ul class="roles">
-          <li class="role">
-            <h3>Elisava</h3>
-            <p class="org">Director · 20XX</p>
-            <p class="lead">Master in Strategic Design and Innovation.</p>
-          </li>
-          <li class="role">
-            <h3>BAU</h3>
-            <p class="org">Lecturer · 20XX</p>
-            <p class="lead">Master in Experience Design.</p>
-          </li>
-          <li class="role">
-            <h3>Massana</h3>
-            <p class="org">Academic advisor · 20XX</p>
-            <p class="lead">DHB and Barcelona Activa.</p>
-          </li>
-          <li class="role">
-            <h3>IED</h3>
-            <p class="org">Lecturer · 20XX</p>
-            <p class="lead">Master in Interaction Design.</p>
-          </li>
-        </ul>
-      </div>
-
-      <aside class="side">
-        <nav class="sidenav">
-          <a href="#experience" aria-label="Previous">‹</a>
-          <a href="#about" aria-label="Next">›</a>
-          <a href="#grid" aria-label="Close">×</a>
-        </nav>
-        <h2 id="teaching-h">Teaching</h2>
-        <p class="desc">Directing, lecturing and advising on master’s programmes. Four schools.</p>
-        <dl class="facts">
-          <dt>Schools</dt><dd>Elisava · BAU · Massana · IED</dd>
-          <dt>Roles</dt><dd>Director, lecturer, advisor</dd>
-          <dt>When</dt><dd>20XX</dd>
-        </dl>
-      </aside>
-
-    </div>
-  </div>
-  <div class="modal" id="about" role="dialog" aria-modal="true" aria-labelledby="about-h">
-    <a class="backdrop" href="#grid" aria-label="Close"></a>
-    <div class="sheet">
-
-      <div class="pane">
-        <div class="prose">
-          <p>Designer of products, teams and systems. Currently Design Manager at
-             Miro, working on core product experiences for collaboration at scale.
-             Before that, eight years at HP across product design, design systems
-             and advanced design.</p>
-          <p>A paragraph on how you work — what you look for in a problem, how you
-             decide, what you want from a team.</p>
-          <p>A paragraph on the rest of it — teaching, what you read, where you are.</p>
-        </div>
-      </div>
-
-      <aside class="side">
-        <nav class="sidenav">
-          <a href="#teaching" aria-label="Previous">‹</a>
-          <a href="#now" aria-label="Next">›</a>
-          <a href="#grid" aria-label="Close">×</a>
-        </nav>
-        <h2 id="about-h">About</h2>
-        <p class="desc">The longer version of the Info column.</p>
-        <dl class="facts">
-          <dt>Based</dt><dd>Barcelona</dd>
-          <dt>Now</dt><dd>Design Manager, Miro</dd>
-          <dt>Email</dt><dd><a href="mailto:martadomingorod@gmail.com">martadomingorod@gmail.com</a></dd>
-        </dl>
-      </aside>
-
-    </div>
-  </div>
-
-<script>
-/* Two small scripts, for the only two things CSS can't do: shuffling and
-   searching. Everything else on this page — View, Order, the pop-ups — is CSS.
-
-   Shuffle: gives each card a random rank for the Random order, and
-   reshuffles every time Random is clicked. With scripting off, Random simply
-   behaves like Featured. */
-(function () {
-  var items = [].slice.call(document.querySelectorAll('.grid > li'));
-  var radio = document.getElementById('order-random');
-  if (!items.length || !radio) return;
-  function shuffle() {
-    var pool = items.map(function (_, i) { return i + 1; });
-    for (var i = pool.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var t = pool[i]; pool[i] = pool[j]; pool[j] = t;
-    }
-    items.forEach(function (li, i) { li.style.setProperty('--o-rnd', pool[i]); });
-  }
-  shuffle();
-  radio.addEventListener('click', shuffle);
-  radio.addEventListener('change', shuffle);
-})();
-
-/* Search. Matches the words on each card AND in the pop-up behind it, so
-   searching "governance" finds Experience even though the card never says it.
-
-   It marks non-matches with a data-nomatch attribute rather than setting an
-   inline display, because an inline style would beat the View filter's
-   stylesheet rule and the two would fight each other. As attributes they
-   simply compose. */
-(function () {
-  var input   = document.getElementById('search');
-  var counter = document.getElementById('searchcount');
-  var results = document.getElementById('results');
-  var items   = [].slice.call(document.querySelectorAll('.grid > li'));
-  if (!input || !items.length) return;
-
-  /* Build each card's haystack once: its own text plus its pop-up's. */
-  items.forEach(function (li) {
-    var link  = li.querySelector('.card');
-    var panel = link && document.getElementById(link.getAttribute('href').slice(1));
-    li.dataset.search = ((li.textContent || '') + ' ' + (panel ? panel.textContent : ''))
-      .replace(/\s+/g, ' ').toLowerCase();
-  });
-
-  function apply() {
-    var q = input.value.trim().toLowerCase();
-    items.forEach(function (li) {
-      if (q && li.dataset.search.indexOf(q) === -1) li.setAttribute('data-nomatch', '');
-      else li.removeAttribute('data-nomatch');
-    });
-    /* Count what is actually on screen — the View filter has a say too. */
-    var shown = items.filter(function (li) { return li.getClientRects().length > 0; }).length;
-    counter.textContent = q ? shown + (shown === 1 ? ' result' : ' results') : '';
-    results.classList.toggle('is-empty', shown === 0);
-  }
-
-  input.addEventListener('input', apply);
-  input.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') { input.value = ''; apply(); }
-  });
-  /* Changing View can empty the grid too, so recount when it changes. */
-  document.querySelectorAll('.optlist input').forEach(function (r) {
-    r.addEventListener('change', apply);
-  });
-})();
-</script>
-
+  </section>
 </body>
 </html>
