@@ -62,7 +62,6 @@ def page(item, prev_item, next_item):
         ("{{slug}}", slug),
         ("{{title}}", html.escape(title)),
         ("{{description}}", html.escape(description)),
-        ("{{meta}}", html.escape(meta)),
         ("{{live}}", live),
         ("{{pager}}", "\n".join(links)),
         ("{{body}}", indent(body_path.read_text(), 6)),

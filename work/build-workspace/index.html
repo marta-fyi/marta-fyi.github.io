@@ -30,19 +30,56 @@
 
   <main class="study">
     <h1>Build Workspace</h1>
-    <p class="meta">Design Lab Lead · HP · 2023–24</p>
     <p class="live"><a href="https://build.hp.com/landing" target="_blank" rel="noopener noreferrer">View live</a></p>
     <div class="body">
+      <!-- House structure for a case study. Building blocks available:
+             <h2>            section label
+             <p class="statement">  the section's lead sentence
+             <p>             body copy
+             <dl class="details">   Role / Focus / Timeline / Team / Status
+             <div class="pair">     text block beside the visual it points to
+             <ol class="outcome">   numbered results
+           A .pair puts its text left and its figure right, tops aligned. A figure
+           placed straight in the body instead spans both columns. -->
+
       <h2>Overview</h2>
-      <p>Write the case study here. This file is plain HTML and is never overwritten by
-      the generator — only the surrounding page shell is.</p>
+      <p>[Two or three sentences: what the product was, what was wrong, and what you
+      reframed.]</p>
 
-      <h2>Approach</h2>
-      <p>Use <code>h2</code> for section headings and <code>p</code> for copy. Images can
-      go in <code>/assets/</code> and be referenced with an absolute path.</p>
+      <dl class="details">
+        <dt>Role</dt>
+        <dd>Design Lab Lead</dd>
+        <dt>Focus</dt>
+        <dd>[Focus]</dd>
+        <dt>Timeline</dt>
+        <dd>2023–24</dd>
+        <dt>Team</dt>
+        <dd>[Team]</dd>
+        <dt>Status</dt>
+        <dd>[Status]</dd>
+      </dl>
 
-      <h2>Outcome</h2>
-      <p>What changed as a result.</p>
+      <h2>[Section]</h2>
+      <p class="statement">[The one sentence this section argues.]</p>
+      <p>[Body copy.]</p>
+
+      <div class="pair">
+        <div>
+          <p class="step-no">01 / [Label]</p>
+          <p>[What this view does and why it matters.]</p>
+        </div>
+        <figure class="shot">
+          <!-- Swap the placeholder for <img src="/assets/..." alt="..."> -->
+          <div class="placeholder"></div>
+          <figcaption>[Caption describing the screen.]</figcaption>
+        </figure>
+      </div>
+
+      <h2>Shipped outcome</h2>
+      <ol class="outcome">
+        <li>[What changed.]</li>
+        <li>[What changed.]</li>
+      </ol>
     </div>
   </main>
 

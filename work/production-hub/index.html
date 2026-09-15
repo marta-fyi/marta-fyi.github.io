@@ -30,19 +30,171 @@
 
   <main class="study">
     <h1>Production Hub</h1>
-    <p class="meta">Product Design Lead · HP · 2023–24</p>
     <p class="live"><a href="https://www.hp.com/us-en/printers/large-format/printos.html" target="_blank" rel="noopener noreferrer">View live</a></p>
     <div class="body">
       <h2>Overview</h2>
-      <p>Write the case study here. This file is plain HTML and is never overwritten by
-      the generator — only the surrounding page shell is.</p>
+      <p>HP PrintOS had the tools to run a print business, but they lived across
+      separate applications. I reframed the platform around one order that could
+      persist from request to delivery, while each team saw the part of the work it
+      needed.</p>
+
+      <dl class="details">
+        <dt>Role</dt>
+        <dd>Platform Design Manager</dd>
+        <dt>Focus</dt>
+        <dd>Platform model and end-to-end workflow</dd>
+        <dt>Timeline</dt>
+        <dd>2023 &ndash; 24 &middot; 6 months</dd>
+        <dt>Team</dt>
+        <dd>Led 2 staff designers and partnered with developer experience teams</dd>
+        <dt>Status</dt>
+        <dd>Live</dd>
+      </dl>
+
+      <h2>Long story, short.</h2>
+      <p class="statement">A product with good features, but the work broke between
+      them.</p>
+      <p>Quoting, scheduling, tracking, reporting, and device management became
+      separate applications. Too many options and inconsistent interfaces made the
+      product very complex and difficult to navigate. Scattered information weakened
+      usability, and layered navigation and repetitive manual work slowed teams
+      down.</p>
+      <p>Churn and growth data showed that the platform experience needed
+      attention.</p>
 
       <h2>Approach</h2>
-      <p>Use <code>h2</code> for section headings and <code>p</code> for copy. Images can
-      go in <code>/assets/</code> and be referenced with an absolute path.</p>
+      <p class="statement">One order should remain recognizable from request to
+      delivery.</p>
+      <p>The unit of design became the production flow rather than the individual
+      application. Files, requirements, approvals, priority, owners, tasks, assigned
+      devices, and status needed to travel together. A shared record creates
+      continuity, and role-specific views make that continuity useful.</p>
+      <p>Account teams needed a planning view, pre-press teams needed approval and
+      production details, production teams needed capacity and device schedules, and
+      operations teams needed clear ownership and live status.</p>
 
-      <h2>Outcome</h2>
-      <p>What changed as a result.</p>
+      <h2>Assembling the platform</h2>
+      <p class="statement">The interface changes with the job. The production record
+      doesn&rsquo;t.</p>
+
+      <!-- Image slots: replace each <div class="placeholder"> with
+           <img src="/assets/production-hub-XX.png" alt="..."> when the asset lands. -->
+
+      <div class="pair">
+        <div>
+          <p class="step-no">01 / For Accounts</p>
+          <p>Start with the full picture. Client work, personal tasks, project progress,
+          queues, and messages share one planning surface.</p>
+        </div>
+        <figure class="shot">
+          <div class="placeholder"></div>
+          <figcaption>Production Hub pre-press view with an approval request, order
+          information, related tasks, and assigned production stations</figcaption>
+        </figure>
+      </div>
+
+      <div class="pair">
+        <div>
+          <p class="step-no">02 / For Pre-press</p>
+          <p>Prepare the order with its context intact. Approval, specifications, related
+          tasks, people, and assigned stations remain connected.</p>
+        </div>
+        <figure class="shot">
+          <div class="placeholder"></div>
+          <figcaption>Production Hub calendar coordinating RIP, printer, and cutter
+          jobs across a live production timeline</figcaption>
+        </figure>
+      </div>
+
+      <div class="pair">
+        <div>
+          <p class="step-no">03 / For Production</p>
+          <p>Plan against real capacity. The schedule connects jobs to RIP, printers,
+          cutters, people, and time.</p>
+        </div>
+        <figure class="shot">
+          <div class="placeholder"></div>
+          <figcaption>Production Hub board organizing ongoing, completed, upcoming, and
+          paused work across teams</figcaption>
+        </figure>
+      </div>
+
+      <div class="pair">
+        <div>
+          <p class="step-no">04 / For Operations</p>
+          <p>Keep ownership and status visible. The board shows what is moving, what is
+          blocked, and who needs to act.</p>
+        </div>
+        <figure class="shot">
+          <div class="placeholder"></div>
+          <figcaption>Operations view.</figcaption>
+        </figure>
+      </div>
+
+      <h2>Design approach</h2>
+      <p class="statement">Standardize the record, adapt the view, and automate the
+      handoff.</p>
+      <p>Those three decisions turned a set of applications into a platform model. Each
+      decision addressed a different source of discontinuity.</p>
+
+      <div class="pair">
+        <div>
+          <p>Standardize what production receives. A configurable order captures the
+          information downstream teams need before work begins. The record&mdash;not the
+          form&mdash;becomes the shared object.</p>
+        </div>
+        <figure class="shot">
+          <div class="placeholder"></div>
+          <figcaption>Customizable Production Hub quote form with contact fields,
+          dashboard customization, and approval notification</figcaption>
+        </figure>
+      </div>
+
+      <div class="pair">
+        <div>
+          <p>Let routine changes move the work forward. Rules connect approvals,
+          assignments, deadlines, and task changes to the next useful action without
+          removing visibility from the team.</p>
+        </div>
+        <figure class="shot">
+          <div class="placeholder"></div>
+          <figcaption>Production Hub workflow builder assigning people, comments,
+          rules, actions, and collaborators to a new request</figcaption>
+        </figure>
+      </div>
+
+      <div class="pair">
+        <div>
+          <p>Connect assignments to production stations. Order details, comments, device
+          requirements, and assigned stations stay together so teams can see capacity
+          conflicts before they become delays.</p>
+        </div>
+        <figure class="shot">
+          <div class="placeholder"></div>
+          <figcaption>Production Hub order details connected to assigned printing and
+          cutting stations</figcaption>
+        </figure>
+      </div>
+
+      <h2>Shipped outcome</h2>
+      <p class="statement">Production Hub shipped as one connected workflow.</p>
+      <p>The live platform now connects the work, end to end:</p>
+      <ol class="outcome">
+        <li>Standardized quotes and orders brought client communication, file exchange,
+        tracking, and payments into one flow.</li>
+        <li>Immediate order status, priorities, and automated rules reduced manual
+        coordination before production.</li>
+        <li>Capacity planning connected incoming orders, deadlines, device schedules,
+        and floor assignments.</li>
+        <li>Live task updates, device oversight, and maintenance planning kept office
+        and production-floor work aligned.</li>
+      </ol>
+
+      <h2>About</h2>
+      <p>A platform is a shared model of the work: the objects that persist, the people
+      who act on them, and the transitions the system can carry without forcing teams
+      to reconstruct the process. Mapping out the pattern and wiring the ecosystem was
+      the tricky part, choosing new brand interactions was the reward.</p>
     </div>
   </main>
 

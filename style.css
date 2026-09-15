@@ -261,8 +261,24 @@ footer {
 
 /* Prose needs a measure: 50% of a wide viewport runs ~95 characters. */
 .study {
-  max-width: 62ch;
+  --col-gap: 4rem;
+  /* Exactly one of the two equal columns, so prose and pair text share both
+     edges without repeating a number. */
+  --col: calc((100% - var(--col-gap)) / 2);
+
+  max-width: 1280px;
+  margin-inline: auto;
   padding: 18vh var(--gutter) 0;
+}
+
+/* Prose keeps to the left column; the right side stays open for visuals. */
+.study > h1,
+.study > .live,
+.study .body > h2,
+.study .body > p,
+.study .body > dl,
+.study .body > ol {
+  max-width: var(--col);
 }
 
 .study h1 {
@@ -304,6 +320,102 @@ footer {
 
 .study .body p:last-child { margin-bottom: 0; }
 
+/* Case study body elements ---------------------------------------------- */
+
+/* Role / Focus / Timeline / Team / Status. Label column echoes the vita. */
+.details {
+  display: grid;
+  grid-template-columns: 7rem 1fr;
+  gap: 0.5rem 1.5rem;
+  margin: 0 0 3rem;
+  font-size: 0.8125rem;
+}
+
+.details dt {
+  color: var(--ink-45);
+}
+
+.details dd {
+  margin: 0;
+}
+
+/* The lead sentence of a section, a step above body copy but not a heading. */
+.study .body .statement {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  text-wrap: pretty;
+}
+
+/* A text block and the visual it points to, tops aligned. */
+.pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 var(--col-gap);
+  align-items: start;
+  margin-top: 5rem;
+}
+
+/* Any number of figures stay right rather than wrapping into column one. */
+.pair > figure { grid-column: 2; }
+.pair > .shot { margin-top: 0; }
+
+/* A figure placed straight in the body spans both columns. */
+.study .body > figure.shot { max-width: none; }
+
+.step-no {
+  margin: 0 0 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--ink-45);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Image slot. Swap the div for an <img> when the real asset lands. */
+.shot {
+  margin: 1.5rem 0 0;
+}
+
+.shot .placeholder {
+  aspect-ratio: 16 / 10;
+  background: rgba(28, 28, 30, 0.04);
+  border: 1px solid rgba(28, 28, 30, 0.08);
+}
+
+.shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.shot figcaption {
+  margin-top: 0.625rem;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--ink-45);
+  text-wrap: pretty;
+}
+
+.outcome {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: outcome;
+}
+
+.outcome li {
+  counter-increment: outcome;
+  display: grid;
+  grid-template-columns: 2.5rem 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.outcome li::before {
+  content: counter(outcome, decimal-leading-zero);
+  color: var(--ink-45);
+  font-variant-numeric: tabular-nums;
+}
+
 /* Pager ----------------------------------------------------------------- */
 
 .pager {
@@ -342,6 +454,19 @@ footer {
 
 @media (max-width: 1000px) {
   .groups { grid-template-columns: repeat(2, 1fr); gap: 3.5rem; }
+}
+
+@media (max-width: 900px) {
+  .pair { grid-template-columns: 1fr; gap: 1.5rem; }
+  /* Without this the explicit column 2 spawns an implicit track and the
+     single-column collapse never happens. */
+  .pair > figure { grid-column: auto; }
+  .study > h1,
+  .study > .live,
+  .study .body > h2,
+  .study .body > p,
+  .study .body > dl,
+  .study .body > ol { max-width: none; }
 }
 
 @media (max-width: 700px) {
