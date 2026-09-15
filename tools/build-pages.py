@@ -71,6 +71,35 @@ def page(item, prev_item, next_item):
     return out
 
 
+def join_names(names):
+    if len(names) == 1:
+        return names[0]
+    return ", ".join(names[:-1]) + " and " + names[-1]
+
+
+def prose(items):
+    """One sentence per company, in list order, linking every title.
+
+    Consecutive entries at the same company are grouped so the sentence reads
+    "A and B at Miro, 2025." rather than repeating the company each time. The
+    year comes from the group's first entry.
+    """
+    groups = []
+    for item in items:
+        link = '<a href="/work/%s/">%s</a>' % (item["slug"], html.escape(item["title"]))
+        if groups and groups[-1]["company"] == item["company"]:
+            groups[-1]["names"].append(link)
+        else:
+            groups.append({"company": item["company"], "year": item["year"], "names": [link]})
+
+    sentences = []
+    for i, g in enumerate(groups):
+        lead = "And " if i and i == len(groups) - 1 else ""
+        sentences.append("%s%s at %s, %s." % (
+            lead, join_names(g["names"]), html.escape(g["company"]), html.escape(g["year"])))
+    return " ".join(sentences)
+
+
 def write(path, text):
     """Write only when the content actually changes, so reruns are no-ops."""
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -90,11 +119,7 @@ def main():
                  WORK[i + 1] if i + 1 < len(WORK) else None),
         )
 
-    listing = "\n".join(
-        '        <li><a href="/work/%s/">%s</a>, at %s.</li>'
-        % (item["slug"], html.escape(item["title"]), html.escape(item["company"]))
-        for item in WORK
-    )
+    listing = "      " + prose(WORK)
 
     index_path = ROOT / "index.html"
     index = index_path.read_text()

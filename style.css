@@ -40,16 +40,6 @@ section {
   text-wrap: pretty;
 }
 
-.works {
-  margin: 1.5rem 0 0;
-  padding: 0;
-  list-style: none;
-  font-size: 1rem;
-  line-height: 1.35;
-}
-
-.works li { margin-bottom: 0.5rem; }
-.works li:last-child { margin-bottom: 0; }
 
 a {
   color: inherit;
