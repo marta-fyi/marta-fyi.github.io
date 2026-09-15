@@ -78,6 +78,9 @@ a:hover {
   height: 100%;
 }
 
+/* Hands the rotation over to the unwind animation on the way home. */
+.spinner.unwinding { animation: none; }
+
 @keyframes spin {
   to { transform: rotate(720deg); }
 }
