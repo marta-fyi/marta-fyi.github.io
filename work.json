@@ -1,0 +1,42 @@
+[
+  {
+    "slug": "miro-1",
+    "title": "[Placeholder]",
+    "company": "Miro",
+    "role": "Design Manager",
+    "year": "2025",
+    "live": "https://miro.com/"
+  },
+  {
+    "slug": "miro-2",
+    "title": "[Placeholder]",
+    "company": "Miro",
+    "role": "Design Manager",
+    "year": "2025",
+    "live": null
+  },
+  {
+    "slug": "production-hub",
+    "title": "Production Hub",
+    "company": "HP",
+    "role": "Product Design Lead",
+    "year": "2021–2023",
+    "live": "https://www.hp.com/us-en/printers/large-format/printos.html"
+  },
+  {
+    "slug": "build-workspace",
+    "title": "Build Workspace",
+    "company": "HP",
+    "role": "Product Design Lead",
+    "year": "2021–2023",
+    "live": "https://build.hp.com/landing"
+  },
+  {
+    "slug": "elisava-master",
+    "title": "Master Degree in Design and Innovation",
+    "company": "Elisava",
+    "role": "Programme Director",
+    "year": "2023–2025",
+    "live": null
+  }
+]

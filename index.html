@@ -21,277 +21,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #F2F2F7;
-    --ink: #1C1C1E;
-    --ink-60: rgba(28, 28, 30, 0.58);
-    --ink-45: rgba(28, 28, 30, 0.45);
-    --gutter: 5vw;
-  }
-
-  * { box-sizing: border-box; }
-
-  html, body {
-    margin: 0;
-    padding: 0;
-    background: var(--bg);
-  }
-
-  body {
-    font-family: 'Archivo', system-ui, -apple-system, sans-serif;
-    font-weight: 400;
-    color: var(--ink);
-    -webkit-font-smoothing: antialiased;
-  }
-
-  section {
-    min-height: 100vh;
-    min-height: 100svh;
-    display: flex;
-    align-items: center;
-    padding: 6vh var(--gutter);
-  }
-
-  .col {
-    width: 50%;
-  }
-
-  .lede {
-    margin: 0;
-    font-size: 1rem;
-    line-height: 1.35;
-    text-wrap: pretty;
-  }
-
-  a {
-    color: inherit;
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.18em;
-    transition: text-decoration-color 0.3s ease;
-  }
-
-  a:hover {
-    text-decoration-color: rgba(28, 28, 30, 0.35);
-  }
-
-  /* Mark floating in the corner, its rotation driven by scroll position. */
-  .spinner {
-    position: fixed;
-    top: 6vh;
-    right: var(--gutter);
-    width: 88px;
-    height: 88px;
-    z-index: 10;
-    pointer-events: none;
-  }
-
-  @keyframes spin {
-    to { transform: rotate(720deg); }
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    @supports (animation-timeline: scroll()) {
-      .spinner {
-        animation: spin linear both;
-        animation-timeline: scroll(root block);
-      }
-    }
-  }
-
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    padding: 0;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-  }
-
-  /* Vita ------------------------------------------------------------------ */
-
-  .vita {
-    /* Size to content: the space above the footer stops being leftover slack. */
-    min-height: 0;
-    align-items: flex-start;
-  }
-
-  .vita .col {
-    width: 100%;
-  }
-
-  /* Columns stretch to the tallest, then each list spreads its rows so all
-     three bottom out at the same line. */
-  .groups {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    align-items: stretch;
-    gap: 4rem;
-  }
-
-  .group {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .group h2 {
-    margin: 0 0 1.75rem;
-    font-size: 0.8125rem;
-    font-weight: 500;
-  }
-
-  .entries {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 1.875rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .dates {
-    margin: 0;
-    font-size: 0.8125rem;
-    color: var(--ink-45);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .group h3 {
-    margin: 0.15rem 0 0;
-    font-size: 0.875rem;
-    font-weight: 500;
-    line-height: 1.3;
-  }
-
-  .sub {
-    margin: 0.15rem 0 0;
-    font-size: 0.8125rem;
-    color: var(--ink-60);
-  }
-
-  /* A company is named once, with its roles on a line of continuity below. */
-  .run {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .run:has(.roles li + li) {
-    flex: 1;
-  }
-
-  .org {
-    margin: 0 0 0.75rem;
-    font-size: 0.8125rem;
-    font-weight: 500;
-    color: var(--ink-60);
-  }
-
-  .roles {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 1.25rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  /* Only a run of two or more roles needs the line. */
-  .roles:has(li + li) {
-    padding-left: 0.875rem;
-    border-left: 1px solid rgba(28, 28, 30, 0.16);
-  }
-
-  /* Footer --------------------------------------------------------------- */
-
-  footer {
-    margin-top: clamp(6rem, 18vh, 12rem);
-    display: flex;
-    align-items: center;
-    gap: 2.5rem;
-    padding: 0 var(--gutter) 8vh;
-    font-size: 0.8125rem;
-  }
-
-  /* Reset the button back to text so it reads like the site's links. */
-  .copy {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    margin: 0;
-    padding: 0;
-    border: 0;
-    background: none;
-    font: inherit;
-    color: inherit;
-    cursor: pointer;
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.18em;
-  }
-
-  .cv {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-
-  .glyph {
-    width: 0.9em;
-    height: 0.9em;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.5;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-  }
-
-  .done-glyph { display: none; }
-
-  .copy:hover .copy-glyph,
-  .copy:focus-visible .copy-glyph { opacity: 0.55; }
-
-  /* Persistent, unlike the copy glyph: worth knowing a link hands you a file. */
-  .arrow-glyph { opacity: 0.55; }
-
-  .copy[data-copied] .copy-glyph { display: none; }
-  .copy[data-copied] .done-glyph { display: block; opacity: 0.55; }
-
-  @media (max-width: 1000px) {
-    .groups { grid-template-columns: repeat(2, 1fr); gap: 3.5rem; }
-  }
-
-  @media (max-width: 700px) {
-    .col { width: 100%; }
-    .groups { grid-template-columns: 1fr; gap: 3rem; align-items: start; }
-    .spinner { width: 68px; height: 68px; }
-    .run:has(.roles li + li) { flex: 0; }
-  }
-
-  @media print {
-    .spinner { display: none; }
-    body { background: #fff; color: #000; }
-    section { min-height: 0; display: block; padding: 0 0 1.5rem; }
-    .col, .vita .col { width: 100%; }
-    .groups { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
-    .entries { justify-content: flex-start; }
-    .run:has(.roles li + li) { flex: 0; }
-    footer { margin-top: 2rem; padding: 0; }
-  }
-</style>
+<link rel="stylesheet" href="/style.css">
 </head>
 <body>
   <h1 class="sr-only">Marta Domingo</h1>
-  <img class="spinner" src="/assets/spinner.png" alt="" aria-hidden="true">
+  <a class="home" href="#top" aria-label="Back to top">
+    <img class="spinner" src="/assets/spinner.png" alt="">
+  </a>
 
   <section>
     <div class="col">
@@ -301,7 +37,16 @@
 
   <section>
     <div class="col">
-      <p class="lede">Some recent work on her portfolio includes <a href="https://miro.com/" target="_blank" rel="noopener noreferrer">Miro Aura Product Language</a> and <a href="https://www.hp.com/us-en/printers/large-format/printos.html" target="_blank" rel="noopener noreferrer">HP Production Hub</a>.</p>
+      <p class="lede">Some of her recent work includes</p>
+      <ul class="works">
+        <!-- work:start -->
+        <li><a href="/work/miro-1/">[Placeholder]</a>, at Miro.</li>
+        <li><a href="/work/miro-2/">[Placeholder]</a>, at Miro.</li>
+        <li><a href="/work/production-hub/">Production Hub</a>, at HP.</li>
+        <li><a href="/work/build-workspace/">Build Workspace</a>, at HP.</li>
+        <li><a href="/work/elisava-master/">Master Degree in Design and Innovation</a>, at Elisava.</li>
+        <!-- work:end -->
+      </ul>
     </div>
   </section>
 
@@ -432,51 +177,6 @@
     <span class="sr-only" role="status" aria-live="polite"></span>
   </footer>
 
-  <script>
-    // Browsers without scroll-driven animations get the same rotation from JS.
-    if (!CSS.supports('animation-timeline: scroll()') &&
-        !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      const mark = document.querySelector('.spinner');
-      let pending = false;
-      const turn = () => {
-        pending = false;
-        const max = document.documentElement.scrollHeight - window.innerHeight;
-        const progress = max > 0 ? window.scrollY / max : 0;
-        mark.style.transform = `rotate(${progress * 720}deg)`;
-      };
-      window.addEventListener('scroll', () => {
-        if (!pending) { pending = true; requestAnimationFrame(turn); }
-      }, { passive: true });
-      turn();
-    }
-
-    // Email copies to the clipboard; the glyph confirms it briefly.
-    const copyBtn = document.querySelector('.copy');
-    const copyStatus = document.querySelector('footer [role="status"]');
-    let resetGlyph;
-    copyBtn.addEventListener('click', async () => {
-      const text = copyBtn.dataset.clip;
-      try {
-        await navigator.clipboard.writeText(text);
-      } catch {
-        // Older browsers, or a non-secure context.
-        const ta = document.createElement('textarea');
-        ta.value = text;
-        ta.setAttribute('readonly', '');
-        ta.style.cssText = 'position:fixed;opacity:0';
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        ta.remove();
-      }
-      copyBtn.dataset.copied = '';
-      copyStatus.textContent = 'Email address copied';
-      clearTimeout(resetGlyph);
-      resetGlyph = setTimeout(() => {
-        delete copyBtn.dataset.copied;
-        copyStatus.textContent = '';
-      }, 1600);
-    });
-  </script>
+  <script src="/script.js" defer></script>
 </body>
 </html>

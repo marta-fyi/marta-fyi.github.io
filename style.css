@@ -1,0 +1,380 @@
+:root {
+  --bg: #F2F2F7;
+  --ink: #1C1C1E;
+  --ink-60: rgba(28, 28, 30, 0.58);
+  --ink-45: rgba(28, 28, 30, 0.45);
+  --gutter: 5vw;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+}
+
+body {
+  font-family: 'Archivo', system-ui, -apple-system, sans-serif;
+  font-weight: 400;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+section {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  padding: 6vh var(--gutter);
+}
+
+.col {
+  width: 50%;
+}
+
+.lede {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.35;
+  text-wrap: pretty;
+}
+
+.works {
+  margin: 1.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.works li { margin-bottom: 0.5rem; }
+.works li:last-child { margin-bottom: 0; }
+
+a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  transition: text-decoration-color 0.3s ease;
+}
+
+a:hover {
+  text-decoration-color: rgba(28, 28, 30, 0.35);
+}
+
+/* Mark floating in the corner, its rotation driven by scroll position. */
+/* The mascot is always a link: back to top on the homepage, home elsewhere.
+   The 88px box is the hit area, so the transparent parts of the drawing are
+   clickable too. */
+.home {
+  position: fixed;
+  /* The drawing is inscribed in its canvas so rotating it cannot push the ink
+     outside this box -- that overflow was what made the mascot look like it
+     drifted. The canvas is 1.23x the drawing, so the box is 10px larger a side
+     than the 88px drawing; top/right pull back by the same 10px to leave the
+     drawing itself sitting on the 6vh / gutter line. */
+  top: calc(6vh - 10px);
+  right: calc(var(--gutter) - 10px);
+  width: 108px;
+  height: 108px;
+  z-index: 10;
+  cursor: pointer;
+}
+
+.spinner {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes spin {
+  to { transform: rotate(720deg); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll()) {
+    .spinner {
+      animation: spin linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Vita ------------------------------------------------------------------ */
+
+.vita {
+  /* Size to content: the space above the footer stops being leftover slack. */
+  min-height: 0;
+  align-items: flex-start;
+}
+
+.vita .col {
+  width: 100%;
+}
+
+/* Columns stretch to the tallest, then each list spreads its rows so all
+   three bottom out at the same line. */
+.groups {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: stretch;
+  gap: 4rem;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+}
+
+.group h2 {
+  margin: 0 0 1.75rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.entries {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.875rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dates {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--ink-45);
+  font-variant-numeric: tabular-nums;
+}
+
+.group h3 {
+  margin: 0.15rem 0 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.sub {
+  margin: 0.15rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--ink-60);
+}
+
+/* A company is named once, with its roles on a line of continuity below. */
+.run {
+  display: flex;
+  flex-direction: column;
+}
+
+.run:has(.roles li + li) {
+  flex: 1;
+}
+
+.org {
+  margin: 0 0 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ink-60);
+}
+
+.roles {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Only a run of two or more roles needs the line. */
+.roles:has(li + li) {
+  padding-left: 0.875rem;
+  border-left: 1px solid rgba(28, 28, 30, 0.16);
+}
+
+/* Footer --------------------------------------------------------------- */
+
+footer {
+  margin-top: clamp(6rem, 18vh, 12rem);
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+  padding: 0 var(--gutter) 8vh;
+  font-size: 0.8125rem;
+}
+
+/* Reset the button back to text so it reads like the site's links. */
+.copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+.cv {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.glyph {
+  width: 0.9em;
+  height: 0.9em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.done-glyph { display: none; }
+
+.copy:hover .copy-glyph,
+.copy:focus-visible .copy-glyph { opacity: 0.55; }
+
+/* Persistent, unlike the copy glyph: worth knowing a link hands you a file. */
+.arrow-glyph { opacity: 0.55; }
+
+.copy[data-copied] .copy-glyph { display: none; }
+.copy[data-copied] .done-glyph { display: block; opacity: 0.55; }
+
+/* Case study ------------------------------------------------------------ */
+
+/* Prose needs a measure: 50% of a wide viewport runs ~95 characters. */
+.study {
+  max-width: 62ch;
+  padding: 18vh var(--gutter) 0;
+}
+
+.study h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+
+.study .meta {
+  margin: 0.5rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--ink-60);
+}
+
+.study .live {
+  margin: 1.5rem 0 0;
+  font-size: 0.8125rem;
+}
+
+.study .body {
+  margin-top: 3.5rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.study .body h2 {
+  margin: 2.5rem 0 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.study .body h2:first-child { margin-top: 0; }
+
+.study .body p {
+  margin: 0 0 1rem;
+  text-wrap: pretty;
+}
+
+.study .body p:last-child { margin-bottom: 0; }
+
+/* Pager ----------------------------------------------------------------- */
+
+.pager {
+  display: flex;
+  gap: 2.5rem;
+  padding: 10vh var(--gutter) 0;
+  font-size: 0.8125rem;
+}
+
+/* Keeps Next on the right even when there is no Previous. */
+.pager .next {
+  margin-left: auto;
+  text-align: right;
+}
+
+.pager a { text-decoration: none; }
+.pager a:hover .title { text-decoration: underline; }
+
+.pager span {
+  display: block;
+  color: var(--ink-45);
+  margin-bottom: 0.25rem;
+}
+
+/* The pager already separates content from the footer, so the footer's own
+   large margin would double up here. */
+.pager + footer {
+  margin-top: clamp(3rem, 8vh, 5rem);
+}
+
+/* The copy glyph already keys off :focus-visible; the mascot is a link now. */
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+@media (max-width: 1000px) {
+  .groups { grid-template-columns: repeat(2, 1fr); gap: 3.5rem; }
+}
+
+@media (max-width: 700px) {
+  .col { width: 100%; }
+  .groups { grid-template-columns: 1fr; gap: 3rem; align-items: start; }
+  .study { padding-top: 22vh; }
+  .home {
+    top: calc(6vh - 8px);
+    right: calc(var(--gutter) - 8px);
+    width: 84px;
+    height: 84px;
+  }
+  .run:has(.roles li + li) { flex: 0; }
+}
+
+@media print {
+  .home { display: none; }
+  body { background: #fff; color: #000; }
+  section { min-height: 0; display: block; padding: 0 0 1.5rem; }
+  .col, .vita .col { width: 100%; }
+  .groups { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+  .entries { justify-content: flex-start; }
+  .run:has(.roles li + li) { flex: 0; }
+  footer { margin-top: 2rem; padding: 0; }
+  .pager { display: none; }
+}
