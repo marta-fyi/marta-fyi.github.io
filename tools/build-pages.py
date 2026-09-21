@@ -5,6 +5,11 @@ Each page is tools/templates/shell.html filled with one entry from work.json,
 wrapping the hand-written body at tools/content/<slug>.html. Content fragments
 are never written to -- only the shell around them.
 
+Styles arrive in three widening-to-narrowing layers: style.css for the site,
+tools/styles/<company>.css for the visual style shared by one employer's case
+studies, and tools/content/<slug>.css for whatever only one page needs. See
+extras(). Scripts follow the per-page rule only.
+
 Also rewrites the work list on the homepage, between the work:start and
 work:end markers, so the list and the pages cannot drift apart.
 
@@ -14,6 +19,7 @@ Run from the repo root:  ./tools/build-pages.py
 import html
 import json
 import pathlib
+import re
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -25,9 +31,61 @@ MARK_END = "<!-- work:end -->"
 
 
 def indent(text, spaces):
+    """Indent the fragment to sit inside the shell, leaving <pre> alone.
+
+    Whitespace inside <pre> is content, so padding it would change what the
+    page actually shows. The opening line is still indented: the pad lands
+    before the tag, which is outside the preformatted run.
+    """
     pad = " " * spaces
-    return "\n".join(pad + line if line.strip() else line
-                     for line in text.strip("\n").split("\n"))
+    out = []
+    in_pre = False
+    for line in text.strip("\n").split("\n"):
+        out.append(line if in_pre or not line.strip() else pad + line)
+        opens, closes = line.count("<pre"), line.count("</pre>")
+        if opens > closes:
+            in_pre = True
+        elif closes > opens:
+            in_pre = False
+    return "\n".join(out)
+
+
+def slugify(name):
+    return re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
+
+
+def extras(item):
+    """Stylesheets and scripts for one page, in cascade order.
+
+    Three levels, each optional and each narrower than the last:
+
+      style.css                     the site, linked by the shell
+      tools/styles/<company>.css    the visual style for that employer's
+                                    case-study content, shared by all of them
+      tools/content/<slug>.css      whatever only this one page needs
+
+    The employer sheet is what keeps two Miro case studies looking like each
+    other, and keeps Miro's visuals from leaking into HP's. Authored under
+    tools/, copied into the served tree so work/ stays the only thing shipped.
+    """
+    slug = item["slug"]
+    tags = []
+
+    house = ROOT / "tools" / "styles" / f"{slugify(item['company'])}.css"
+    if house.exists():
+        write(ROOT / "work" / "_shared" / house.name, house.read_text())
+        tags.append('<link rel="stylesheet" href="/work/_shared/%s">' % house.name)
+
+    for suffix, tag in (
+        ("css", '<link rel="stylesheet" href="/work/%s/page.css">'),
+        ("js", '<script src="/work/%s/page.js" defer></script>'),
+    ):
+        source = ROOT / "tools" / "content" / f"{slug}.{suffix}"
+        if not source.exists():
+            continue
+        write(ROOT / "work" / slug / f"page.{suffix}", source.read_text())
+        tags.append(tag % slug)
+    return "".join(t + "\n" for t in tags)
 
 
 def page(item, prev_item, next_item):
@@ -63,6 +121,7 @@ def page(item, prev_item, next_item):
         ("{{title}}", html.escape(title)),
         ("{{description}}", html.escape(description)),
         ("{{live}}", live),
+        ("{{extras}}", extras(item)),
         ("{{pager}}", "\n".join(links)),
         ("{{body}}", indent(body_path.read_text(), 6)),
     ):

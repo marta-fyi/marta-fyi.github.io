@@ -1,0 +1,392 @@
+/* Miro — content visual style
+   ===========================================================================
+   The visual style for the *content* of Miro case studies. Shared by every
+   entry in work.json whose company is Miro, so the two of them look like each
+   other and neither leaks into HP's.
+
+   It sits inside marta.fyi's own system, it does not replace it: the prose,
+   the layout, the focus ring and the page furniture stay the site's. This
+   sheet only governs what is inside a frame.
+
+   Distilled from Miro's product language to nine primitives:
+
+     .board      the 24px dot field everything sits on
+     .frame      a labelled region, title bar above the outline
+     .obj        a card floating on the board, chrome shadow, soft corners
+     .sticky     the atom: flat fill, same-hue dark text, slight lift
+     .toolbar    floating rounded bar
+     .seg        segmented control
+     .connector  1.5px line with a real arrowhead
+     .chip       a small status token
+     .row        a line of label and value inside an object
+
+   Chrome is neutral and quiet; colour belongs only to the things people make.
+   That is Miro's own rule and it is what stops a page like this turning into
+   a brand exercise.
+
+   Every value here is designed to evoke, never reproduced. No MDS token is
+   published. The contrast ratios in the comments are measured against the
+   values on this page.
+   =========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600&display=swap');
+
+.study {
+  /* --- chrome: a warm neutral ladder ---------------------------------- */
+  --m-canvas:   #FAF9F7;
+  --m-surface:  #FFFFFF;
+  --m-subtle:   #F5F4F2;
+  --m-hairline: #F1EFEC;
+  --m-line:     #EAE8E4;
+  --m-dot:      #D9D7D1;
+
+  --m-ink:   #1A1814;  /* 16.8:1 on canvas */
+  --m-ink-2: #544E40;  /*  7.9:1 */
+  --m-ink-3: #746B58;  /*  5.0:1 */
+
+  /* --- the things people make ------------------------------------------
+     Nine hues, each a fill with its own dark same-hue ink and a quiet
+     surface. Ink on fill is never below 5.7:1, ink on subtle never below
+     8.0:1. Same-hue ink rather than black is most of what makes a sticky
+     read as a sticky rather than a coloured box. */
+  --lemon:     #FAE980; --lemon-ink:     #574D0F; --lemon-sub:     #FDFAE5;
+  --tangerine: #FAB980; --tangerine-ink: #57310F; --tangerine-sub: #FDF0E5;
+  --coral:     #FA8880; --coral-ink:     #57140F; --coral-sub:     #FDE7E5;
+  --rose:      #FA80B5; --rose-ink:      #570F2E; --rose-sub:      #FDE5EF;
+  --violet:    #C180FA; --violet-ink:    #350F57; --violet-sub:    #F2E5FD;
+  --cobalt:    #80ACFA; --cobalt-ink:    #0F2957; --cobalt-sub:    #E5EEFD;
+  --aqua:      #80EDFA; --aqua-ink:      #0F5057; --aqua-sub:      #E5FBFD;
+  --lime:      #B1FA80; --lime-ink:      #2C570F; --lime-sub:      #EFFDE5;
+  --slate:     #DDDCD9; --slate-ink:     #433F37; --slate-sub:     #F4F4F3;
+
+  /* --- geometry --------------------------------------------------------
+     Everything in a frame is measured in px on an 8px grid, so objects sit
+     *on* the dot field rather than near it. The page around it stays in rem. */
+  --m-grid: 24px;
+  --m-r-button: 8px;
+  --m-r-input: 12px;
+  --m-r-panel: 16px;
+  --m-r-card: 20px;
+  --m-r-float: 24px;
+  --m-r-round: 999px;
+
+  /* A floating surface over a canvas casts two shadows: a tight one that
+     seats it and a wide one that lifts it. One blur reads as a sticker. */
+  --m-lift: 0 1px 2px rgba(26, 24, 20, 0.06), 0 4px 16px rgba(26, 24, 20, 0.07);
+  --m-lift-sm: 0 1px 2px rgba(26, 24, 20, 0.10);
+
+  --m-sans: 'Noto Sans', 'Archivo', system-ui, sans-serif;
+  --m-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* --- frame --------------------------------------------------------------
+   Miro draws a frame's name above its outline, not inside it. The title bar
+   is where the reading switch lives, so the control is always adjacent to
+   the thing it changes and the page needs no pinned furniture. */
+
+.frame {
+  margin: 4rem 0 0;
+  font-family: var(--m-sans);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--m-ink-2);
+}
+
+.frame-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 4px 8px;
+}
+
+.frame-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--m-ink-3);
+}
+
+.frame figcaption {
+  margin-top: 12px;
+  padding: 0 4px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--m-ink-3);
+  text-wrap: pretty;
+}
+
+/* --- board ---------------------------------------------------------------
+   The dot field, offset half a cell so the first dot sits inside the frame
+   rather than on its edge. */
+
+.board {
+  padding: 24px;
+  background-color: var(--m-canvas);
+  background-image: radial-gradient(var(--m-dot) 1px, transparent 1px);
+  background-size: var(--m-grid) var(--m-grid);
+  background-position: 12px 12px;
+  border: 1px solid var(--m-line);
+  border-radius: var(--m-r-float);
+}
+
+/* --- obj ----------------------------------------------------------------- */
+
+.obj {
+  display: grid;
+  padding: 16px;
+  background: var(--m-surface);
+  border-radius: var(--m-r-panel);
+  box-shadow: var(--m-lift);
+}
+
+.obj-h {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--m-ink);
+}
+
+.obj-s {
+  margin: 0;
+  font-size: 12px;
+  color: var(--m-ink-3);
+  text-wrap: pretty;
+}
+
+/* --- sticky -------------------------------------------------------------- */
+
+.sticky {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 2px;
+  width: 88px;
+  height: 88px;
+  border-radius: 4px;
+  box-shadow: var(--m-lift-sm);
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.sticky .hx { font-family: var(--m-mono); font-weight: 400; opacity: 0.75; }
+
+.s-lemon     { background: var(--lemon);     color: var(--lemon-ink); }
+.s-tangerine { background: var(--tangerine); color: var(--tangerine-ink); }
+.s-coral     { background: var(--coral);     color: var(--coral-ink); }
+.s-rose      { background: var(--rose);      color: var(--rose-ink); }
+.s-violet    { background: var(--violet);    color: var(--violet-ink); }
+.s-cobalt    { background: var(--cobalt);    color: var(--cobalt-ink); }
+.s-aqua      { background: var(--aqua);      color: var(--aqua-ink); }
+.s-lime      { background: var(--lime);      color: var(--lime-ink); }
+.s-slate     { background: var(--slate);     color: var(--slate-ink); }
+
+/* --- toolbar ------------------------------------------------------------- */
+
+/* A toolbar hugs its buttons; a full-width bar reads as a header, which is a
+   different object. */
+.toolbar {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  background: var(--m-surface);
+  border-radius: var(--m-r-round);
+  box-shadow: var(--m-lift);
+}
+
+.toolbar > * {
+  padding: 5px 12px;
+  border-radius: var(--m-r-round);
+  font-size: 12px;
+  color: var(--m-ink-3);
+  white-space: nowrap;
+}
+
+.toolbar > .on { background: var(--m-ink); color: var(--m-surface); }
+.toolbar > .mark { font-weight: 600; color: var(--m-ink); padding-left: 8px; }
+
+/* --- seg: the reading switch --------------------------------------------- */
+
+/* Focusable but invisible. display:none would take it out of the tab order,
+   and this is the only control the page has. */
+.read-mode {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.seg {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  background: var(--m-subtle);
+  border-radius: var(--m-r-round);
+  cursor: pointer;
+  user-select: none;
+}
+
+.seg span {
+  padding: 3px 10px;
+  border-radius: var(--m-r-round);
+  font-size: 12px;
+  color: var(--m-ink-3);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.study .body:not(:has(.read-mode:checked)) .seg .s-look,
+.study .body:has(.read-mode:checked) .seg .s-read {
+  background: var(--m-surface);
+  color: var(--m-ink);
+  box-shadow: var(--m-lift-sm);
+}
+
+/* One control, so all of its labels ring together. */
+.study .body:has(.read-mode:focus-visible) .seg {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+/* --- the flip -------------------------------------------------------------
+   An object does not vanish and get replaced by a code block. Each one keeps
+   its place on the board and swaps register: the card becomes its record.
+
+   Both faces are stacked in the same grid cell and the inactive one is hidden
+   with visibility rather than display, so the box is always as tall as the
+   taller face and flipping cannot move anything by a pixel. Guessing a
+   min-height per object would have been approximate; this is exact, and it
+   survives any later edit to either face. visibility:hidden leaves the
+   accessibility tree, same as display:none, so only one face is ever read. */
+
+.obj > [data-face],
+.sticky > [data-face] { grid-area: 1 / 1; min-width: 0; }
+
+.study .body [data-face="data"] { visibility: hidden; }
+.study .body:has(.read-mode:checked) [data-face="board"] { visibility: hidden; }
+.study .body:has(.read-mode:checked) [data-face="data"] { visibility: visible; }
+
+.rec {
+  margin: 0;
+  font-family: var(--m-mono);
+  font-size: 12px;
+  line-height: 1.65;
+  color: var(--m-ink-2);
+  white-space: pre;
+  overflow-x: auto;
+}
+
+.rec .k { color: var(--m-ink-3); }
+.rec .n { color: var(--m-ink-3); font-style: italic; }
+
+/* --- before and after -----------------------------------------------------
+   Two grounds, not two columns of text. "Before" gets no board, no lift and
+   no colour, but keeps the same padding and rhythm as the after side, so it
+   reads as a designed state rather than an unfinished one.
+
+   Deliberately unequal: the visual weight is part of the argument. */
+
+.ba {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.ba-label {
+  margin: 0 0 8px;
+  padding-left: 4px;
+  font-size: 12px;
+  color: var(--m-ink-3);
+}
+
+.ba-before {
+  padding: 24px;
+  background: var(--m-subtle);
+  border: 1px dashed var(--m-line);
+  border-radius: var(--m-r-float);
+}
+
+/* Nothing floats and nothing is coloured on the before side. */
+.ba-before .obj {
+  background: none;
+  border: 1px dashed var(--m-line);
+  box-shadow: none;
+}
+
+.ba-before .obj-h { color: var(--m-ink-2); }
+
+/* There was nothing to fetch, and every before column says so in the same
+   words. What improved is not that the guidance got better, it is that an
+   agent now has something to read at all. */
+.ba-none {
+  margin: 0;
+  font-family: var(--m-mono);
+  font-size: 12px;
+  font-style: italic;
+  line-height: 1.6;
+  color: var(--m-ink-3);
+}
+
+/* --- chip ---------------------------------------------------------------- */
+
+.chip {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--m-r-round);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.c-quiet  { background: var(--m-subtle); color: var(--m-ink-3); }
+.c-flag   { background: var(--lemon-sub); color: var(--lemon-ink); }
+.c-block  { background: var(--coral-sub); color: var(--coral-ink); }
+.c-ok     { background: var(--lime-sub); color: var(--lime-ink); }
+.c-open   { background: var(--cobalt-sub); color: var(--cobalt-ink); }
+
+/* --- row ----------------------------------------------------------------- */
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 92px;
+  gap: 12px;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 13px;
+}
+
+.row > :first-child { color: var(--m-ink); }
+.row > :last-child { justify-self: end; }
+
+/* The severity column is a fixed 92px and the chip fills it, so switching
+   volume cannot move a single row. The claim is that the checklist does not
+   change; it has to be true to the pixel. */
+.row .chip { display: block; width: 100%; text-align: center; }
+
+/* --- connector ------------------------------------------------------------ */
+
+.connector { display: block; overflow: visible; }
+.connector path,
+.connector line {
+  fill: none;
+  stroke: var(--m-ink-3);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+/* --- numbers -------------------------------------------------------------- */
+
+.frame [class*="num"],
+.frame .mono { font-family: var(--m-mono); font-variant-numeric: tabular-nums; }
+
+@media (prefers-reduced-motion: reduce) {
+  .seg span { transition: none; }
+}
+
+@media (max-width: 900px) {
+  .frame { margin-top: 3rem; }
+  .board { padding: 16px; }
+  .sticky { width: 72px; height: 72px; }
+}
