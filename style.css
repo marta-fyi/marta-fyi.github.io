@@ -226,17 +226,34 @@ footer {
   font: inherit;
   color: inherit;
   cursor: pointer;
+}
+
+/* Quieter than the links in the prose: down here the glyph already marks each
+   item as something you can act on, so the rule only shows on approach. */
+footer a,
+footer .copy {
+  text-decoration: none;
+}
+
+footer a:hover,
+footer a:focus-visible,
+footer .copy:hover,
+footer .copy:focus-visible {
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.18em;
 }
 
-.cv {
+.cv,
+.out {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
 }
 
+/* All three are persistent rather than revealed on hover: the glyph is what
+   says whether an item copies, opens away or hands you a file, and that is
+   worth knowing before you point at it. */
 .glyph {
   width: 0.9em;
   height: 0.9em;
@@ -245,20 +262,13 @@ footer {
   stroke-width: 1.5;
   stroke-linecap: round;
   stroke-linejoin: round;
-  opacity: 0;
-  transition: opacity 0.2s ease;
+  opacity: 0.55;
 }
 
 .done-glyph { display: none; }
 
-.copy:hover .copy-glyph,
-.copy:focus-visible .copy-glyph { opacity: 0.55; }
-
-/* Persistent, unlike the copy glyph: worth knowing a link hands you a file. */
-.arrow-glyph { opacity: 0.55; }
-
 .copy[data-copied] .copy-glyph { display: none; }
-.copy[data-copied] .done-glyph { display: block; opacity: 0.55; }
+.copy[data-copied] .done-glyph { display: block; }
 
 /* Case study ------------------------------------------------------------ */
 
@@ -449,7 +459,6 @@ footer {
   margin-top: clamp(3rem, 8vh, 5rem);
 }
 
-/* The copy glyph already keys off :focus-visible; the mascot is a link now. */
 :focus-visible {
   outline: 2px solid var(--ink);
   outline-offset: 3px;

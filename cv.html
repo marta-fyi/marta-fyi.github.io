@@ -59,8 +59,31 @@
     letter-spacing: -0.015em;
   }
 
+  /* The web footer marks each action with a glyph. The PDF gets the same
+     marks, but only on what a PDF can actually do: mailto and https both
+     survive as link annotations through Chrome's print, a copy button does
+     not. So the email opens a client here rather than copying. */
   .contact { margin: 1.5mm 0 0; font-size: 8pt; color: var(--ink-60); }
-  .contact a { color: inherit; text-decoration: none; }
+
+  .contact a {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.9mm;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .contact .glyph {
+    width: 0.85em;
+    height: 0.85em;
+    align-self: center;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    color: var(--ink-45);
+  }
 
   header img {
     width: 19mm;
@@ -168,22 +191,20 @@
 <body>
 <main>
 
-<main>
-
   <header>
     <div>
       <h1>Marta Domingo</h1>
       <p class="contact">
         Barcelona &middot;
-        <a href="mailto:hello@marta.fyi">hello@marta.fyi</a> &middot;
-        <a href="https://www.linkedin.com/in/marta-domingo/">LinkedIn</a> &middot;
-        <a href="https://marta.fyi/">marta.fyi</a>
+        <a href="mailto:hello@marta.fyi">hello@marta.fyi <svg class="glyph" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3.5" width="12" height="9" rx="1.5"/><path d="m2.5 5 5.5 4 5.5-4"/></svg></a> &middot;
+        <a href="https://www.linkedin.com/in/marta-domingo/">LinkedIn <svg class="glyph" viewBox="0 0 16 16" aria-hidden="true"><path d="M9.5 3.5h3v3M12.5 3.5 7.5 8.5"/><path d="M11 9.5v2A1.5 1.5 0 0 1 9.5 13h-5A1.5 1.5 0 0 1 3 11.5v-5A1.5 1.5 0 0 1 4.5 5h2"/></svg></a> &middot;
+        <a href="https://marta.fyi/">marta.fyi <svg class="glyph" viewBox="0 0 16 16" aria-hidden="true"><path d="M9.5 3.5h3v3M12.5 3.5 7.5 8.5"/><path d="M11 9.5v2A1.5 1.5 0 0 1 9.5 13h-5A1.5 1.5 0 0 1 3 11.5v-5A1.5 1.5 0 0 1 4.5 5h2"/></svg></a>
       </p>
     </div>
     <img src="/assets/mark-square.png" alt="">
   </header>
 
-  <p class="profile">I&rsquo;m a hands-on design lead who enjoys moving between shaping product direction, working through complex interaction problems and helping teams do their best work. At Miro, I lead design for core collaboration experiences used by more than 100 million people, staying close to the work from early framing through detailed experience decisions. Previously at HP, I designed and led work across early-stage innovation, product experiences, platforms and design systems. I care about thoughtful strategy, strong craft and creating an environment where people can grow and make confident decisions.</p>
+  <p class="profile">I&rsquo;m a hands-on designer with more than 10 years of experience building products, who enjoys moving between shaping product direction, working through complex interaction problems and helping teams do their best work. At Miro, I lead design for Growth on a product used by more than 100 million people, staying close to the work from early framing through detailed experience decisions. Previously at HP, I designed and led work across early-stage innovation, product experiences, platforms and design systems. I care about thoughtful strategy, strong craft and creating an environment where people can grow and make confident decisions.</p>
 
   <div class="cols">
 
@@ -221,7 +242,7 @@
         <h2>Background</h2>
         <div class="rec">
           <h3>MPhil, Contemporary Philosophy</h3>
-          <p>Universitat Oberta de Catalunya &middot; <span class="dates">2023&ndash;2026</span></p>
+          <p>Universitat Oberta de Catalunya &middot; <span class="dates">2023&ndash;Present</span></p>
         </div>
         <div class="rec">
           <h3>MBA, Business Administration</h3>
@@ -247,17 +268,24 @@
         <h2>Experience</h2>
         <div class="role">
           <div class="role-head">
-            <h3>Miro &mdash; Design Manager</h3>
-            <p class="dates">2025&ndash;Present</p>
+            <h3>Miro &mdash; Head of Design, Growth</h3>
+            <p class="dates">2026&ndash;Present</p>
           </div>
           <ul class="duties">
-            <li>Lead design for core collaboration experiences used by more than 100 million people.</li>
-          <li>Stay close to the product work, partnering with designers and product teams to frame problems, explore directions and refine key interactions.</li>
-          <li>Explore how AI can support the design process and create more useful product experiences.</li>
-          <li>Shape design quality through critique, detailed feedback and clear experience standards.</li>
-          <li>Create frameworks and ways of working that help teams make strong, independent design decisions.</li>
-          <li>Support design leads and individual contributors while continuing to contribute to product direction and craft.</li>
-          <li>Work closely with Product, Engineering and senior leadership to connect strategic priorities with the experience delivered to users.</li>
+            <li>Lead design for Growth at Miro: the path people take from first touch through activation, conversion and expansion, on a product used by more than 100 million people.</li>
+            <li>Run design as an experimentation practice&mdash;hypotheses, prototypes and live tests rather than opinion&mdash;and design AI-enabled experiences into those journeys.</li>
+            <li>Grow the team and the bar it works to, keeping Product, Engineering and senior leadership aligned so growth targets and experience quality move together.</li>
+          </ul>
+        </div>
+        <div class="role">
+          <div class="role-head">
+            <h3>Miro &mdash; Design Manager, Core Experiences</h3>
+            <p class="dates">2025&ndash;2026</p>
+          </div>
+          <ul class="duties">
+            <li>Led design for the core collaboration experiences at the centre of Miro, from early framing through detailed interaction decisions.</li>
+            <li>Took AI from exploration into shipped product experiences, and into how the design team itself works.</li>
+            <li>Raised the quality bar through critique, clear experience standards and frameworks that let designers make strong, independent decisions.</li>
           </ul>
         </div>
         <div class="role">
@@ -266,12 +294,9 @@
             <p class="dates">2024&ndash;2025</p>
           </div>
           <ul class="duties">
-            <li>Led the Design Lab while contributing directly to the exploration and development of early product ideas.</li>
-          <li>Worked with multidisciplinary teams to frame opportunities, create concepts and explore new markets and customer needs.</li>
-          <li>Used prototypes and experiments to turn early customer signals into clearer product directions.</li>
-          <li>Translated research and design exploration into evidence that supported go/no-go investment decisions.</li>
-          <li>Made discovery cycles faster and more focused by helping teams test the most important assumptions early.</li>
-          <li>Connected hands-on exploration with product strategy, ensuring that decisions remained grounded in real customer needs.</li>
+            <li>Led the Design Lab, HP&rsquo;s early-stage innovation team, exploring new markets and customer needs ahead of the roadmap.</li>
+            <li>Used prototypes and experiments as the unit of argument, turning weak early signals into directions teams could commit to.</li>
+            <li>Produced the evidence behind go/no-go investment decisions, and made discovery cycles faster by testing the riskiest assumptions first.</li>
           </ul>
         </div>
         <div class="role">
@@ -280,12 +305,9 @@
             <p class="dates">2021&ndash;2023</p>
           </div>
           <ul class="duties">
-            <li>Led the move towards design at scale while remaining closely involved in the design system&rsquo;s foundations, patterns and product application.</li>
-          <li>Worked directly with design teams to evolve the system, contributing to an approximately 40% increase in component reuse.</li>
-          <li>Designed shared standards for quality, consistency and usability, reducing design-system update cycles by approximately 25%.</li>
-          <li>Partnered with designers and engineers to turn recurring product needs into reusable components and practical guidance.</li>
-          <li>Defined ways to measure adoption and understand where the system was&mdash;or was not&mdash;helping teams.</li>
-          <li>Combined systems thinking with detailed product work to help teams design and ship with greater speed and confidence.</li>
+            <li>Led the move to design at scale while staying close to the design system&rsquo;s foundations, patterns and product application.</li>
+            <li>Paired systems thinking with detailed product work, defining shared standards for quality, consistency and usability.</li>
+            <li>Contributed to an approximately 40% increase in component reuse and approximately 25% shorter update cycles, with adoption measured rather than assumed.</li>
           </ul>
         </div>
         <div class="role">
@@ -294,12 +316,9 @@
             <p class="dates">2019&ndash;2021</p>
           </div>
           <ul class="duties">
-            <li>Combined hands-on product design with leadership across multiple product lines and platform initiatives.</li>
-          <li>Led a team of four designers while continuing to shape concepts, interaction patterns and key product decisions.</li>
-          <li>Worked through complex product problems with Design, Product and Engineering from early framing to delivery.</li>
-          <li>Reduced late-stage rework by bringing disciplines together earlier and making design ownership clearer.</li>
-          <li>Helped unify more than ten applications used by approximately 36,000 companies.</li>
-          <li>Designed shared platform principles, patterns and frameworks that created a more consistent experience across products.</li>
+            <li>Combined hands-on product design with leadership of four designers across multiple product lines and platform initiatives.</li>
+            <li>Worked complex product problems with Design, Product and Engineering from early framing through to delivery.</li>
+            <li>Helped unify more than ten applications used by approximately 36,000 companies, and cut late-stage rework by making design ownership clear.</li>
           </ul>
         </div>
         <div class="role">
@@ -309,11 +328,8 @@
           </div>
           <ul class="duties">
             <li>Explored and designed early product concepts, helping teams learn before committing to development.</li>
-          <li>Created prototypes and tested key assumptions to reduce uncertainty around new opportunities.</li>
-          <li>Planned and ran user experiments that shaped longer-term product strategy.</li>
-          <li>Used insights from both successful and discontinued concepts to guide future product decisions.</li>
-          <li>Helped establish an experimentation-first approach focused on making, testing and learning quickly.</li>
-          <li>Worked closely with Product, Engineering and Research to turn customer needs into tangible product ideas.</li>
+            <li>Built prototypes and ran user experiments to reduce uncertainty around new opportunities.</li>
+            <li>Shaped longer-term product strategy from what shipped and what was discontinued, and helped establish an experimentation-first way of working.</li>
           </ul>
         </div>
       </section>
