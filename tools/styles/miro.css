@@ -11,7 +11,7 @@
    Distilled from Miro's product language to nine primitives:
 
      .board      the 24px dot field everything sits on
-     .frame      a labelled region, title bar above the outline
+     .frame      a labeled region, title bar above the outline
      .obj        a card floating on the board, chrome shadow, soft corners
      .sticky     the atom: flat fill, same-hue dark text, slight lift
      .toolbar    floating rounded bar
@@ -20,7 +20,7 @@
      .chip       a small status token
      .row        a line of label and value inside an object
 
-   Chrome is neutral and quiet; colour belongs only to the things people make.
+   Chrome is neutral and quiet; color belongs only to the things people make.
    That is Miro's own rule and it is what stops a page like this turning into
    a brand exercise.
 
@@ -48,7 +48,7 @@
      Nine hues, each a fill with its own dark same-hue ink and a quiet
      surface. Ink on fill is never below 5.7:1, ink on subtle never below
      8.0:1. Same-hue ink rather than black is most of what makes a sticky
-     read as a sticky rather than a coloured box. */
+     read as a sticky rather than a colored box. */
   --lemon:     #FAE980; --lemon-ink:     #574D0F; --lemon-sub:     #FDFAE5;
   --tangerine: #FAB980; --tangerine-ink: #57310F; --tangerine-sub: #FDF0E5;
   --coral:     #FA8880; --coral-ink:     #57140F; --coral-sub:     #FDE7E5;
@@ -282,7 +282,7 @@
 
 /* --- before and after -----------------------------------------------------
    Two grounds, not two columns of text. "Before" gets no board, no lift and
-   no colour, but keeps the same padding and rhythm as the after side, so it
+   no color, but keeps the same padding and rhythm as the after side, so it
    reads as a designed state rather than an unfinished one.
 
    Deliberately unequal: the visual weight is part of the argument. */
@@ -308,7 +308,7 @@
   border-radius: var(--m-r-float);
 }
 
-/* Nothing floats and nothing is coloured on the before side. */
+/* Nothing floats and nothing is colored on the before side. */
 .ba-before .obj {
   background: none;
   border: 1px dashed var(--m-line);

@@ -7,7 +7,7 @@
 
    The palette and the component metrics are taken from the source page, not
    approximated -- a sticky that is nearly Miro yellow reads as a mistake,
-   and the colour is doing real work here. Five sticky hues stand for five
+   and the color is doing real work here. Five sticky hues stand for five
    people's contributions; blue is only ever the machine; red is only ever a
    failure; everything else is the neutral chrome a canvas is drawn on.
 
@@ -23,7 +23,7 @@
    No figure carries a heading, a concept name or a rule. Those are prose,
    and they live in the column beside the image. What a figure may carry is
    a label on an object inside a board -- "Idea A", "AI frame", "Collision"
-   -- because that is annotation on the artefact, not writing about it.
+   -- because that is annotation on the artifact, not writing about it.
    =========================================================================== */
 
 :root {
@@ -172,7 +172,7 @@ body {
 }
 
 /* Human work already on the board is fenced with a dashed hairline and
-   labelled, so "existing" is a visible state rather than an assumption. */
+   labeled, so "existing" is a visible state rather than an assumption. */
 .existing {
   display: grid;
   grid-template-columns: repeat(2, 48px);
