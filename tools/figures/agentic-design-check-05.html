@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="fig-width" content="540">
+<title>Content authenticity</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tools/figures/figure.css">
+<style>
+.pairbox { gap: 12px; }
+.state { margin-bottom: 7px; font-size: 10px; }
+.state::before { width: 7px; height: 7px; }
+.canvas { padding: 8px; }
+.frame { min-height: 168px; padding: 22px 10px 10px; }
+.frame[data-frame]::before { top: 6px; left: 8px; font-size: 8px; }
+.sticky { font-size: 7px; padding: 3px; border-radius: 4px; }
+.ai-frame { padding: 16px 6px 7px; font-size: 8px; border-radius: 6px; }
+.ai-frame::before { top: 4px; left: 6px; font-size: 7px; }
+.collision { padding: 2px 5px; font-size: 7px; border-radius: 4px; }
+.existing { grid-template-columns: repeat(2, 36px); gap: 5px; padding: 6px; }
+.existing .sticky { width: 36px; height: 36px; }
+.existing-label { margin: 4px 0 0; font-size: 8px; }
+.retro { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.rc { padding: 8px; border: 1px solid var(--line); border-radius: 6px;
+      background: var(--panel); }
+.rc strong { display: block; margin-bottom: 6px; font-size: 9px; }
+.rc .sticky { min-height: 32px; margin-bottom: 5px; }
+.cp { margin: 8px 0 0; color: var(--secondary); font-size: 8px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="sheet">
+<div class="pairbox">
+<div><p class="state">Bad output &mdash; fabricates the team&rsquo;s voice</p><div class="canvas"><div class="frame" data-frame="Retrospective"><div class="retro"><div class="rc"><strong>Went well</strong><div class="sticky">Great teamwork</div><div class="sticky cyan">Fast delivery</div></div><div class="rc"><strong>Improve</strong><div class="sticky coral">More focus</div><div class="sticky mint">Plan earlier</div></div></div></div></div></div>
+<div><p class="state good">Good output &mdash; leaves authorship with people</p><div class="canvas"><div class="frame" data-frame="Retrospective"><div class="retro"><div class="rc"><strong>Went well</strong><div class="sticky empty"></div><div class="sticky cyan empty"></div></div><div class="rc"><strong>Improve</strong><div class="sticky coral empty"></div><div class="sticky mint empty"></div></div></div><p class="cp">Participants write their own.</p></div></div></div>
+</div>
+</div>
+</body>
+</html>

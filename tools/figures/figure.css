@@ -1,0 +1,233 @@
+/* Case-study figures — Miro visual language.
+   ===========================================================================
+   Each figure is an HTML file in this directory, rendered to a PNG in assets/
+   by tools/build-figures.sh. HTML and CSS rather than hand-written SVG:
+   these are drawings of boards, and flex and grid describe a board far more
+   directly than absolute coordinates do.
+
+   The palette and the component metrics are taken from the source page, not
+   approximated -- a sticky that is nearly Miro yellow reads as a mistake,
+   and the colour is doing real work here. Five sticky hues stand for five
+   people's contributions; blue is only ever the machine; red is only ever a
+   failure; everything else is the neutral chrome a canvas is drawn on.
+
+   Every figure is 540px wide, which is what the right-hand column of a
+   .pair measures -- and it is drawn at that size rather than drawn large and
+   scaled down. A board drawn at 1136 and shown at 536 takes its 9px labels
+   to 4px; drawn at final size, 9px stays 9px. So the constraint is real: if
+   a drawing does not fit in 540 it has too much in it.
+
+   Each figure declares its width in a <meta name="fig-width">. Rendered at
+   2x and trimmed to content.
+
+   No figure carries a heading, a concept name or a rule. Those are prose,
+   and they live in the column beside the image. What a figure may carry is
+   a label on an object inside a board -- "Idea A", "AI frame", "Collision"
+   -- because that is annotation on the artefact, not writing about it.
+   =========================================================================== */
+
+:root {
+  /* the things people make */
+  --yellow: #ffe46b;
+  --coral:  #ff9ba0;
+  --cyan:   #8eddf2;
+  --mint:   #8ee6ad;
+  --lilac:  #c8a8ff;
+  --sticky-ink: #242424;
+
+  /* the machine */
+  --blue:      #4968ff;
+  --blue-deep: #3153e9;
+  --blue-wash: #f0f3ff;
+  --blue-ink:  #1d2854;
+
+  /* failure */
+  --red:     #e75a5a;
+  --red-ink: #5e1f24;
+  --green:   #28a96b;
+
+  /* chrome */
+  --text:      #111111;
+  --secondary: #596174;
+  --muted:     #747b8b;
+  --faint:     #949baa;
+  --line:      #d9dce2;
+  --dot:       #cfd2d7;
+  --canvas:    #f4f5f5;
+  --panel:     #fafafa;
+  --surface:   #ffffff;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+body {
+  background: #fff;
+  color: var(--text);
+  font-family: 'Archivo', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.sheet { padding: 24px; }
+
+/* --- board, frame, canvas ------------------------------------------------
+   A Miro board is a dot field; a frame is a named white region sitting on
+   it, with its name above the outline rather than inside. */
+
+.canvas {
+  padding: 22px;
+  border: 1px solid var(--line);
+  background-color: var(--canvas);
+  background-image: radial-gradient(var(--dot) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+.frame {
+  position: relative;
+  padding: 20px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  box-shadow: 0 6px 16px rgba(17, 17, 17, 0.07);
+  overflow: hidden;
+}
+
+.frame[data-frame]::before {
+  content: attr(data-frame);
+  position: absolute;
+  top: 7px;
+  left: 10px;
+  color: #7b8190;
+  font-size: 10px;
+}
+
+.frame[data-frame] { padding-top: 28px; }
+
+/* --- sticky --------------------------------------------------------------
+   Flat fill, dark ink, a shadow tight enough to read as paper rather than a
+   floating card. Five hues and one empty state. */
+
+.sticky {
+  display: grid;
+  place-content: center;
+  padding: 7px;
+  border-radius: 6px;
+  background: var(--yellow);
+  box-shadow: 0 2px 5px rgba(17, 17, 17, 0.1);
+  color: var(--sticky-ink);
+  font-size: 9px;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.sticky.coral { background: var(--coral); }
+.sticky.cyan  { background: var(--cyan); }
+.sticky.mint  { background: var(--mint); }
+.sticky.lilac { background: var(--lilac); }
+
+/* An empty note keeps its hue at a fraction, so a column of them still
+   reads as a place five different people are meant to write. */
+.sticky.empty {
+  color: transparent;
+  opacity: 0.45;
+  box-shadow: none;
+}
+
+/* --- the machine's own objects ------------------------------------------
+   Anything the AI placed is blue-framed. That is the single convention the
+   whole set depends on: if it is blue, a machine put it there. */
+
+.ai-frame {
+  position: relative;
+  padding: 22px 12px 12px;
+  border: 2px solid var(--blue);
+  border-radius: 9px;
+  background: rgba(240, 243, 255, 0.94);
+  color: var(--blue-ink);
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  box-shadow: 0 3px 8px rgba(17, 17, 17, 0.07);
+}
+
+.ai-frame::before {
+  content: "AI frame";
+  position: absolute;
+  top: 7px;
+  left: 9px;
+  color: var(--blue-deep);
+  font-size: 9px;
+  font-weight: 500;
+}
+
+.ai-tool {
+  padding: 7px;
+  border: 1px solid var(--blue);
+  border-radius: 6px;
+  color: var(--blue-deep);
+  font-size: 9px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Human work already on the board is fenced with a dashed hairline and
+   labelled, so "existing" is a visible state rather than an assumption. */
+.existing {
+  display: grid;
+  grid-template-columns: repeat(2, 48px);
+  gap: 7px;
+  padding: 9px;
+  border: 1px dashed var(--faint);
+}
+
+.existing-label {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.collision {
+  padding: 4px 7px;
+  border-radius: 6px;
+  background: var(--coral);
+  color: var(--red-ink);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+/* --- figure furniture ---------------------------------------------------- */
+
+/* A red dot for the failing state, a green one for the passing state, in
+   every pair. The words say the same thing, but the dot is what you see. */
+.state {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 9px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.state::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--red);
+}
+
+.state.good::before { background: var(--green); }
+
+.pairbox { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+
+.rule {
+  margin: 16px 0 0;
+  padding-left: 12px;
+  border-left: 2px solid var(--blue);
+  color: #343944;
+  font-size: 13px;
+}
+
+.rule strong { font-weight: 600; }
+
+.note { margin: 10px 0 0; color: var(--muted); font-size: 10px; }

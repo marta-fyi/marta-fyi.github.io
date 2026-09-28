@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="fig-width" content="540">
+<title>One rule, three forms</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tools/figures/figure.css">
+<style>
+.flow { display: grid; justify-items: center; gap: 0; }
+.dn { color: var(--secondary); font-size: 15px; line-height: 1; padding: 9px 0; }
+
+.art { width: 300px; padding: 16px; }
+
+/* Level 01 is written on a sticky because that is where it starts: on the
+   board, in the room. */
+.art.note { border-radius: 6px; background: var(--mint);
+            box-shadow: 0 3px 7px rgba(17,17,17,.1); }
+.art.note i { display: block; height: 7px; margin-bottom: 8px; border-radius: 2px;
+              background: rgba(20, 70, 44, 0.32); }
+.art.note i:last-child { margin-bottom: 0; }
+
+/* Level 02 is a document: a heading, then rules someone can check. */
+.art.doc { border: 1px solid var(--line); background: #fff;
+           box-shadow: 0 3px 8px rgba(17,17,17,.05); }
+.art.doc .h { height: 8px; width: 58%; margin-bottom: 12px; border-radius: 2px;
+              background: rgba(28,28,30,.55); }
+.art.doc u { display: grid; grid-template-columns: 5px 1fr; gap: 7px; align-items: center;
+             margin-bottom: 7px; text-decoration: none; }
+.art.doc u:last-child { margin-bottom: 0; }
+.art.doc u b { display: block; width: 5px; height: 5px; border-radius: 50%;
+               background: var(--faint); }
+.art.doc u s { display: block; height: 6px; border-radius: 2px;
+               background: rgba(28,28,30,.14); text-decoration: none; }
+
+/* Level 03 is the only one a machine reads, so it is the only one with the
+   even rhythm of monospace. */
+.art.code { border: 1px solid var(--line); border-radius: 4px; background: var(--blue-wash); }
+.art.code i { display: block; height: 6px; margin-bottom: 9px; border-radius: 2px;
+              background: rgba(73,104,255,.38); }
+.art.code i.ind { margin-left: 22px; }
+.art.code i.c { background: rgba(28,28,30,.13); }
+.art.code i:last-child { margin-bottom: 0; }
+</style>
+</head>
+<body>
+<div class="sheet">
+<div class="flow">
+<div class="art note"><i style="width:82%"></i><i style="width:96%"></i><i style="width:64%"></i></div>
+<span class="dn">&darr;</span>
+<div class="art doc"><div class="h"></div><u><b></b><s style="width:88%"></s></u><u><b></b><s style="width:74%"></s></u><u><b></b><s style="width:92%"></s></u><u><b></b><s style="width:66%"></s></u></div>
+<span class="dn">&darr;</span>
+<div class="art code"><i style="width:60%"></i><i class="ind" style="width:76%"></i><i class="ind" style="width:28%"></i><i class="c" style="width:84%"></i><i class="c" style="width:70%"></i></div>
+</div>
+</div>
+</body>
+</html>

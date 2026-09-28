@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="fig-width" content="540">
+<title>Exploration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tools/figures/figure.css">
+<style>
+/* No stage behind the diagram. The figure's own white ground is already a
+   container; a second rounded panel inside it is nesting for its own sake. */
+.stage { display: grid; place-items: center; height: 186px; }
+.parrow { color: #343944; font-size: 15px; }
+.sticky { width: 48px; height: 48px; }
+
+.seq { display: flex; align-items: center; gap: 6px; }
+
+.acc { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.aarrow { height: 14px; color: #343944; font-size: 13px; line-height: 14px; }
+.acc-base { display: flex; gap: 6px; }
+
+.exp { position: relative; width: 130px; height: 130px; }
+.exp .sticky { position: absolute; width: 32px; height: 32px; }
+.exp .n { left: 49px; top: 0; }
+.exp .s { left: 49px; bottom: 0; }
+.exp .w { left: 0; top: 49px; }
+.exp .e { right: 0; top: 49px; }
+.exp .centre { position: absolute; left: 45px; top: 45px; display: grid; place-items: center;
+               width: 40px; height: 40px; border-radius: 6px; background: var(--cyan);
+               color: var(--sticky-ink); font-size: 15px; font-weight: 700; }
+
+/* The gap is the whole subject of the fourth pattern, so it is drawn and
+   measured rather than left as incidental space. */
+.dist { display: grid; grid-template-columns: 62px 1fr 62px; gap: 8px; align-items: center;
+        width: 230px; }
+.dist-q { padding: 9px 7px; border-radius: 6px; background: var(--mint);
+          color: var(--sticky-ink); font-size: 9px; line-height: 1.25; }
+.dist-line { border-top: 1px dashed var(--secondary); color: var(--secondary);
+             font-size: 8px; line-height: 1.2; text-align: center; padding-top: 3px; }
+.dist-work { display: grid; grid-template-columns: repeat(2, 27px); gap: 4px; }
+.dist-work .sticky { width: 27px; height: 27px; }
+
+.resp { display: grid; grid-template-columns: auto 20px auto; gap: 8px; align-items: center; }
+.resp-cluster { position: relative; display: grid; grid-template-columns: repeat(2, 32px);
+                gap: 5px; padding: 8px; border: 1px dashed var(--faint); }
+.resp-cluster .sticky { width: 32px; height: 32px; }
+.resp-label { position: absolute; left: 0; right: 0; bottom: -18px; color: var(--muted);
+              font-size: 9px; text-align: center; }
+.resp-ai { padding: 10px 7px; border-radius: 6px; background: var(--lilac);
+           color: var(--sticky-ink); font-size: 9px; line-height: 1.2; text-align: center; }
+</style>
+</head>
+<body>
+<div class="sheet">
+<div class="stage"><div class="exp"><div class="sticky cyan n"></div><div class="sticky cyan s"></div><div class="sticky cyan w"></div><div class="sticky cyan e"></div><div class="centre">?</div></div></div>
+</div>
+</body>
+</html>

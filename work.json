@@ -8,12 +8,12 @@
     "live": null
   },
   {
-    "slug": "miro-2",
-    "title": "[Placeholder]",
+    "slug": "agentic-design",
+    "title": "On agentic design",
     "company": "Miro",
     "role": "Design Manager",
     "year": "2025–26",
-    "live": null
+    "live": "https://miro.com/ai/ai-overview/"
   },
   {
     "slug": "build-workspace",

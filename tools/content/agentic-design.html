@@ -1,0 +1,335 @@
+<!-- On agentic design.
+     Figures are authored in tools/figures/ and rendered to PNG by
+     tools/build-figures.sh. Every one is 540px wide, which is what the
+     right-hand column of a .pair measures, and each is drawn at that size
+     rather than drawn large and scaled down.
+
+     One reading pattern throughout: the argument is prose on the left, the
+     evidence is an image on the right. No figure carries a heading, a concept
+     name or a rule -- those are text, in the column beside the image. What a
+     figure does carry is a label on an object inside a board, because that is
+     annotation on the artefact rather than writing about it.
+
+     .step-no is doing double duty as the small grey label above a rule. It is
+     already "a short grey line introducing the block beneath it", which is
+     what "How AI should interpret it" and "Decision rule" need, so this page
+     adds no CSS of its own. -->
+
+<h2>Overview</h2>
+<p>Miro&rsquo;s AI could already place the right pieces on a board &mdash; the
+right notes, the right shapes, all correctly styled. The board it produced
+could still be unusable: overcrowded, dropped on top of work someone had
+already done, or filled in with opinions the team had never said. Designers
+spotted it instantly. Nobody could explain it in a way an AI, or the engineers
+building it, could act on.</p>
+<p>This was a research project before it was a design one. I collected what the
+AI actually produced, sorted the failures into patterns, and turned the
+patterns into rules engineers could build and anyone could check.</p>
+
+<dl class="details">
+  <dt>Role</dt>
+  <dd>Design Manager</dd>
+  <dt>Focus</dt>
+  <dd>Agentic visual quality and spatial composition</dd>
+  <dt>Timeline</dt>
+  <dd>2025 &ndash; 26</dd>
+  <dt>Team</dt>
+  <dd>[Team and key partners]</dd>
+  <dt>Status</dt>
+  <dd>First version, three collaboration formats</dd>
+</dl>
+
+<h2>Long story, short.</h2>
+<p class="statement">Every other design-system MCP inherits a layout. An
+infinite canvas inherits nothing.</p>
+<p>A design system made machine-readable answers the first question: what is
+this supposed to look like. The right sticky yellow, the right frame corners,
+the right connector. That part is solved, and it is not what this was about.</p>
+<p>Every other design-system MCP gets to treat composition as already solved,
+because its components live inside a screen. A grid, a set of breakpoints, an
+edge &mdash; something underneath the component library decides where things go
+once the right component is picked. A button does not need to know how far it
+sits from the next button.</p>
+<p>Miro&rsquo;s canvas has no layout system underneath it. No grid, no
+breakpoint, no edge. Position, density, pacing, whitespace and sequence are
+inherited from nowhere. Composition has to be designed on purpose, as its own
+layer.</p>
+
+<h2>Approach</h2>
+<p class="statement">Study the output, not the intention.</p>
+<p>Judgement about a generated board was fast, confident and completely
+unexplainable. Every designer looking at the same bad output agreed it was bad,
+and no two of them described why in the same words. So the method started from
+artefacts rather than opinions: gather what the system actually made, put weak
+and strong results next to each other, and only then try to name the
+difference.</p>
+
+<div class="pair">
+  <div>
+    <p class="step-no">01 / Collect what the system made</p>
+    <p>I kept the worst boards as evidence rather than filing them as bugs. Six
+    outcomes recurred from the same prompt &mdash; overfilled, incomplete, too
+    decorative, colliding with work someone had already done, no clear flow, and
+    occasionally a good one. The pieces were correct in every one of them. Only
+    the arrangement changed.</p>
+  </div>
+  <figure class="shot">
+    <img src="/assets/agentic-design-outcomes.png" width="1080" height="858"
+         alt="Six small boards generated from one prompt: overfilled, incomplete, too decorative, objects colliding, no clear flow, and one well staged.">
+  </figure>
+</div>
+
+<h2>Three kinds of collaboration</h2>
+<p class="statement">Narrow enough to build, different enough to catch a false
+pattern.</p>
+<p>I compared the ways teams work together in Miro by how often each happens,
+how complex it is, how bad the AI results were, and how teachable the patterns
+would be. Three rose to the top, chosen to be different enough from each other
+to show whether a rule really transferred or just happened to work once:
+retrospectives, which are columns; ideation workshops, which spread around a
+prompt; and project reviews, which run in sequence.</p>
+<p>Then I sorted the failures into groups. Seven held across all three formats:
+no clear start, random spacing, weak separation, unclear sequence, mismatched
+objects, visual noise, and content the team never said.</p>
+
+<h2>One rule, written three times</h2>
+<p class="statement">Be deterministic about purpose, flexible about
+expression.</p>
+<p>Vague advice like &ldquo;make it feel spacious&rdquo; leaves the AI guessing.
+Fixed templates remove the point of using AI at all. The work was deciding which
+choices must always go one way to protect the experience, and which stay open to
+the situation &mdash; then writing each decision once for each of the three
+readers who had to act on it.</p>
+<p>The rule that started the project: a retrospective is where a team says
+honestly what went well and what did not, and the notes are there for people to
+fill in themselves. When the AI fills them with believable-sounding feedback the
+board looks finished, but the team&rsquo;s real opinions have been replaced by a
+guess before anyone arrived. Empty sticky notes are not unfinished.</p>
+
+<div class="pair">
+  <div>
+    <p class="step-no">One decision, three readers</p>
+    <p>Each rule was written three times, because three different readers had to
+    act on it. The principle names the collaborative purpose the choice protects:
+    people remain the authors of their own experience, so the AI prepares a place
+    for contribution rather than filling it.</p>
+    <p>The design rule turns that into behaviour anyone can recognise on a board.
+    Leave contribution areas empty by default. Only add sample content when the
+    prompt asks for it. Label any sample as an example. Never fabricate summaries,
+    votes or participant input.</p>
+    <p>The machine-readable rule makes it concrete enough to implement:
+    <code>participatory_activity &rarr; contribution_areas.default_content =
+    empty</code>, with samples opt-in and always labelled.</p>
+  </div>
+  <figure class="shot">
+    <img src="/assets/agentic-design-levels.png" width="1080" height="784"
+         alt="Three forms of the same rule stacked in sequence: a green sticky note, then a white document, then a blue panel of code." loading="lazy">
+    <figcaption>The same decision changing form &mdash; a note on the board, a document a designer checks, something a machine reads.</figcaption>
+  </figure>
+</div>
+
+<h2>What position means on a shared canvas</h2>
+<p class="statement">Layout is behaviour.</p>
+<p>On a page you read top to bottom and everyone knows it. An endless canvas has
+no such order, so position itself carries meaning. Things in a row read as steps
+in sequence. Things stacked read as a pile of contributions. Things arranged
+around a central question read as an open exploration.</p>
+<p>So the second half of the system is a spatial grammar: five patterns, each
+one a thing position already says to a person, and each one asking the AI to
+behave differently. Space tells people what order to work in, where to look, and
+whose work is whose.</p>
+
+<div class="pair">
+  <div>
+    <p class="step-no">01 / Sequence</p>
+    <p>Objects placed in a line read as ordered steps. Direction tells people where to begin and what happens next.</p>
+    <p class="step-no">How AI should interpret it</p>
+    <p>Arrange stages along one clear axis, preserve their order, and attach each new step at the end of the path.</p>
+  </div>
+  <figure class="shot">
+    <img src="/assets/agentic-design-concept-01.png" width="1080" height="516"
+         alt="Diagram of the sequence pattern: Three notes in a row, linked by arrows." loading="lazy">
+  </figure>
+</div>
+<div class="pair">
+  <div>
+    <p class="step-no">02 / Accumulation</p>
+    <p>Repeated contributions form a growing collection around a shared prompt. The group should expand without losing its centre.</p>
+    <p class="step-no">How AI should interpret it</p>
+    <p>Place new contributions near their source, reserve room for more, and grow the collection outward as people add content.</p>
+  </div>
+  <figure class="shot">
+    <img src="/assets/agentic-design-concept-02.png" width="1080" height="516"
+         alt="Diagram of the accumulation pattern: Notes gathering downward into a cluster." loading="lazy">
+  </figure>
+</div>
+<div class="pair">
+  <div>
+    <p class="step-no">03 / Exploration</p>
+    <p>Ideas arranged around a central question signal open, non-linear discovery rather than a prescribed route.</p>
+    <p class="step-no">How AI should interpret it</p>
+    <p>Keep the question at the visual centre, distribute branches evenly, and avoid suggesting that one direction is the correct path.</p>
+  </div>
+  <figure class="shot">
+    <img src="/assets/agentic-design-concept-03.png" width="1080" height="516"
+         alt="Diagram of the exploration pattern: Four notes evenly placed around a question at the centre." loading="lazy">
+  </figure>
+</div>
+<div class="pair">
+  <div>
+    <p class="step-no">04 / Distance</p>
+    <p>Proximity expresses relationship. A larger gap creates separation; a smaller gap makes objects read as one group.</p>
+    <p class="step-no">How AI should interpret it</p>
+    <p>Keep related objects close enough to scan together, and use visibly larger gaps to separate unrelated groups or phases.</p>
+  </div>
+  <figure class="shot">
+    <img src="/assets/agentic-design-concept-04.png" width="1080" height="516"
+         alt="Diagram of the distance pattern: A question and a cluster of notes held apart by a measured gap." loading="lazy">
+  </figure>
+</div>
+<div class="pair">
+  <div>
+    <p class="step-no">05 / Respect existing work</p>
+    <p>Human-authored content has priority. New AI material should extend the board without covering or displacing what is already there.</p>
+    <p class="step-no">How AI should interpret it</p>
+    <p>Detect occupied areas, add related work beside them, and move AI-created material first whenever more room is needed.</p>
+  </div>
+  <figure class="shot">
+    <img src="/assets/agentic-design-concept-05.png" width="1080" height="516"
+         alt="Diagram of the respect existing work pattern: A fenced cluster of existing notes, with an AI suggestion arriving beside it." loading="lazy">
+  </figure>
+</div>
+
+<h2>Test the output, not the intention</h2>
+<p class="statement">Seven checks, each one the whole system compressed.</p>
+<p>What the work produced, in its most usable form, is below: seven dimensions
+to test a generated artefact, each answerable by looking. Every principle, rule
+and specification behind them reduced to something checkable in a few
+seconds.</p>
+<p>Their real value was diagnostic. When a board failed one of these, the
+failure pointed at something specific to repair in the system rather than in the
+board: a principle too vague, a rule too broad, two rules contradicting each
+other, or a situation nobody had accounted for.</p>
+
+<div class="pair">
+  <div>
+    <p class="step-no">01 / Spatial safety</p>
+    <p>A new object should preserve existing work and attach to meaningful context without collisions.</p>
+    <p class="step-no">Decision rule</p>
+    <p>Protect human-authored content first; reflow AI-created material before moving existing work.</p>
+  </div>
+  <figure class="shot">
+    <img src="/assets/agentic-design-check-01.png" width="1080" height="568"
+         alt="Check 01: an AI frame dropped across a fenced cluster of four notes with a collision tag, beside the same frame placed in clear space next to it." loading="lazy">
+  </figure>
+</div>
+<div class="pair">
+  <div>
+    <p class="step-no">02 / Lifecycle clarity</p>
+    <p>A participant should be able to see how to enter the activity, contribute, and reach an ending.</p>
+    <p class="step-no">Decision rule</p>
+    <p>Express entry, participation and completion as distinct spatial phases.</p>
+  </div>
+  <figure class="shot">
+    <img src="/assets/agentic-design-check-02.png" width="1080" height="568"
+         alt="Check 02: five notes scattered at angles, beside three zones labelled entry, work and exit with arrows between them." loading="lazy">
+  </figure>
+</div>
+<div class="pair">
+  <div>
+    <p class="step-no">03 / Psychological density</p>
+    <p>The amount of visible content should match what people need to think about in the current phase.</p>
+    <p class="step-no">Decision rule</p>
+    <p>Begin with low density and let the board accumulate complexity through participation.</p>
+  </div>
+  <figure class="shot">
+    <img src="/assets/agentic-design-check-03.png" width="1080" height="582"
+         alt="Check 03: a grid of fifteen notes filling the frame, beside a single prompt with three notes under it." loading="lazy">
+  </figure>
+</div>
+<div class="pair">
+  <div>
+    <p class="step-no">04 / Interactive integrity</p>
+    <p>If an activity requires timing, voting or another action, the output should contain a working tool, not a picture of one.</p>
+    <p class="step-no">Decision rule</p>
+    <p>Use native interactive objects whenever the activity depends on their behaviour.</p>
+  </div>
+  <figure class="shot">
+    <img src="/assets/agentic-design-check-04.png" width="1080" height="568"
+         alt="Check 04: two flat panels imitating a timer and a vote, beside two real tools with blue action buttons." loading="lazy">
+  </figure>
+</div>
+<div class="pair">
+  <div>
+    <p class="step-no">05 / Content authenticity</p>
+    <p>The AI can prepare contribution areas, but it should not pretend that participants have already contributed.</p>
+    <p class="step-no">Decision rule</p>
+    <p>Contribution areas default to empty unless the prompt explicitly requests labelled example content.</p>
+  </div>
+  <figure class="shot">
+    <img src="/assets/agentic-design-check-05.png" width="1080" height="589"
+         alt="Check 05: two retrospective columns filled with written notes, beside the same columns holding empty ones." loading="lazy">
+  </figure>
+</div>
+<div class="pair">
+  <div>
+    <p class="step-no">06 / Output delivery</p>
+    <p>A collaborative activity should move the team toward a decision, commitment or next action.</p>
+    <p class="step-no">Decision rule</p>
+    <p>Include an explicit destination for decisions, owners and follow-up actions.</p>
+  </div>
+  <figure class="shot">
+    <img src="/assets/agentic-design-check-06.png" width="1080" height="598"
+         alt="Check 06: four ideas floating unstructured, beside a path from evidence to decision to a blue-framed action." loading="lazy">
+  </figure>
+</div>
+<div class="pair">
+  <div>
+    <p class="step-no">07 / Product-language fit</p>
+    <p>The generated board should use a coherent hierarchy, component vocabulary, tone and visual rhythm.</p>
+    <p class="step-no">Decision rule</p>
+    <p>Reuse established components and hierarchy; vary expression only where the use case requires it.</p>
+  </div>
+  <figure class="shot">
+    <img src="/assets/agentic-design-check-07.png" width="1080" height="598"
+         alt="Check 07: three objects in three unrelated styles, beside two matching panels built from the same components." loading="lazy">
+  </figure>
+</div>
+
+<h2>What the system contained</h2>
+<ol class="outcome">
+  <li>A written explanation of what makes a collaborative board good.</li>
+  <li>A library of real results &mdash; good, bad, and in between.</li>
+  <li>A set of reusable layout patterns.</li>
+  <li>Rules tying each design choice to the purpose it serves, written so
+  engineers could build them.</li>
+  <li>The seven checks, plus a log of what changed and why.</li>
+</ol>
+
+<h2>Shipped outcome</h2>
+<p class="statement">A bad board stopped being something to fix by hand and
+became evidence about the system.</p>
+<ol class="outcome">
+  <li>Judgment became explicit: instead of &ldquo;this board feels wrong&rdquo;,
+  designers could point to which principle it broke.</li>
+  <li>Taste became buildable: engineers got specific defaults, limits and
+  exceptions instead of a vague brief.</li>
+  <li>Quality became testable: a failure named the part of the system that
+  needed repair.</li>
+</ol>
+<p>The method held across three different kinds of collaboration, which is what
+I set out to test. Whether it improves outcomes for real teams over time is the
+next thing to measure, and not something I&rsquo;m claiming yet.</p>
+
+<h2>About</h2>
+<p>I&rsquo;m drawn to problems where quality is easy to feel and hard to
+explain. Narrow the problem, use real examples so the argument moves past
+personal preference, and tie every visual decision to something it should make
+people do.</p>
+<p>The translation between design and engineering is part of the design work,
+not a handoff at the end. These rules were written with the engineers who had to
+implement them, and several got narrower because a rule that read well proved
+impossible to apply consistently.</p>
+<p>My job was not to make AI copy a designer&rsquo;s taste. It was to make the
+reasoning behind that taste something other people &mdash; and a machine &mdash;
+could actually use.</p>

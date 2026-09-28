@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="fig-width" content="540">
+<title>Six outcomes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tools/figures/figure.css">
+<style>
+.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 12px; }
+.frame { min-height: 0; height: 96px; padding: 8px; }
+.cap { margin: 6px 0 0; color: var(--secondary); font-size: 10px; }
+.cap.ok { color: var(--green); font-weight: 600; }
+.cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+.cols.two { grid-template-columns: repeat(2, 1fr); width: 62%; }
+.col { display: grid; gap: 5px; }
+.sticky { min-height: 16px; padding: 0; border-radius: 3px; }
+.solo { display: grid; place-content: center; height: 100%; }
+.solo .sticky { width: 46px; height: 24px; }
+.scatter { position: relative; height: 100%; }
+.scatter .sticky { position: absolute; width: 28%; height: 17px; }
+.collide { position: relative; height: 100%; }
+.collide .ai-frame { position: absolute; left: 16%; top: 4px; width: 62%; min-height: 40px;
+                     padding: 14px 4px 4px; font-size: 7px; border-radius: 5px; }
+.collide .ai-frame::before { top: 3px; left: 5px; font-size: 6px; }
+.collide .ex { position: absolute; left: 0; top: 22px; display: grid;
+               grid-template-columns: repeat(2, 24px); gap: 4px; padding: 4px;
+               border: 1px dashed var(--faint); }
+.collide .ex .sticky { min-height: 16px; }
+.tool { display: grid; place-content: center; min-height: 16px; border: 1px solid var(--blue);
+        border-radius: 3px; color: var(--blue-deep); font-size: 6px; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="sheet">
+<div class="grid">
+<div><div class="frame"><div class="cols"><div class="col"><div class="sticky "></div><div class="sticky cyan"></div><div class="sticky mint"></div><div class="sticky lilac"></div></div><div class="col"><div class="sticky coral"></div><div class="sticky "></div><div class="sticky cyan"></div><div class="sticky mint"></div></div><div class="col"><div class="sticky mint"></div><div class="sticky coral"></div><div class="sticky lilac"></div><div class="sticky "></div></div></div></div><p class="cap">Overfilled</p></div>
+<div><div class="frame"><div class="cols two"><div class="col"><div class="sticky empty"></div><div class="sticky empty"></div></div><div class="col"><div class="sticky cyan empty"></div><div class="sticky coral empty"></div></div></div></div><p class="cap">Incomplete</p></div>
+<div><div class="frame"><div class="solo"><div class="sticky lilac"></div></div></div><p class="cap">Too decorative</p></div>
+<div><div class="frame"><div class="collide"><div class="ex"><div class="sticky "></div><div class="sticky coral"></div><div class="sticky cyan"></div><div class="sticky mint"></div></div><div class="ai-frame">New AI activity</div></div></div><p class="cap">Objects collide</p></div>
+<div><div class="frame"><div class="scatter"><div class="sticky" style="top:2px;left:3%"></div><div class="sticky coral" style="top:38px;left:30%"></div><div class="sticky cyan" style="top:10px;left:56%"></div><div class="sticky mint" style="top:54px;left:64%"></div><div class="sticky lilac" style="top:30px;left:5%"></div></div></div><p class="cap">No clear flow</p></div>
+<div><div class="frame"><div class="cols"><div class="col"><div class="sticky empty"></div><div class="tool">Timer</div></div><div class="col"><div class="sticky cyan empty"></div><div class="sticky coral empty"></div></div><div class="col"><div class="tool">Vote</div><div class="tool">Action</div></div></div></div><p class="cap ok">Well staged</p></div>
+</div>
+</div>
+</body>
+</html>

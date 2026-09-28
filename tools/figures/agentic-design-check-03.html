@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="fig-width" content="540">
+<title>Psychological density</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tools/figures/figure.css">
+<style>
+.pairbox { gap: 12px; }
+.state { margin-bottom: 7px; font-size: 10px; }
+.state::before { width: 7px; height: 7px; }
+.canvas { padding: 8px; }
+.frame { min-height: 168px; padding: 22px 10px 10px; }
+.frame[data-frame]::before { top: 6px; left: 8px; font-size: 8px; }
+.sticky { font-size: 7px; padding: 3px; border-radius: 4px; }
+.ai-frame { padding: 16px 6px 7px; font-size: 8px; border-radius: 6px; }
+.ai-frame::before { top: 4px; left: 6px; font-size: 7px; }
+.collision { padding: 2px 5px; font-size: 7px; border-radius: 4px; }
+.existing { grid-template-columns: repeat(2, 36px); gap: 5px; padding: 6px; }
+.existing .sticky { width: 36px; height: 36px; }
+.existing-label { margin: 4px 0 0; font-size: 8px; }
+.dense { display: grid; grid-template-columns: repeat(5, 28px); gap: 4px;
+         justify-content: center; padding-top: 8px; }
+.dense .sticky { width: 28px; height: 28px; }
+.warn { margin: 10px 0 0; color: var(--red); font-size: 8px; text-align: center; }
+.calm { display: grid; place-content: center; align-content: center; height: 136px; }
+.prompt { padding: 10px; border: 1px solid var(--line); background: var(--panel);
+          font-size: 9px; line-height: 1.35; text-align: center; }
+.crow { display: flex; gap: 10px; justify-content: center; margin-top: 12px; }
+.crow .sticky { width: 32px; height: 32px; }
+</style>
+</head>
+<body>
+<div class="sheet">
+<div class="pairbox">
+<div><p class="state">Bad output &mdash; the starting state feels finished</p><div class="canvas"><div class="frame" data-frame="Opening"><div class="dense"><div class="sticky "></div><div class="sticky coral"></div><div class="sticky cyan"></div><div class="sticky mint"></div><div class="sticky lilac"></div><div class="sticky "></div><div class="sticky coral"></div><div class="sticky cyan"></div><div class="sticky mint"></div><div class="sticky lilac"></div><div class="sticky "></div><div class="sticky coral"></div><div class="sticky cyan"></div><div class="sticky mint"></div><div class="sticky lilac"></div></div><p class="warn">No focal point &middot; no room to begin</p></div></div></div>
+<div><p class="state good">Good output &mdash; attention starts in one place</p><div class="canvas"><div class="frame" data-frame="Opening"><div class="calm"><div class="prompt">Add one reflection about the last sprint.</div><div class="crow"><div class="sticky "></div><div class="sticky coral"></div><div class="sticky cyan"></div></div></div></div></div></div>
+</div>
+</div>
+</body>
+</html>

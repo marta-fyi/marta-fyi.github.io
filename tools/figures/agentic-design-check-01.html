@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="fig-width" content="540">
+<title>Spatial safety</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tools/figures/figure.css">
+<style>
+.pairbox { gap: 12px; }
+.state { margin-bottom: 7px; font-size: 10px; }
+.state::before { width: 7px; height: 7px; }
+.canvas { padding: 8px; }
+.frame { min-height: 168px; padding: 22px 10px 10px; }
+.frame[data-frame]::before { top: 6px; left: 8px; font-size: 8px; }
+.sticky { font-size: 7px; padding: 3px; border-radius: 4px; }
+.ai-frame { padding: 16px 6px 7px; font-size: 8px; border-radius: 6px; }
+.ai-frame::before { top: 4px; left: 6px; font-size: 7px; }
+.collision { padding: 2px 5px; font-size: 7px; border-radius: 4px; }
+.existing { grid-template-columns: repeat(2, 36px); gap: 5px; padding: 6px; }
+.existing .sticky { width: 36px; height: 36px; }
+.existing-label { margin: 4px 0 0; font-size: 8px; }
+.st { position: relative; height: 136px; }
+/* The frame has to sit on top of the cluster. Beside it, the drawing says
+   the AI found a gap, which is the good case. */
+.st.bad .existing { position: absolute; left: 0; top: 24px; }
+.st.bad .existing-label { position: absolute; left: 2px; top: 118px; }
+.st.bad .ai-frame { position: absolute; left: 56px; top: 6px; width: 118px; }
+.st.bad .collision { position: absolute; left: 62px; top: 72px; }
+.st.good { display: grid; grid-template-columns: auto 14px 1fr; gap: 6px;
+           align-items: center; }
+.anchor { color: var(--secondary); font-size: 13px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="sheet">
+<div class="pairbox">
+<div><p class="state">Bad output &mdash; overwrites the workspace</p><div class="canvas"><div class="frame" data-frame="Retrospective"><div class="st bad"><div class="existing"><div class="sticky ">Idea A</div><div class="sticky coral">Idea B</div><div class="sticky cyan">Idea C</div><div class="sticky mint">Idea D</div></div><p class="existing-label">Existing work</p><div class="ai-frame">New AI activity</div><span class="collision">Collision</span></div></div></div></div>
+<div><p class="state good">Good output &mdash; preserves and extends</p><div class="canvas"><div class="frame" data-frame="Retrospective"><div class="st good"><div><div class="existing"><div class="sticky ">Idea A</div><div class="sticky coral">Idea B</div><div class="sticky cyan">Idea C</div><div class="sticky mint">Idea D</div></div><p class="existing-label">Existing work</p></div><span class="anchor">&rarr;</span><div class="ai-frame">New AI activity</div></div></div></div></div>
+</div>
+</div>
+</body>
+</html>
