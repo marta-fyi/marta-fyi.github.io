@@ -59,31 +59,12 @@
     letter-spacing: -0.015em;
   }
 
-  /* The web footer marks each action with a glyph. The PDF gets the same
-     marks, but only on what a PDF can actually do: mailto and https both
-     survive as link annotations through Chrome's print, a copy button does
-     not. So the email opens a client here rather than copying. */
+  /* Plain text, no glyphs: the web footer marks each action with one, the PDF
+     does not need to. mailto and https still survive as link annotations
+     through Chrome's print, so the addresses stay clickable. */
   .contact { margin: 1.5mm 0 0; font-size: 8pt; color: var(--ink-60); }
 
-  .contact a {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 0.9mm;
-    color: inherit;
-    text-decoration: none;
-  }
-
-  .contact .glyph {
-    width: 0.85em;
-    height: 0.85em;
-    align-self: center;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.5;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    color: var(--ink-45);
-  }
+  .contact a { color: inherit; text-decoration: none; }
 
   header img {
     width: 19mm;
@@ -118,8 +99,6 @@
     font-size: 8.5pt;
     font-weight: 500;
   }
-
-  .skills { margin: 0; color: var(--ink-60); }
 
   /* Sidebar records: title, then org and dates beneath. */
   .rec { margin-bottom: 3mm; break-inside: avoid; }
@@ -195,49 +174,19 @@
     <div>
       <h1>Marta Domingo</h1>
       <p class="contact">
-        Barcelona &middot;
-        <a href="mailto:hello@marta.fyi">hello@marta.fyi <svg class="glyph" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3.5" width="12" height="9" rx="1.5"/><path d="m2.5 5 5.5 4 5.5-4"/></svg></a> &middot;
-        <a href="https://www.linkedin.com/in/marta-domingo/">LinkedIn <svg class="glyph" viewBox="0 0 16 16" aria-hidden="true"><path d="M9.5 3.5h3v3M12.5 3.5 7.5 8.5"/><path d="M11 9.5v2A1.5 1.5 0 0 1 9.5 13h-5A1.5 1.5 0 0 1 3 11.5v-5A1.5 1.5 0 0 1 4.5 5h2"/></svg></a> &middot;
-        <a href="https://marta.fyi/">marta.fyi <svg class="glyph" viewBox="0 0 16 16" aria-hidden="true"><path d="M9.5 3.5h3v3M12.5 3.5 7.5 8.5"/><path d="M11 9.5v2A1.5 1.5 0 0 1 9.5 13h-5A1.5 1.5 0 0 1 3 11.5v-5A1.5 1.5 0 0 1 4.5 5h2"/></svg></a>
+        <a href="mailto:hello@marta.fyi">hello@marta.fyi</a> &middot;
+        <a href="https://www.linkedin.com/in/marta-domingo/">LinkedIn</a> &middot;
+        <a href="https://marta.fyi/">marta.fyi</a>
       </p>
     </div>
     <img src="/assets/mark-square.png" alt="">
   </header>
 
-  <p class="profile">I&rsquo;m a hands-on designer with more than 10 years of experience building products, who enjoys moving between shaping product direction, working through complex interaction problems and helping teams do their best work. At Miro, I lead design for Growth on a product used by more than 100 million people, staying close to the work from early framing through detailed experience decisions. Previously at HP, I designed and led work across early-stage innovation, product experiences, platforms and design systems. I care about thoughtful strategy, strong craft and creating an environment where people can grow and make confident decisions.</p>
+  <p class="profile">I&rsquo;m a designer with +10 years of experience building products, moving between shaping direction, working through interaction problems and staying close to the details. Currently at Miro, I lead Growth, working across activation, conversion and expansion. My experience spans AI and collaboration products, design systems and early-stage ideas across established products at scale and new spaces taking shape.</p>
 
   <div class="cols">
 
     <div>
-      <section>
-        <h2>Core skills</h2>
-        <p class="skills">Product design &middot; Interaction design &middot; Prototyping &middot; AI-enabled experiences &middot; Design systems &middot; Growth &middot; Experimentation &middot; Platform design</p>
-      </section>
-
-      <section>
-        <h2>Lecturer at</h2>
-        <div class="rec">
-          <h3>ELISAVA &mdash; Master&rsquo;s Programme Director, Strategic Design and Innovation</h3>
-          <p class="dates">2023&ndash;2025</p>
-        </div>
-        <div class="rec">
-          <h3>BAU &mdash; Lecturer, Master&rsquo;s in Experience Design</h3>
-          <p class="dates">2021&ndash;2025</p>
-        </div>
-        <div class="rec">
-          <h3>Massana School of Art and Design &mdash; Academic Adviser</h3>
-          <p class="dates">2021</p>
-        </div>
-        <div class="rec">
-          <h3>IED &mdash; Lecturer, Master&rsquo;s in Interaction Design</h3>
-          <p class="dates">2020</p>
-        </div>
-        <div class="rec">
-          <h3>ELISAVA &mdash; Lecturer, Undergraduate Degree in Design</h3>
-          <p class="dates">2016&ndash;2021</p>
-        </div>
-      </section>
-
       <section>
         <h2>Background</h2>
         <div class="rec">
@@ -257,8 +206,32 @@
           <p>ELISAVA &middot; <span class="dates">2011&ndash;2015</span></p>
         </div>
         <div class="rec">
-          <h3>Experience Design Programme</h3>
+          <h3>Experience Design Program</h3>
           <p>KAOSPILOT &middot; <span class="dates">2019</span></p>
+        </div>
+      </section>
+
+      <section>
+        <h2>Lecturer at</h2>
+        <div class="rec">
+          <h3>ELISAVA &mdash; Master&rsquo;s Program Director, Strategic Design and Innovation</h3>
+          <p class="dates">2023&ndash;2025</p>
+        </div>
+        <div class="rec">
+          <h3>BAU &mdash; Lecturer, Master&rsquo;s in Experience Design</h3>
+          <p class="dates">2021&ndash;2025</p>
+        </div>
+        <div class="rec">
+          <h3>Massana School of Art and Design &mdash; Academic Advisor</h3>
+          <p class="dates">2021</p>
+        </div>
+        <div class="rec">
+          <h3>IED &mdash; Lecturer, Master&rsquo;s in Interaction Design</h3>
+          <p class="dates">2020</p>
+        </div>
+        <div class="rec">
+          <h3>ELISAVA &mdash; Lecturer, Undergraduate Degree in Design</h3>
+          <p class="dates">2016&ndash;2021</p>
         </div>
       </section>
     </div>
@@ -272,9 +245,9 @@
             <p class="dates">2026&ndash;Present</p>
           </div>
           <ul class="duties">
-            <li>Lead design for Growth at Miro: the path people take from first touch through activation, conversion and expansion, on a product used by more than 100 million people.</li>
-            <li>Run design as an experimentation practice&mdash;hypotheses, prototypes and live tests rather than opinion&mdash;and design AI-enabled experiences into those journeys.</li>
-            <li>Grow the team and the bar it works to, keeping Product, Engineering and senior leadership aligned so growth targets and experience quality move together.</li>
+            <li>Lead Acquisition, Retention and Growth streams, working across activation and expansion impacting +100M people.</li>
+            <li>Led the design of the AI onboarding experience that delivered a meaningful increase in paid conversion and ARR.</li>
+            <li>Set up shared standards and practical frameworks that help teams make strong decisions independently.</li>
           </ul>
         </div>
         <div class="role">
@@ -283,9 +256,9 @@
             <p class="dates">2025&ndash;2026</p>
           </div>
           <ul class="duties">
-            <li>Led design for the core collaboration experiences at the centre of Miro, from early framing through detailed interaction decisions.</li>
-            <li>Took AI from exploration into shipped product experiences, and into how the design team itself works.</li>
-            <li>Raised the quality bar through critique, clear experience standards and frameworks that let designers make strong, independent decisions.</li>
+            <li>Built and led a design-platform team supporting four product squads, giving clear ownership to Miro&rsquo;s design language.</li>
+            <li>Made the case for a shared design-to-code workflow and aligned leadership around the investment, moving the work from a local initiative to an organizational priority.</li>
+            <li>Led a refresh of Miro&rsquo;s design language and design-to-code process, creating a clearer path from shared foundations to the final product.</li>
           </ul>
         </div>
         <div class="role">
@@ -294,9 +267,9 @@
             <p class="dates">2024&ndash;2025</p>
           </div>
           <ul class="duties">
-            <li>Led the Design Lab, HP&rsquo;s early-stage innovation team, exploring new markets and customer needs ahead of the roadmap.</li>
-            <li>Used prototypes and experiments as the unit of argument, turning weak early signals into directions teams could commit to.</li>
-            <li>Produced the evidence behind go/no-go investment decisions, and made discovery cycles faster by testing the riskiest assumptions first.</li>
+            <li>Led HP&rsquo;s early-stage innovation team, exploring new markets and customer needs before ideas reached the product roadmap.</li>
+            <li>Built and tested prototypes with customers to understand which directions were worth pursuing.</li>
+            <li>Focused on the riskiest assumptions first, helping teams make better-informed investment decisions.</li>
           </ul>
         </div>
         <div class="role">
@@ -305,9 +278,9 @@
             <p class="dates">2021&ndash;2023</p>
           </div>
           <ul class="duties">
-            <li>Led the move to design at scale while staying close to the design system&rsquo;s foundations, patterns and product application.</li>
-            <li>Paired systems thinking with detailed product work, defining shared standards for quality, consistency and usability.</li>
-            <li>Contributed to an approximately 40% increase in component reuse and approximately 25% shorter update cycles, with adoption measured rather than assumed.</li>
+            <li>Led the move toward shared design-system foundations, patterns and product standards.</li>
+            <li>Increased component reuse by approximately 40% and shortened update cycles by approximately 25%.</li>
+            <li>Defined clear standards for quality, consistency and usability, and followed how they were adopted across products.</li>
           </ul>
         </div>
         <div class="role">
@@ -316,9 +289,9 @@
             <p class="dates">2019&ndash;2021</p>
           </div>
           <ul class="duties">
-            <li>Combined hands-on product design with leadership of four designers across multiple product lines and platform initiatives.</li>
-            <li>Worked complex product problems with Design, Product and Engineering from early framing through to delivery.</li>
-            <li>Helped unify more than ten applications used by approximately 36,000 companies, and cut late-stage rework by making design ownership clear.</li>
+            <li>Led four designers working across several product lines and platform projects.</li>
+            <li>Helped bring more than 10 applications used by approximately 36,000 companies into a more consistent product experience.</li>
+            <li>Worked alongside Product and Engineering from early ideas through delivery, making ownership clearer and reducing late changes.</li>
           </ul>
         </div>
         <div class="role">
@@ -327,9 +300,9 @@
             <p class="dates">2017&ndash;2019</p>
           </div>
           <ul class="duties">
-            <li>Explored and designed early product concepts, helping teams learn before committing to development.</li>
-            <li>Built prototypes and ran user experiments to reduce uncertainty around new opportunities.</li>
-            <li>Shaped longer-term product strategy from what shipped and what was discontinued, and helped establish an experimentation-first way of working.</li>
+            <li>Designed and tested early product concepts, helping teams learn before committing to development.</li>
+            <li>Built prototypes and ran customer experiments to explore new opportunities and reduce uncertainty.</li>
+            <li>Used lessons from both successful and discontinued concepts to shape longer-term product direction and encourage a more experimental way of working.</li>
           </ul>
         </div>
       </section>
