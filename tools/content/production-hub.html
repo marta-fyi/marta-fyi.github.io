@@ -1,12 +1,15 @@
 <h2>Overview</h2>
-<p>HP PrintOS had the tools to run a print business, but they lived across
-separate applications. I reframed the platform around one order that could
-persist from request to delivery, while each team saw the part of the work it
-needed.</p>
+
+<p>HP PrintOS is the software large print companies use to run their
+production. Over the years it had grown into separate apps, and each one kept
+its own piece of every order.</p>
+<p>I rebuilt it around the order. Now one job carries its whole story, from the
+first request to the final delivery, and every team works from the same
+place.</p>
 
 <dl class="details">
   <dt>Role</dt>
-  <dd>Platform Design Manager</dd>
+  <dd>Product Design Lead</dd>
   <dt>Focus</dt>
   <dd>Platform model and end-to-end workflow</dd>
   <dt>Timeline</dt>
@@ -17,155 +20,137 @@ needed.</p>
   <dd>Live</dd>
 </dl>
 
-<h2>Long story, short.</h2>
-<p class="statement">A product with good features, but the work broke between
-them.</p>
-<p>Quoting, scheduling, tracking, reporting, and device management became
-separate applications. Too many options and inconsistent interfaces made the
-product very complex and difficult to navigate. Scattered information weakened
-usability, and layered navigation and repetitive manual work slowed teams
-down.</p>
-<p>Churn and growth data showed that the platform experience needed
-attention.</p>
+<h2>The order was the product all along</h2>
+<p>Print people have always thought in jobs. The industry even has a standard
+format for job tickets, so putting the order at the center wasn&rsquo;t a new
+idea.</p>
+<p>What made it hard was history. PrintOS had grown one app at a time, and each
+app kept its own version of the job, looked after by a different team. We could
+have given every app the same look. It would have felt tidier, but the gaps
+between them would still be there.</p>
+<p>So I didn&rsquo;t start with screens. We defined the order once, as a shared
+structure every service can read and write, and connected the existing apps to
+it. Moving all the data would have taken years. A shared definition let the apps
+keep running while they stopped disagreeing.</p>
 
-<h2>Approach</h2>
-<p class="statement">One order should remain recognizable from request to
-delivery.</p>
-<p>The unit of design became the production flow rather than the individual
-application. Files, requirements, approvals, priority, owners, tasks, assigned
-devices, and status needed to travel together. A shared record creates
-continuity, and role-specific views make that continuity useful.</p>
-<p>Account teams needed a planning view, pre-press teams needed approval and
-production details, production teams needed capacity and device schedules, and
-operations teams needed clear ownership and live status.</p>
-
-<h2>Assembling the platform</h2>
-<p class="statement">The interface changes with the job. The production record
-doesn&rsquo;t.</p>
-
-<!-- Image slots: replace each <div class="placeholder"> with
-     <img src="/assets/production-hub-XX.png" alt="..."> when the asset lands. -->
+<h2>Built for the extreme case</h2>
 
 <div class="pair">
   <div>
-    <p class="step-no">01 / For Accounts</p>
-    <p>Start with the full picture. Client work, personal tasks, project progress,
-    queues, and messages share one planning surface.</p>
+    <p>One shared record works well for a box of business cards. I wanted it to
+    hold up at the other end too. Imagine a global brand wrapping buildings in a
+    dozen cities on the same morning. That&rsquo;s one client and one campaign,
+    but a dozen orders and hundreds of panels, printed alongside other
+    clients&rsquo; work.</p>
+    <p>That&rsquo;s where my first model broke. Operators don&rsquo;t think in
+    orders. They think in runs: a batch of panels, often from several clients, on
+    one machine at one time.</p>
   </div>
   <figure class="shot">
-    <img src="/assets/production-hub-accounts.png" width="1080" height="683"
-         alt="Production Hub overview: two client project cards with progress bars, a numbered task list, a month calendar, a print queue, and a message list." loading="lazy">
-    <figcaption>Production Hub overview with client project cards, a personal
-    task list, a month calendar, the print queue, and team messages</figcaption>
+    <img src="/assets/production-hub-runs.png" width="1080" height="749"
+         alt="A production timeline marked 10:30 to 12:30, with two job cards from different clients scheduled back to back on the same machine." loading="lazy">
+    <figcaption>A run as the operator sees it: jobs from different clients on one
+    machine, in one stretch of time</figcaption>
   </figure>
 </div>
 
 <div class="pair">
   <div>
-    <p class="step-no">02 / For Pre-press</p>
-    <p>Prepare the order with its context intact. Approval, specifications, related
-    tasks, people, and assigned stations remain connected.</p>
+    <p>So the model has two sides. On one side are the client, the campaign, the
+    order, and its items. On the other are the runs. Each item knows which run it
+    belongs to, and each run knows which orders it touches. If a printer stops,
+    every affected order shows it straight away, and the account team knows
+    before the client has to ask.</p>
   </div>
   <figure class="shot">
-    <img src="/assets/production-hub-prepress.png" width="1080" height="683"
-         alt="Production Hub pre-press panel: an approval request with order information, file specifications, related tasks, and assigned stations, over a dimmed timeline." loading="lazy">
-    <figcaption>Production Hub pre-press view with an approval request, order
-    information, related tasks, and assigned production stations</figcaption>
+    <img src="/assets/production-hub-machines.png" width="1080" height="784"
+         alt="A printer list beside a scheduled job, a card being dragged to mark it done, and a push notification reading: order ready to be cut, waiting at Laminator 1." loading="lazy">
+    <figcaption>The run side of the model, on the floor: machines, what is on
+    them, and what the next station is waiting for</figcaption>
+  </figure>
+</div>
+
+<h2>Orders can start with gaps</h2>
+
+<div class="pair">
+  <div>
+    <p>Big orders rarely arrive complete. Files come late, and a visual changes
+    two days before launch. That&rsquo;s normal, so the system had to allow for
+    it.</p>
+    <p>An order can exist unfinished, and each step simply says what it needs
+    before it can begin. Scheduling needs sizes and dates, printing needs
+    approved files, and shipping needs an address for every destination.</p>
+  </div>
+  <figure class="shot">
+    <img src="/assets/production-hub-files.png" width="1080" height="1009"
+         alt="An upload panel with one artwork file part-way through uploading, a drag-and-drop target, and a list of files already attached to the order." loading="lazy">
+    <figcaption>Artwork arriving against an order that already exists, rather
+    than an order that cannot start until the artwork does</figcaption>
   </figure>
 </div>
 
 <div class="pair">
   <div>
-    <p class="step-no">03 / For Production</p>
-    <p>Plan against real capacity. The schedule connects jobs to RIP, printers,
-    cutters, people, and time.</p>
+    <p>From there, orders move through a few clear states: waiting for files, in
+    proof, scheduled, on press, partly shipped, delivered. Reprint branches off
+    that path. Each state belongs to one team. Once a proof is approved, the
+    specs are locked, and any late change becomes a new version that goes back
+    through proof. Nothing gets quietly edited after sign-off.</p>
   </div>
   <figure class="shot">
-    <img src="/assets/production-hub-production.png" width="1080" height="683"
-         alt="Production Hub timeline: job thumbnails scheduled in columns for RIP, three printers, and a cutter, crossed by a current-time line." loading="lazy">
-    <figcaption>Production Hub calendar coordinating RIP, printer, and cutter
-    jobs across a live production timeline</figcaption>
+    <img src="/assets/production-hub-states.png" width="1080" height="885"
+         alt="An order tracker showing ordered, printed and shipped as completed steps with an estimated delivery still ahead, above a dated log of each event and where it happened." loading="lazy">
+    <figcaption>The same path, read from the client&rsquo;s side: which state the
+    order is in, and when each one happened</figcaption>
+  </figure>
+</div>
+
+<h2>Automation that knows the work</h2>
+
+<div class="pair">
+  <div>
+    <p>The automation that matters starts on the production floor. If a machine
+    goes down, its runs are flagged and every affected delivery date is checked
+    again. When a run finishes, the finishing team gets its task. When a client
+    rejects a proof, the order goes back to the account team with the
+    client&rsquo;s notes attached.</p>
+  </div>
+  <figure class="shot">
+    <img src="/assets/production-hub-rules.png" width="1080" height="783"
+         alt="An automation panel with a list of triggers including approval completed, attachment added, task assigned and due date set, beside the actions they can fire." loading="lazy">
+    <figcaption>Triggers drawn from things that actually happen to a job, and the
+    actions each one can set off</figcaption>
   </figure>
 </div>
 
 <div class="pair">
   <div>
-    <p class="step-no">04 / For Operations</p>
-    <p>Keep ownership and status visible. The board shows what is moving, what is
-    blocked, and who needs to act.</p>
+    <p>Every automatic step leaves a note on the order. When a task appears and
+    nobody knows why, people stop trusting the system, and that trust is hard to
+    win back.</p>
   </div>
   <figure class="shot">
-    <img src="/assets/production-hub-operations.png" width="1080" height="683"
-         alt="Production Hub board: four columns, On Going, Completed, Upcoming and Paused, holding job cards with tags, dates, clients and assignees." loading="lazy">
-    <figcaption>Production Hub board organizing ongoing, completed, upcoming, and
-    paused work across teams</figcaption>
+    <img src="/assets/production-hub-notes.png" width="1080" height="784"
+         alt="An order thread with twenty-three comments, one explaining why a state changed, beside a task actions menu offering assignment, reminders and due dates." loading="lazy">
+    <figcaption>The order&rsquo;s own thread, where every change says who made it
+    and why</figcaption>
   </figure>
 </div>
 
-<h2>Design approach</h2>
-<p class="statement">Standardize the record, adapt the view, and automate the
-handoff.</p>
-<p>Those three decisions turned a set of applications into a platform model. Each
-decision addressed a different source of discontinuity.</p>
+<h2>What it cost</h2>
+<p>This wasn&rsquo;t free. Each app gave up control of its own data, and no
+single team can change the shape of the order on its own anymore. That&rsquo;s a
+real cost for the people who build it.</p>
+<p>I held to it anyway. Every middle ground I looked at ended in the same place:
+separate data, synced after the fact. That&rsquo;s the problem we started
+with.</p>
 
-<div class="pair">
-  <div>
-    <p>Standardize what production receives. A configurable order captures the
-    information downstream teams need before work begins. The record&mdash;not the
-    form&mdash;becomes the shared object.</p>
-  </div>
-  <figure class="shot">
-    <img src="/assets/production-hub-orders-workflow.png" width="1080" height="728"
-         alt="A New Request section in Production Hub, with menu options to add a rule, rename or delete the section, and rows to assign an owner, leave a comment, and add actions and collaborators." loading="lazy">
-    <figcaption>Production Hub workflow builder assigning people, comments,
-    rules, actions, and collaborators to a new request</figcaption>
-  </figure>
-</div>
-
-<div class="pair">
-  <div>
-    <p>Let routine changes move the work forward. Rules connect approvals,
-    assignments, deadlines, and task changes to the next useful action without
-    removing visibility from the team.</p>
-  </div>
-  <figure class="shot">
-    <img src="/assets/production-hub-orders-rules.png" width="1080" height="728"
-         alt="Production Hub automation panel: a Triggers tab listing approval completed, attachment added, comment added, task assigned, due date set and task no longer waiting, beside Create task and Due date is approaching action cards." loading="lazy">
-    <figcaption>Production Hub automation with triggers for approvals,
-    attachments, comments, assignments, and due dates, and the actions they set
-    off</figcaption>
-  </figure>
-</div>
-
-<div class="pair">
-  <div>
-    <p>Connect assignments to production stations. Order details, comments, device
-    requirements, and assigned stations stay together so teams can see capacity
-    conflicts before they become delays.</p>
-  </div>
-  <figure class="shot">
-    <div class="placeholder"></div>
-    <figcaption>Production Hub order details connected to assigned printing and
-    cutting stations</figcaption>
-  </figure>
-</div>
-
-<h2>Shipped outcome</h2>
-<p class="statement">Production Hub shipped as one connected workflow.</p>
-<p>The live platform now connects the work, end to end:</p>
-<ol class="outcome">
-  <li>Standardized quotes and orders brought client communication, file exchange,
-  tracking, and payments into one flow.</li>
-  <li>Immediate order status, priorities, and automated rules reduced manual
-  coordination before production.</li>
-  <li>Capacity planning connected incoming orders, deadlines, device schedules,
-  and floor assignments.</li>
-  <li>Live task updates, device oversight, and maintenance planning kept office
-  and production-floor work aligned.</li>
-</ol>
-
-<h2>About</h2>
-<p>A platform is a shared model of the work: the objects that persist, the people
-who act on them, and the transitions the system can carry without forcing teams
-to reconstruct the process. Mapping out the pattern and wiring the ecosystem was
-the tricky part, choosing new brand interactions was the reward.</p>
+<h2>Live</h2>
+<p>Production Hub is live, and you can
+<a href="https://www.hp.com/us-en/printers/large-format/printos.html"
+   target="_blank" rel="noopener noreferrer">explore it yourself</a>.</p>
+<p>To me, a platform is a shared model of the work: the things that last, the
+people who act on them, and the steps the system can carry so nobody has to
+rebuild the process by hand. Mapping that model and connecting everything was
+the hard part. Shaping the new brand interactions on top of it was the
+reward.</p>
