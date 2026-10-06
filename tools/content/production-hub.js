@@ -1,72 +1,47 @@
 /* Production Hub -- the promo: one order, #39208, through four teams.
  *
- * One master timeline in four stages: Accounts, Production, Operations,
- * Shipping. The timeline is a pure function of time: seek(t) writes every
- * element's transform and opacity for that instant, and nothing else. Playing
- * is seek() on a clock, jumping to a stage is seek() to its final frame, and
- * reduced motion is jumping without the clock. Nothing accumulates, so the
- * loop cannot drift.
+ * One master timeline in real seconds, played once: Accounts, Production,
+ * Operations, Shipping, ending on Shipping's final frame with Replay. The
+ * timeline is a pure function of time: seek(t) writes every element's
+ * transform and opacity for that instant and nothing else, so playing,
+ * jumping, replaying and reduced motion are all just seek().
  *
- * Choreography is authored in timeline seconds (stages start at 0, 5.5, 10,
- * 14.5; the loop ends at 19). Playback runs it at SPEED and holds each
- * stage's final frame for DWELL seconds, so a viewer has time to read it:
- * about 30 s a loop. The rail is driven by that real clock, so it stays the
- * playback timer.
+ * Grammar:
+ *   - Only the order token travels between stages: artwork (3:4), mint bar
+ *     and #39208, always the same size, moved by translation alone. Cards
+ *     never morph; they exit and enter around the token.
+ *   - Every stage change is the same 1.1 s: satellites out (0-180 ms),
+ *     primary card out to the left (150-400), token travels with the rail in
+ *     sync (300-850), next card in from the right (650-1100).
+ *   - Tokens: enter 450 ms cubic-bezier(.22,1,.36,1) + 16 px; exit 250 ms
+ *     (satellites 180) cubic-bezier(.55,0,1,.45); travel
+ *     cubic-bezier(.65,0,.35,1) at 300/450/550 ms by distance.
+ *   - Holds of 1.5 s on each stage's final frame, 2 s on the last.
  *
- * Two authored frames share one choreography:
- *   desktop  600x760, scaled to its column (>= 768px)
- *   mobile   340x680, the same story laid out narrow (< 768px), because the
- *            desktop frame scaled to a phone would put type under 11px
+ * Two authored frames share one choreography, both sized with container
+ * query units (no transform scaling, so text renders crisp):
+ *   desktop  600x760 design px (>= 768px)
+ *   mobile   340x780 design px, the same story laid out narrow (< 768px)
  *
- * window.Promo exposes frame(n) for storyboard and QA pages.
+ * Geometry is kept in design px; the engine converts to CSS px at draw time.
+ * window.__promo (localhost only) exposes seek() and the track dump for QA.
  */
 (function () {
   'use strict';
 
   var A = '/assets/promo/';
-  var S = [0, 5.5, 10, 14.5];            /* stage starts, timeline seconds */
-  var FILL_END = 18.6;                   /* everything shown; then the reset */
-  var END = 19;
-  var FRAME_T = [5.45, 9.95, 14.45, 18.55];  /* each stage's final frame */
-  var SPEED = 0.75, DWELL = 1.2;
+  var END = 21.55;
+  var FRAME_T = [6.45, 11.55, 16.4, 21.5];        /* each stage's final frame */
+  var TRANS_IN = [null, 6.5, 11.6, 16.45];        /* start of the transition into each stage */
+  var STAGE_W = { d: 568, m: 316 };               /* design width of the white stage */
   var STAGES = ['Accounts', 'Production', 'Operations', 'Shipping'];
-  var CAPTIONS = ['Files, quote and payment', 'Split across every station',
+  var CAPTIONS = ['Files, quote and payment', 'Fits into the gaps',
                   'Plans change, the order adapts', 'Shipped and tracked'];
   var DESCRIPTION = 'One order, #39208, moving through four teams. ' +
     'Accounts: the client uploads AW_Campaign_2024.AI, the €580,00 quote is sent, accepted by John Walters and paid by credit card, and the order is queued. ' +
-    'Production: the order splits into three parts, printed on Printer 1 and Printer 2 at the same time and then cut on Cutter 1. ' +
+    'Production: in a schedule already full of other orders, it finds a free slot on Printer 2 and the next free slot on Cutter 1 right after it, and splits into a print job and a cutting job that fill them. ' +
     'Operations: the due date moves from 23/04/2024 to 22/04/2024 to make the carrier pickup, and the task is marked done. ' +
     'Shipping: the order is printed, shipped on 22/04/2024 at 17:56 from Sant Cugat with Seur, and tracked to delivery on 23/04/2024.';
-
-  /* --- real clock <-> timeline ----------------------------------------- */
-  /* Breakpoints [u, t]: the timeline plays at SPEED and stops for DWELL at
-     each final frame. */
-  var WARP = (function () {
-    var pts = [[0, 0]], u = 0, t = 0;
-    FRAME_T.forEach(function (ft) {
-      u += (ft - t) / SPEED; t = ft; pts.push([u, t]);
-      u += DWELL; pts.push([u, t]);
-    });
-    u += (END - t) / SPEED; pts.push([u, END]);
-    return pts;
-  })();
-  var U_END = WARP[WARP.length - 1][0];
-  function tAt(u) {
-    for (var i = 1; i < WARP.length; i++) {
-      var a = WARP[i - 1], b = WARP[i];
-      if (u <= b[0]) return b[0] === a[0] ? a[1] : a[1] + (b[1] - a[1]) * (u - a[0]) / (b[0] - a[0]);
-    }
-    return END;
-  }
-  /* the earliest real time showing timeline t (the start of a dwell) */
-  function uAt(t) {
-    for (var i = 1; i < WARP.length; i++) {
-      var a = WARP[i - 1], b = WARP[i];
-      if (t <= b[1] && b[1] > a[1]) return a[0] + (b[0] - a[0]) * (t - a[1]) / (b[1] - a[1]);
-    }
-    return U_END;
-  }
-  var US = S.map(uAt).concat([uAt(FILL_END)]);   /* real stage starts, plus the fill's end */
 
   /* --- icons ----------------------------------------------------------- */
   var ICONS = {
@@ -83,15 +58,16 @@
     calalert:'<rect x="3.5" y="5.5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3.5v4M16 3.5v4M12 13v3"/><circle cx="12" cy="18" r=".6" fill="currentColor" stroke="none"/>',
     caltoday:'<rect x="3.5" y="5.5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3.5v4M16 3.5v4"/><rect x="7.5" y="13" width="3" height="3" rx=".6"/>',
     cal:    '<rect x="3.5" y="5.5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3.5v4M16 3.5v4"/>',
-    back:   '<path d="M14.5 5.5 8 12l6.5 6.5"/>',
     chev:   '<path d="M9 5.5 15.5 12 9 18.5"/>',
     dots:   '<circle cx="12" cy="5.5" r="1.35" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.35" fill="currentColor" stroke="none"/><circle cx="12" cy="18.5" r="1.35" fill="currentColor" stroke="none"/>',
     pause:  '<path d="M9 6v12M15 6v12"/>',
-    play:   '<path d="M8 5.5v13l10.5-6.5L8 5.5Z"/>'
+    play:   '<path d="M8 5.5v13l10.5-6.5L8 5.5Z"/>',
+    replay: '<path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.5 4.5v4h4"/>'
   };
   function ic(n, cls) { return '<svg class="ic' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 24" aria-hidden="true">' + ICONS[n] + '</svg>'; }
+  function U(n) { return 'calc(' + n + ' * var(--u))'; }
   function at(x, y, w, h) {
-    return 'left:' + x + 'px;top:' + y + 'px' + (w != null ? ';width:' + w + 'px' : '') + (h != null ? ';height:' + h + 'px' : '');
+    return 'left:' + U(x) + ';top:' + U(y) + (w != null ? ';width:' + U(w) : '') + (h != null ? ';height:' + U(h) : '');
   }
   function ext(a, b) { for (var k in b) a[k] = b[k]; return a; }
   var LIFT = '<i class="pm-lift"></i>';
@@ -100,57 +76,57 @@
   function rail() {
     return '<div class="pm__rail" role="group" aria-label="Stages"><div class="pm__track"><i class="pm__fill" data-a="railfill"></i></div>' +
       STAGES.map(function (s, i) {
-        return '<button class="pm__node" type="button" data-stage="' + i + '" style="left:' + (i * 25) + '%"><span>' + s + '</span></button>';
+        var cls = i === 0 ? '' : i === 3 ? ' pm__node--end' : ' pm__node--mid';
+        return '<button class="pm__node' + cls + '" type="button" data-stage="' + i + '" style="left:' + (i * 100 / 3) + '%"><span>' + s + '</span></button>';
       }).join('') + '</div>' +
       '<button class="pm__pp" type="button" aria-label="Pause animation">' + ic('pause') + '</button>';
   }
   function captions() {
     return CAPTIONS.map(function (c, i) { return '<p class="pm__cap" data-a="cap' + i + '">' + c + '</p>'; }).join('');
   }
+  function slot(key, extra) { return '<span class="slot' + (extra ? ' ' + extra : '') + '" data-a="' + key + '"></span>'; }
 
   function uploadCard(x, y, w, M) {
+    var row = M
+      ? '<p class="frow__n" style="margin-bottom:' + U(8) + '">AW_Campaign_2024.AI</p><div class="frow">' + slot('slot-up') +
+        '<p class="frow__s num">21,3 MB</p><span class="pc" data-a="pcheck">' + ic('check') + '</span></div>'
+      : '<div class="frow">' + slot('slot-up') + '<div><p class="frow__n">AW_Campaign_2024.AI</p><p class="frow__s num">21,3 MB</p></div>' +
+        '<span class="pc" data-a="pcheck">' + ic('check') + '</span></div>';
     return '<div class="c" data-a="up" style="' + at(x, y, w) + '">' + LIFT +
       '<div class="ch"><span class="ch__tile">' + ic('upload') + '</span><p class="ch__t">Upload files</p>' +
-      '<span style="font-size:13px;color:var(--grey)">#39208</span>' + ic('close', 'ch__x') + '</div>' +
-      '<div class="drop"' + (M ? ' style="height:124px;padding:0 16px;text-align:center"' : '') + '><span class="drop__i" data-a="dropi">' + ic('fileup') + '</span>' +
-      '<p>Drag &amp; drop your files here or <a>choose file</a></p><p style="font-size:12px;color:var(--grey)">500 MB max file size.</p></div>' +
-      '<div data-a="prow" style="margin-top:16px">' +
-      '<div class="frow"><img class="art" data-a="artu" src="' + A + 'art-39208.webp" alt="" style="width:30px;height:44px">' +
-      '<div><p class="frow__n">AW_Campaign_2024.AI</p><p class="frow__s num">21,3 MB</p></div>' +
-      '<span class="pc" data-a="pcheck">' + ic('check') + '</span></div>' +
-      '<div class="prog" data-a="pbar"><i data-a="pfill"></i></div></div>' +
+      '<span style="font-size:' + U(13) + ';color:var(--grey)">#39208</span>' + ic('close', 'ch__x') + '</div>' +
+      '<div class="drop"' + (M ? ' style="height:' + U(124) + ';padding:0 ' + U(16) + ';text-align:center"' : '') + '><span class="drop__i" data-a="dropi">' + ic('fileup') + '</span>' +
+      '<p>Drag &amp; drop your files here or <a>choose file</a></p><p style="font-size:' + U(12) + ';color:var(--grey)">500 MB max file size.</p></div>' +
+      '<div style="margin-top:' + U(16) + '">' + row + '<div class="prog"><i data-a="pfill"></i></div></div>' +
       '</div>';
   }
   function dropPill() {
-    return '<span class="fpill at" data-a="pill" style="gap:8px;padding-left:4px;border-radius:15px">' + LIFT +
-      '<img src="' + A + 'art-39208.webp" alt="" style="width:16px;height:22px;object-fit:cover;border-radius:4px">AW_Campaign_2024.AI</span>';
+    return '<span class="fpill at" data-a="pill" style="gap:' + U(8) + ';padding-left:' + U(4) + '">' + LIFT +
+      '<img src="' + A + 'art-39208.webp" alt="" style="width:' + U(16) + ';height:' + U(22) + ';object-fit:cover;border-radius:' + U(4) + '">AW_Campaign_2024.AI</span>';
   }
 
-  /* on mobile the artwork sits beside the rows instead of in a file row */
   function orderCard(x, y, w, M) {
-    var art = '<img class="art" data-a="arto" src="' + A + 'art-39208.webp" alt="" style="' +
-      (M ? 'position:absolute;right:20px;top:66px;width:52px;height:84px' : 'width:40px;height:64px') + '">';
     return '<div class="c" data-a="order" style="' + at(x, y, w) + '">' + LIFT +
       '<div class="ch"><p class="ch__t">Order details</p><span class="pill pill--mint" data-a="queued">Queued</span></div>' +
       '<div class="fr"><span>Client</span><span>Brownie</span></div>' +
       '<div class="fr"><span>Order ID</span><span>#39208</span></div>' +
       '<div class="fr"><span>Job type</span><span>Banner</span></div>' +
       '<div class="fr"><span>Priority</span><span><span class="pill pill--coral">High</span></span></div>' +
-      (M ? art : '<div class="hr"></div><div class="frow">' + art +
-        '<div><p class="frow__n">AW_Campaign_2024.AI</p><p class="frow__s num">21,3 MB</p></div></div>') +
+      '<div class="hr"></div><div class="frow">' + slot('slot-order') +
+      '<p class="frow__s num">21,3 MB</p></div>' +   /* the name was shown on upload; the quote overlaps here */
       '</div>';
   }
 
   function quoteCard(x, y, w, M) {
     var lines = [[M ? 'Print <em>× 10</em>' : 'Print · NEPTUNE_Vinyl_345x543 <em>× 10</em>', '€420,00'],
                  ['Lamination <em>× 10</em>', '€90,00'], ['Cutting', '€45,00'], ['Packaging', '€25,00']];
-    return '<div class="c" data-a="quote" style="' + at(x, y, w) + ';padding:18px 16px">' + LIFT +
+    return '<div class="c" data-a="quote" style="' + at(x, y, w) + ';padding:' + U(18) + ' ' + U(16) + '">' + LIFT +
       '<div class="ch"><span class="ch__tile">' + ic('quote') + '</span><p class="ch__t">Quote</p>' +
-      '<span class="stack"><span class="pill pill--sent" data-a="sent">Sent</span><span class="pill pill--mint" data-a="accepted">Accepted</span></span></div>' +
+      '<span class="stack" style="overflow:hidden"><span class="pill pill--sent" data-a="sent">Sent</span><span class="pill pill--mint" data-a="accepted">Accepted</span></span></div>' +
       '<p class="qby" data-a="qby">Accepted by John Walters</p>' +
       lines.map(function (l, i) { return '<div class="ql" data-a="ql' + i + '"><span>' + l[0] + '</span><span class="num">' + l[1] + '</span></div>'; }).join('') +
       '<div class="qt" data-a="qt"><span>Total</span><span class="num" data-a="total">€580,00</span></div>' +
-      '<div class="chips" style="margin-top:16px"><span class="chip">PayPal</span>' +
+      '<div class="chips" style="margin-top:' + U(16) + '"><span class="chip">PayPal</span>' +
       '<span class="stack"><span class="chip">Credit card</span><span class="chip chip--on" data-a="cardon">Credit card' + ic('checkc') + '</span></span>' +
       (M ? '' : '<span class="chip">Wire transfer</span>') + '</div>' +
       '</div>';
@@ -164,56 +140,64 @@
 
   /* a job card: an order, or one part of it, on the schedule */
   function job(o) {
-    return '<div class="job' + (o.tok ? ' job--tok' : '') + (o.cls ? ' ' + o.cls : '') + '"' + (o.a ? ' data-a="' + o.a + '"' : '') +
+    return '<div class="job' + (o.cls ? ' ' + o.cls : '') + '"' + (o.a ? ' data-a="' + o.a + '"' : '') +
       ' style="' + at(o.x, o.y, o.w, o.h) + '">' + LIFT +
       '<span class="job__bar" style="background:var(--o-' + o.order + ')"></span>' +
       (o.noArt ? '' : '<img class="job__art" src="' + A + 'art-' + o.order + '.webp" alt="">') +
-      '<div class="job__b"><p class="job__id">' + o.id + '</p>' + (o.nm ? '<p class="job__nm">' + o.nm + '</p>' : '') +
-      (o.tok ? '<p class="job__sp">NEPTUNE_Vinyl_345x543</p><span class="faces"><img src="' + A + 'face-manel.webp" alt=""><img src="' + A + 'face-ada.webp" alt=""></span>' : '') +
-      '</div>' + (o.tok ? ic('dots', 'job__dots') : '') + '</div>';
+      '<div class="job__b"><p class="job__id">' + o.id + '</p>' + (o.nm ? '<p class="job__nm">' + o.nm + '</p>' : '') + '</div></div>';
   }
 
   /* --- the schedule: Printer 1, Printer 2, Cutter 1, 09:00-12:00 ------- */
   var GEO = {
-    d: { laneX: [70, 230, 390], laneW: 154, t0: 120, pxH: 160, headY: 24, gridX: 64, gridW: 484, tickX: 20, pillX: 12, bottom: 616 },
-    m: { laneX: [52, 140, 228], laneW: 84, t0: 238, pxH: 100, headY: 160, gridX: 46, gridW: 266, tickX: 2, pillX: 0, bottom: 556, m: true }
+    d: { laneX: [70, 230, 390], laneW: 154, t0: 192, pxH: 132, headY: 96, gridX: 64, gridW: 484, tickX: 20, pillX: 12, bottom: 604, chip: [20, 16] },
+    m: { laneX: [52, 140, 228], laneW: 84, t0: 182, pxH: 136, headY: 86, gridX: 46, gridW: 266, tickX: 2, pillX: 0, bottom: 606, chip: [12, 12], m: true }
   };
   function ty(g, hhmm) { var p = hhmm.split(':'); return g.t0 + ((+p[0] - 9) + (+p[1]) / 60) * g.pxH; }
-  function slot(g, lane, from, to) {
+  function lane(g, l, from, to) {
     var y = ty(g, from) + 2, pad = g.m ? 2 : 4;
-    return { x: g.laneX[lane] + pad, y: y, w: g.laneW - pad * 2, h: ty(g, to) - 2 - y };
+    return { x: g.laneX[l] + pad, y: y, w: g.laneW - pad * 2, h: ty(g, to) - 2 - y };
   }
+  /* an empty slot the order can take: dashed mint outline in the lane */
+  function gap(g, l, from, to, key) { var r = lane(g, l, from, to); return '<span class="gap" data-a="' + key + '" style="' + at(r.x, r.y, r.w, r.h) + '"></span>'; }
   var STATIONS = [['Printer 1', 'HP Latex 800W', 'printer'], ['Printer 2', 'HP Latex 800W', 'printer'], ['Cutter 1', 'CutterX 231M', 'cutter']];
 
   function schedule(g) {
     var s = '', narrow = g.m ? { cls: 'job--m', noArt: true } : {};
-    STATIONS.forEach(function (st, i) {
-      s += '<div class="st' + (g.m ? ' st--m' : '') + '" style="' + at(g.laneX[i], g.headY, g.laneW) + '"><img src="' + A + 'station-' + st[2] + '.webp" alt="">' +
-        '<div><p class="st__n">' + st[0] + '</p>' + (g.m ? '' : '<p class="st__m">' + st[1] + '</p>') + '</div>' +
-        (i === 0 ? '<span class="st__ring" data-a="ring"></span>' : '') + '</div>';
-    });
     ['09:00', '10:00', '11:00', '12:00'].forEach(function (t) {
       s += '<span class="tick num" style="' + at(g.tickX, ty(g, t)) + '">' + t + '</span>' +
            '<span class="grid" style="' + at(g.gridX, ty(g, t), g.gridW) + '"></span>';
     });
     g.laneX.forEach(function (x) { s += '<span class="lane" style="' + at(x - (g.m ? 2 : 3), g.t0 - 16, null, g.bottom - g.t0) + '"></span>'; });
-    s += job(ext(ext(slot(g, 0, '10:45', '12:00'), { order: '98410', id: '#98410', nm: 'Miro Beat Mondrian' }), narrow));
-    s += job(ext(ext(slot(g, 1, '10:30', '12:00'), { order: '618716', id: '#618716', nm: 'Europeana Mar Rana' }), narrow));
-    s += job(ext(ext(slot(g, 0, '09:30', '10:30'), { order: '39208', id: '#39208-01', nm: 'Print', a: 'p1' }), narrow));
-    s += job(ext(ext(slot(g, 1, '09:30', '10:30'), { order: '39208', id: '#39208-02', nm: 'Print', a: 'p2' }), narrow));
+    /* a full day: the other two orders each print, then cut, on every machine.
+       The only room is Printer 2 09:45-10:45 and Cutter 1 straight after. */
+    [[0, '09:00', '10:15', '98410', 'Print'], [0, '10:15', '12:00', '618716', 'Print'],
+     [1, '09:00', '09:45', '618716', 'Print'], [1, '10:45', '12:00', '98410', 'Print'],
+     [2, '09:45', '10:45', '618716', 'Cutting'], [2, '11:30', '12:00', '98410', 'Cutting']].forEach(function (j) {
+      s += job(ext(ext(lane(g, j[0], j[1], j[2]), { order: j[3], id: '#' + j[3], nm: j[4] }), narrow));
+    });
+    s += gap(g, 1, '09:45', '10:45', 'gap1') + gap(g, 2, '10:45', '11:30', 'gap2');
+    s += job(ext(ext(lane(g, 1, '09:45', '10:45'), { order: '39208', id: '#39208-01', nm: 'Print', a: 'p1' }), narrow));
+    s += job(ext(ext(lane(g, 2, '10:45', '11:30'), { order: '39208', id: '#39208-02', nm: 'Cutting', a: 'p2' }), narrow));
+    /* headers after the parts: a part passes under its station on the way into the lane */
+    STATIONS.forEach(function (st, i) {
+      s += '<div class="st' + (g.m ? ' st--m' : '') + '" style="' + at(g.laneX[i], g.headY, g.laneW) + '"><img src="' + A + 'station-' + st[2] + '.webp" alt="">' +
+        '<div><p class="st__n">' + st[0] + '</p>' + (g.m ? '' : '<p class="st__m">' + st[1] + '</p>') + '</div>' +
+        (i === 2 ? '<span class="st__ring" data-a="ring"></span>' : '') + '</div>';
+    });
     var y = ty(g, '11:24');
     s += '<div data-a="now" style="position:absolute;inset:0"><span class="now" style="' + at(g.gridX, y, g.gridW) + '"></span>' +
          '<span class="tpill num" style="' + at(g.pillX, y) + '">11:24</span></div>';
+    s += slot('slot-sched', 'slot--ghost" style="' + at(g.chip[0], g.chip[1]));
     return '<div data-a="sched" style="position:absolute;inset:0">' + s + '</div>';
   }
 
   function doneCard(x, y, w) {
     return '<div class="done" data-a="done" style="' + at(x, y, w) + '">' + LIFT +
-      '<img class="art done__art" src="' + A + 'art-39208.webp" alt="">' +
-      '<p class="done__id">#39208</p><p class="done__nm">Akatsuki Asuma Mogato</p><p class="done__sp">NEPTUNE_Vinyl_345x543</p>' +
-      '<span class="due">' + ic('cal') + '<span class="stack num"><span data-a="due23">Due 23/04/2024</span><span data-a="due22">Due 22/04/2024</span></span></span>' +
+      slot('slot-done') + '<span class="done__dots" data-a="dots">' + ic('dots') + '</span>' +
+      '<p class="done__nm" style="margin-top:' + U(14) + '">Akatsuki Asuma Mogato</p><p class="done__sp">NEPTUNE_Vinyl_345x543</p>' +
+      '<span class="due">' + ic('cal') + '<span class="stack num" style="overflow:hidden"><span data-a="due23">Due 23/04/2024</span><span data-a="due22">Due 22/04/2024</span></span></span>' +
       '<div class="slide" data-a="slide"><span class="knob" data-a="knob">' + ic('check') + '<span class="knob--ok" data-a="knobok">' + ic('check') + '</span></span>' +
-      'Drag to mark done<span class="slide__chev"><span data-a="ch0">' + ic('chev') + '</span><span data-a="ch1">' + ic('chev') + '</span><span data-a="ch2">' + ic('chev') + '</span></span></div></div>';
+      'Drag to mark done<span class="slide__chev">' + ic('chev') + ic('chev') + ic('chev') + '</span></div></div>';
   }
 
   function taskMenu(x, y, w) {
@@ -225,14 +209,10 @@
       }).join('') + '</div>';
   }
 
-  function phone(x, y, w, h) {
-    return '<div class="phone" data-a="phone" style="' + at(x, y, w, h) + '">' +
-      '<div class="ph__h">' + ic('back') + '<p class="ph__id">#39208</p><p class="ph__c">24 comments</p></div>' +
-      '<p class="ph__day">Today</p>' +
-      '<div class="msg msg--new" data-a="amelie"><img src="' + A + 'face-amelie.webp" alt=""><div><p class="msg__n">Amélie Laurent</p><p class="msg__t">1 minute ago</p>' +
-      '<p class="msg__b">Due date moved to 22/04 to make the carrier pickup.</p></div></div>' +
-      '<div class="msg"><img src="' + A + 'face-manel.webp" alt=""><div><p class="msg__n">Manel Rodriguez</p><p class="msg__t">16h ago</p></div></div>' +
-      '</div>';
+  function commentRow(x, y, w) {
+    return '<div class="c cmt" data-a="cmt" style="' + at(x, y, w) + '">' + LIFT +
+      '<img src="' + A + 'face-amelie.webp" alt=""><div><p class="cmt__n">Amélie Laurent<span class="cmt__t">1 minute ago</span></p>' +
+      '<p class="cmt__b">Due date moved to 22/04 to make the carrier pickup.</p></div></div>';
   }
 
   var TRACK = [['Ordered', '19/04/2024', '12:23'], ['Printed', '21/04/2024', '16:31'], ['Shipped', '22/04/2024', '17:56'], ['Estimated delivery', '23/04/2024']];
@@ -247,8 +227,9 @@
       return '<div class="trk__l" style="' + align + '"><p>' + l[0] + '</p><p class="num"' + (i < 3 ? ' data-a="td' + i + '"' : '') + '>' +
         l[1] + (l[2] ? '<br>' + l[2] : '') + '</p></div>';
     }).join('');
-    return '<div class="c" data-a="track" style="' + at(x, y, w) + ';padding:20px 24px 22px">' + LIFT +
-      '<div class="ch" style="margin-left:104px;margin-bottom:22px"><span class="ch__tile">' + ic('pin') + '</span><p class="ch__t">Tracking</p></div>' +
+    return '<div class="c" data-a="track" style="' + at(x, y, w) + ';padding:' + U(20) + ' ' + U(24) + ' ' + U(22) + '">' + LIFT +
+      slot('slot-track', 'slot--ghost" style="left:' + U(-10) + ';top:' + U(-36)) +
+      '<div class="ch" style="margin-left:' + U(104) + ';margin-bottom:' + U(22) + '"><span class="ch__tile">' + ic('pin') + '</span><p class="ch__t">Tracking</p></div>' +
       '<div class="trk"><i class="trk__fill" data-a="tfill"></i>' + nodes + '</div>' +
       '<div class="trk__labels">' + labels + '</div>' +
       '<p class="upd__h">Updates</p>' +
@@ -265,227 +246,245 @@
         '<p>' + l[0] + '</p><p class="vrow__d num"' + (i < 3 ? ' data-a="td' + i + '"' : '') + '>' + l[1] + (l[2] ? '<br>' + l[2] : '') + '</p></div>';
     }).join('');
     return '<div class="c" data-a="track" style="' + at(x, y, w) + '">' + LIFT +
-      '<div class="ch" style="margin-left:112px;margin-bottom:18px"><span class="ch__tile">' + ic('pin') + '</span><p class="ch__t">Tracking</p></div>' +
+      slot('slot-track', 'slot--ghost" style="left:' + U(-8) + ';top:' + U(-36)) +
+      '<div class="ch" style="margin-left:' + U(116) + ';margin-bottom:' + U(18) + '"><span class="ch__tile">' + ic('pin') + '</span><p class="ch__t">Tracking</p></div>' +
       '<div class="vtrk"><span class="vtrk__bar"><i class="vtrk__fill" data-a="vfill"></i></span>' + rows + '</div>' +
-      '<p class="upd__h" style="margin-top:14px">Updates</p>' +
+      '<p class="upd__h" style="margin-top:' + U(14) + '">Updates</p>' +
       '<div class="upd upd--2"><span class="h">Date</span><span class="h">Event</span>' +
       '<span class="r num" data-a="ur0">22/04/2024 - 17:56<br>Sant Cugat, ES</span>' +
       '<span class="r" data-a="ur1"><span class="ev">Shipped</span><br>Carrier: Seur</span></div>' +
       '</div>';
   }
 
-  function compactToken(x, y) {
-    return '<div class="job" data-a="ctok" style="' + at(x, y, 128, 74) + ';box-shadow:var(--sh-lift)">' +
-      '<span class="job__bar" style="background:var(--o-39208)"></span><img class="job__art" src="' + A + 'art-39208.webp" alt="" style="width:38px">' +
-      '<div class="job__b" style="align-self:center"><p class="job__id" style="color:var(--navy);font-size:13px">#39208</p></div></div>';
+  function token() {
+    return '<div class="tokn" data-a="token"><i class="pm-lift" data-a="tokl"></i><span class="job__bar"></span>' +
+      '<img src="' + A + 'art-39208.webp" alt=""><p class="num">#39208</p></div>';
   }
 
   /* --- the two stages -------------------------------------------------- */
   function desktopStage() {
-    var g = GEO.d;
     return uploadCard(60, 70, 448) + dropPill() +
-      orderCard(20, 24, 296) + quoteCard(240, 232, 308) + toast('t1', 20, 540, 340, 'req', 'New request for approval', 'Sent by Account Manager') +
-      schedule(g) +
-      job({ x: 100, y: 236, w: 368, order: '39208', id: '#39208', nm: 'Akatsuki Asuma Mogato', tok: true, a: 'tok' }) +
-      job(ext(slot(g, 2, '10:30', '11:30'), { order: '39208', id: '#39208-03', nm: 'Cutting', a: 'p3' })) +
-      doneCard(24, 48, 296) + taskMenu(24, 330, 290) + phone(330, 24, 250, 680) +
-      trackingCard(20, 128, 528) + compactToken(10, 92) +
-      toast('t2', 20, 510, 360, 'ok', 'Order #39208 Shipped', 'Sent by Production Manager') +
-      '<img class="art at" data-a="fly" src="' + A + 'art-39208.webp" alt="">';
+      orderCard(20, 24, 296) + quoteCard(240, 232, 308) +
+      schedule(GEO.d) +
+      doneCard(24, 40, 276) + taskMenu(312, 56, 240) + commentRow(24, 352, 524) +
+      trackingCard(20, 128, 528) + token();
+  }
+  /* notifications float over the stage's bottom-left corner, unclipped */
+  function desktopFloat() {
+    return toast('t1', -12, 582, 360, 'req', 'New request for approval', 'Sent by Account Manager') +
+      toast('t2', -12, 582, 360, 'ok', 'Order #39208 Shipped', 'Sent by Production Manager');
   }
   function mobileStage() {
-    var g = GEO.m;
     return uploadCard(12, 24, 292, true) + dropPill() +
-      orderCard(12, 12, 292, true) + quoteCard(24, 196, 280, true) + toast('t1', 12, 498, 292, 'req', 'New request for approval', 'Sent by Account Manager') +
-      schedule(g) +
-      job({ x: 12, y: 12, w: 292, order: '39208', id: '#39208', nm: 'Akatsuki Asuma Mogato', tok: true, a: 'tok', cls: 'job--tokm' }) +
-      job(ext(ext(slot(g, 2, '10:30', '11:30'), { order: '39208', id: '#39208-03', nm: 'Cutting', a: 'p3' }), { cls: 'job--m', noArt: true })) +
-      doneCard(12, 12, 292) + taskMenu(12, 292, 292) + phone(12, 292, 292, 420) +
-      trackingCardNarrow(12, 58, 292) + compactToken(4, 22) +
-      toast('t2', 12, 440, 292, 'ok', 'Order #39208 Shipped', 'Sent by Production Manager') +
-      '<img class="art at" data-a="fly" src="' + A + 'art-39208.webp" alt="">';
+      orderCard(12, 12, 292, true) + quoteCard(24, 300, 280, true) +
+      schedule(GEO.m) +
+      doneCard(12, 12, 292) + taskMenu(12, 320, 292) + commentRow(12, 320, 292) +
+      trackingCardNarrow(12, 58, 292) + token();
+  }
+  function mobileFloat() {
+    return toast('t1', -6, 600, 300, 'req', 'New request for approval', 'Sent by Account Manager') +
+      toast('t2', -6, 600, 300, 'ok', 'Order #39208 Shipped', 'Sent by Production Manager');
   }
 
   /* --- engine ---------------------------------------------------------- */
-  function bez(x1, y1, x2, y2) {
+  function bez(x1, y1, x2, y2, id) {
     function cx(t) { return 3 * x1 * t * (1 - t) * (1 - t) + 3 * x2 * t * t * (1 - t) + t * t * t; }
     function cy(t) { return 3 * y1 * t * (1 - t) * (1 - t) + 3 * y2 * t * t * (1 - t) + t * t * t; }
-    return function (x) {
+    var f = function (x) {
       if (x <= 0) return 0; if (x >= 1) return 1;
       var lo = 0, hi = 1, t = x;
       for (var i = 0; i < 24; i++) { t = (lo + hi) / 2; if (cx(t) < x) lo = t; else hi = t; }
       return cy(t);
     };
+    f.id = id; return f;
   }
-  var OUT = bez(.22, 1, .36, 1), INOUT = bez(.65, 0, .35, 1), LIN = function (p) { return p; };
+  var ENTER = bez(.22, 1, .36, 1, 'cubic-bezier(.22,1,.36,1)');
+  var EXIT = bez(.55, 0, 1, .45, 'cubic-bezier(.55,0,1,.45)');
+  var TRAVEL = bez(.65, 0, .35, 1, 'cubic-bezier(.65,0,.35,1)');
+  var LIN = function (p) { return p; }; LIN.id = 'linear';
+  var D_IN = .45, D_OUT = .25, D_SAT = .18;
+  function travelDur(px) { return px < 40 ? .3 : px <= 200 ? .45 : .55; }
   var DEF = { x: 0, y: 0, s: 1, sx: 1, sy: 1, o: 1, l: 0 };
   var PROPS = ['x', 'y', 's', 'sx', 'sy', 'o', 'l'];
 
-  /* keys: [[time, {props}, ease], ...] -- ease shapes the segment arriving at
-     that key. Props not given carry over from the previous key. */
+  /* Keys: [[time, {props}, ease], ...]. Each property is interpolated only
+     between the keys that set it, so opacity and position can have their
+     own timing on one element. The ease shapes the segment arriving at a key. */
   function Track(el, keys) {
-    this.el = el; this.lift = el.querySelector(':scope > .pm-lift'); this.last = ''; this.k = [];
-    var prev = DEF;
+    this.el = el; this.last = ''; this.p = {}; this.active = [];
+    this.lift = keys.some(function (k) { return 'l' in k[1]; }) ? el.querySelector(':scope > .pm-lift') : null;
     keys.sort(function (a, b) { return a[0] - b[0]; });
-    for (var i = 0; i < keys.length; i++) {
-      var v = {}; for (var j = 0; j < PROPS.length; j++) { var p = PROPS[j]; v[p] = p in keys[i][1] ? keys[i][1][p] : prev[p]; }
-      this.k.push({ t: keys[i][0], v: v, e: keys[i][2] || OUT }); prev = v;
+    for (var j = 0; j < PROPS.length; j++) {
+      var n = PROPS[j], list = [];
+      keys.forEach(function (k) { if (n in k[1]) list.push({ t: k[0], v: k[1][n], e: k[2] || ENTER }); });
+      if (list.length) {
+        this.p[n] = list;
+        for (var i = 1; i < list.length; i++) if (list[i].v !== list[i - 1].v) this.active.push([list[i - 1].t, list[i].t]);
+      }
     }
   }
-  Track.prototype.at = function (t) {
-    var k = this.k;
+  Track.prototype.val = function (n, t) {
+    var k = this.p[n]; if (!k) return DEF[n];
     if (t <= k[0].t) return k[0].v;
-    for (var i = 1; i < k.length; i++) {
-      if (t < k[i].t) {
-        var a = k[i - 1], b = k[i], p = b.e((t - a.t) / (b.t - a.t)), v = {};
-        for (var j = 0; j < PROPS.length; j++) { var n = PROPS[j]; v[n] = a.v[n] + (b.v[n] - a.v[n]) * p; }
-        return v;
-      }
+    for (var i = 1; i < k.length; i++) if (t < k[i].t) {
+      var a = k[i - 1], b = k[i]; return a.v + (b.v - a.v) * b.e((t - a.t) / (b.t - a.t));
     }
     return k[k.length - 1].v;
   };
-  Track.prototype.apply = function (t) {
-    var v = this.at(t);
-    var tr = (v.x || v.y ? 'translate(' + v.x.toFixed(2) + 'px,' + v.y.toFixed(2) + 'px)' : '') +
+  Track.prototype.apply = function (t, px) {
+    var v = {}; for (var j = 0; j < PROPS.length; j++) v[PROPS[j]] = this.val(PROPS[j], t);
+    var tr = (v.x || v.y ? 'translate(' + (v.x * px).toFixed(2) + 'px,' + (v.y * px).toFixed(2) + 'px)' : '') +
              (v.s * v.sx !== 1 || v.s * v.sy !== 1 ? ' scale(' + (v.s * v.sx).toFixed(4) + ',' + (v.s * v.sy).toFixed(4) + ')' : '');
-    var key = tr + '|' + v.o.toFixed(3) + '|' + v.l.toFixed(3);
+    var moving = this.active.some(function (r) { return t >= r[0] - .1 && t < r[1]; });
+    var key = tr + '|' + v.o.toFixed(3) + '|' + v.l.toFixed(3) + '|' + moving;
     if (key === this.last) return;
     this.last = key;
+    this.el.style.willChange = moving ? 'transform, opacity' : '';   /* only around a move */
     this.el.style.transform = tr;
-    this.el.style.opacity = v.o >= 0.999 ? '' : v.o.toFixed(3);
+    this.el.style.opacity = v.o >= 0.999 ? '1' : v.o.toFixed(3);   /* explicit: some elements default to 0 in CSS */
     this.el.style.visibility = v.o <= 0.001 ? 'hidden' : '';
     if (this.lift) this.lift.style.opacity = v.l.toFixed(3);
   };
 
-  /* geometry in stage coordinates, measured before any transform is applied */
-  function rect(el, stage) {
-    var r = el.getBoundingClientRect(), s = stage.getBoundingClientRect(), k = s.width / stage.offsetWidth;
-    return { x: (r.left - s.left) / k, y: (r.top - s.top) / k, w: r.width / k, h: r.height / k };
-  }
-  /* the transform that puts element B over rect A (center origin). Uniform
-     scale: a non-uniform one would stretch the type mid-morph. */
-  function from(a, b) {
-    var k = Math.sqrt((a.w / b.w) * (a.h / b.h));
-    return { x: (a.x + a.w / 2) - (b.x + b.w / 2), y: (a.y + a.h / 2) - (b.y + b.h / 2), sx: k, sy: k };
-  }
-  /* part-way along a morph: the outgoing card holds full opacity while it
-     travels, so the order is never shown by two half-faded copies */
-  function part(f, p) { return { x: f.x * p, y: f.y * p, sx: 1 + (f.sx - 1) * p, sy: 1 + (f.sy - 1) * p }; }
-  function m(o, extra) { var r = {}; for (var k in o) r[k] = o[k]; for (k in extra) r[k] = extra[k]; return r; }
-  function enter(t0, d, fromP) { return [[t0, m({ o: 0 }, fromP || {})], [t0 + d, { o: 1, x: 0, y: 0, s: 1, sx: 1, sy: 1 }]]; }
-
-  /* --- choreography: one script, two layouts --------------------------- */
-  function choreography(q, stage, M) {
+  /* --- choreography ---------------------------------------------------- */
+  function choreography(q, rect, M) {
     var T = [], g = M ? GEO.m : GEO.d, i;
     function tr(name, keys) { var el = q(name); if (el) T.push(new Track(el, keys)); }
+    /* card in from the right / out to the left, satellites out quicker */
+    function cardIn(t0) { return [[t0, { o: 0, x: 16 }], [t0 + D_IN, { o: 1, x: 0 }]]; }
+    function cardOut(t0, d) { return [[t0, { o: 1, x: 0 }], [t0 + (d || D_OUT), { o: 0, x: -16 }, EXIT]]; }
+    function satOut(t0) { return [[t0, { o: 1, x: 0 }], [t0 + D_SAT, { o: 0, x: -12 }, EXIT]]; }
+    function toastIn(t0) { return [[t0, { o: 0, y: 12 }], [t0 + D_IN, { o: 1, y: 0 }]]; }
+    function toastOut(t0) { return [[t0, { o: 1, y: 0 }], [t0 + D_SAT, { o: 0, y: 8 }, EXIT]]; }
 
-    /* positions that depend on layout */
-    var dropi = rect(q('dropi'), stage), pill = q('pill');
-    if (M) { pill.style.left = (dropi.x + dropi.w / 2 - pill.offsetWidth / 2) + 'px'; pill.style.top = (dropi.y + dropi.h / 2 - 15) + 'px'; }
-    else { pill.style.left = (dropi.x + dropi.w + 12) + 'px'; pill.style.top = (dropi.y + dropi.h / 2 - 15) + 'px'; }
-    var rArtU = rect(q('artu'), stage), rArtO = rect(q('arto'), stage);
-    var rOrder = rect(q('order'), stage), rTok = rect(q('tok'), stage);
-    var rP = [rect(q('p1'), stage), rect(q('p2'), stage), rect(q('p3'), stage)];
-    var rDone = rect(q('done'), stage), rTrack = rect(q('track'), stage);
-    var travel = q('slide').offsetWidth - 12 - 44;
-    var fly = q('fly');
-    fly.style.left = rArtO.x + 'px'; fly.style.top = rArtO.y + 'px'; fly.style.width = rArtO.w + 'px'; fly.style.height = rArtO.h + 'px';
-    var pillFrom = M ? { x: 90, y: 260 } : { x: 150, y: 214 };
+    /* layout-dependent positions, design px */
+    var dropi = rect(q('dropi')), pill = q('pill'), pillW = rect(pill).w;
+    var pillAt = M ? [dropi.x + dropi.w / 2 - pillW / 2, dropi.y + dropi.h / 2 - 15] : [dropi.x + dropi.w + 12, dropi.y + dropi.h / 2 - 15];
+    pill.style.left = U(pillAt[0]); pill.style.top = U(pillAt[1]);
+    var pillFrom = M ? { x: 0, y: 250 } : { x: 30, y: 200 };
+    var S = {};
+    ['slot-up', 'slot-order', 'slot-sched', 'slot-done', 'slot-track'].forEach(function (k) { S[k] = rect(q(k)); });
+    var travel = rect(q('slide')).w - 12 - 44;
 
-    /* Stage 1 -- Accounts (0-5.5) */
-    tr('up', enter(0, .7, { y: 24 }).concat([[2.1, { o: 1, y: 0 }], [2.6, { o: 0, y: -12 }]]));
-    tr('pill', [[0, { o: 0, x: pillFrom.x, y: pillFrom.y }], [.7, { o: 1, y: pillFrom.y - 24 }],
-                [.85, { s: 1.04, l: 1, x: pillFrom.x * .8, y: (pillFrom.y - 24) * .8 }],
-                [1.3, { s: 1, l: 0, x: 0, y: 0 }], [1.45, { o: 0 }, LIN]]);
-    tr('prow', [[1.3, { o: 0, y: 8 }], [1.6, { o: 1, y: 0 }]]);
-    tr('pfill', [[1.3, { sx: 0 }], [1.95, { sx: 1 }, INOUT]]);
-    tr('pbar', [[1.95, { o: 1 }], [2.1, { o: 0 }, LIN]]);
-    tr('pcheck', [[1.95, { o: 0, s: .7 }], [2.1, { o: 1, s: 1 }]]);
-    tr('artu', [[2.1, { o: 1 }], [2.12, { o: 0 }, LIN]]);
-    tr('fly', [[2.09, { o: 0 }], [2.1, m(from(rArtU, rArtO), { o: 1, l: 1 }), LIN], [2.75, { o: 1, x: 0, y: 0, sx: 1, sy: 1, l: 0 }], [2.8, { o: 0 }, LIN]]);
-    tr('arto', [[2.75, { o: 0 }], [2.8, { o: 1 }, LIN]]);
-    var fo = from(rTok, rOrder);
-    tr('order', enter(2.1, .6, { y: 16 }).concat([[5.5, { o: 1 }],
-      [5.85, m(part(fo, .6), { o: 1, l: 1 })], [6.15, m(fo, { o: 0, l: 1 })]]));
-    tr('queued', [[4.4, { o: 0, s: .85 }], [4.8, { o: 1, s: 1 }]]);
-    tr('quote', enter(2.8, .6, { x: 32 }).concat([[5.5, { o: 1 }], [5.9, { o: 0, x: 24 }]]));
-    for (i = 0; i < 4; i++) tr('ql' + i, [[2.95 + i * .06, { o: 0, y: 6 }], [3.35 + i * .06, { o: 1, y: 0 }]]);
-    tr('qt', [[3.2, { o: 0, y: 6 }], [3.5, { o: 1, y: 0 }]]);
-    tr('sent', [[3.8, { o: 1 }], [4.0, { o: 0 }]]);
-    tr('accepted', [[3.9, { o: 0, s: .9 }], [4.25, { o: 1, s: 1 }]]);
-    tr('qby', [[3.95, { o: 0, y: -4 }], [4.35, { o: 1, y: 0 }]]);
-    tr('cardon', [[4.0, { o: 0 }], [4.3, { o: 1 }]]);
-    tr('t1', enter(4.4, .45, { x: -24, y: 24 }).concat([[5.5, { o: 1 }], [5.9, { o: 0, y: 16 }]]));
-
-    /* Stage 2 -- Production (5.5-10). On mobile the token stays above the
-       schedule while its parts fly out; on desktop it hands over to them. */
-    var tok = [[5.5, m(from(rOrder, rTok), { o: 0, l: 1 })], [5.65, { o: 1 }, LIN], [6.15, { x: 0, y: 0, sx: 1, sy: 1, l: 0 }]];
-    tr('tok', tok.concat(M ? [[10.25, { o: 1, y: 0 }], [10.55, { o: 0, y: -12 }]] : [[6.85, { o: 1 }], [7.05, { o: 0 }, LIN]]));
-    tr('sched', [[6.2, { o: 0 }], [6.8, { o: 1 }], [10, { o: 1, s: 1 }], [10.7, { o: .18, s: .96 }], [14.5, { o: .18 }], [14.9, { o: 0 }]]);
-    ['p1', 'p2', 'p3'].forEach(function (n, k) {
-      var t0 = 6.8 + k * .12, keys = [[t0, m(from(rTok, rP[k]), { o: 0, l: 1 })], [t0 + .15, { o: 1 }, LIN],
-                                      [t0 + .6, { x: 0, y: 0, sx: 1, sy: 1, l: 0 }]];
-      if (n === 'p3') keys.push([10, { o: 1 }], [10.4, m(part(from(rDone, rP[2]), .6), { o: 1, l: 1 })], [10.65, m(from(rDone, rP[2]), { o: 0, l: 1 })]);
-      tr(n, keys);
-    });
-    tr('now', [[7.8, { o: 0, y: ty(g, '09:00') - ty(g, '11:24') }], [7.9, { o: 1 }, LIN], [8.8, { y: 0 }, INOUT]]);
-    tr('ring', [[8.8, { o: 0 }], [9.3, { o: 1 }]]);
-
-    /* Stage 3 -- Operations (10-14.5). Mobile has no room beside the card,
-       so the thread takes the menu's place once the date has changed. */
-    tr('done', [[10, m(from(rP[2], rDone), { o: 0, l: 1 })], [10.25, { o: 1 }, LIN], [10.65, { x: 0, y: 0, sx: 1, sy: 1, l: 0 }],
-                [14.5, { o: 1 }], [14.85, m(part(from(rTrack, rDone), .55), { o: 1, l: 1 })],
-                [15.15, m(from(rTrack, rDone), { o: 0, l: 1 })]]);
-    tr('menu', enter(10.7, .5, { s: .96, y: 8 }).concat(M ? [[11.6, { o: 1, x: 0 }], [11.95, { o: 0, x: -40 }]]
-                                                           : [[14.5, { o: 1 }], [14.8, { o: 0, s: .97 }]]));
-    tr('duehl', [[11.0, { o: 0 }], [11.3, { o: 1 }]]);
-    tr('due23', [[11.1, { o: 1, y: 0 }], [11.45, { o: 0, y: -10 }]]);
-    tr('due22', [[11.15, { o: 0, y: 10 }], [11.5, { o: 1, y: 0 }]]);
-    tr('phone', enter(M ? 11.7 : 11.5, .8, { x: 120 }).concat([[14.5, { o: 1 }], [14.9, { o: 0, x: 80 }]]));
-    tr('amelie', [[M ? 12.15 : 11.95, { o: 0, y: -8 }], [M ? 12.6 : 12.4, { o: 1, y: 0 }]]);
-    tr('knob', [[12.5, { x: 0 }], [13.3, { x: travel }, INOUT]]);
-    tr('knobok', [[13.3, { o: 0 }], [13.5, { o: 1 }]]);
-    for (i = 0; i < 3; i++) {
-      var c0 = 12.5 + i * .1;
-      tr('ch' + i, [[c0, { o: 1 }], [c0 + .2, { o: .25 }, INOUT], [c0 + .4, { o: 1 }, INOUT], [c0 + .6, { o: .25 }, INOUT], [c0 + .8, { o: 1 }, INOUT]]);
+    /* the token: translation only, between slots. Each trip also moves the
+       rail when it is a stage change, with the same start, duration, ease. */
+    var tk = [[0, { o: 0, x: S['slot-up'].x, y: S['slot-up'].y }], [.9, { o: 0 }], [1.1, { o: 1 }]];
+    var rl = [[0, { sx: 0 }]], switches = [0], tl = [[0, { o: 0 }]];
+    function trip(t0, from, to, railTo) {
+      var d = travelDur(Math.hypot(S[to].x - S[from].x, S[to].y - S[from].y));
+      tk.push([t0, { x: S[from].x, y: S[from].y }], [t0 + d, { x: S[to].x, y: S[to].y }, TRAVEL]);
+      tl.push([t0, { o: 0 }], [t0 + .12, { o: 1 }], [t0 + d - .12, { o: 1 }], [t0 + d, { o: 0 }]);
+      if (railTo != null) { rl.push([t0, { sx: railTo - 1 / 3 }], [t0 + d, { sx: railTo }, TRAVEL]); switches.push(t0 + d / 2); }
+      return d;
     }
 
-    /* Stage 4 -- Shipping (14.5-19) */
-    tr('track', [[14.5, m(from(rDone, rTrack), { o: 0, l: 1 })], [14.7, { o: 1 }, LIN], [15.15, { x: 0, y: 0, sx: 1, sy: 1, l: 0 }],
-                 [FILL_END, { o: 1 }], [END, { o: 0 }]]);
-    tr('ctok', [[14.5, { o: 0, s: .8 }], [14.8, { o: 1, s: 1 }], [FILL_END, { o: 1 }], [END, { o: 0 }]]);
-    tr(M ? 'vfill' : 'tfill', [[15.2, M ? { sy: 0 } : { sx: 0 }], [16.7, M ? { sy: 2 / 3 } : { sx: 2 / 3 }, INOUT]]);
-    [15.2, 15.95, 16.6].forEach(function (t0, k) {
-      tr('tn' + k, [[t0, { o: 0, s: .6 }], [t0 + .15, { o: 1, s: 1 }]]);
+    /* Stage 1 -- Accounts. The first frame is drawn before play: no entrance. */
+    tr('up', cardOut(2.1));
+    tr('pill', [[0, { x: pillFrom.x, y: pillFrom.y, l: 0 }], [.45, { x: pillFrom.x, y: pillFrom.y, l: 0 }], [.65, { l: 1 }],
+                [1.0, { x: 0, y: 0, l: 0 }, TRAVEL], [1.0, { o: 1 }], [1.0 + D_SAT, { o: 0 }, EXIT]]);
+    tr('pfill', [[1.0, { sx: 0 }], [1.8, { sx: 1 }, TRAVEL]]);
+    tr('pcheck', [[1.8, { o: 0, x: 8 }], [1.8 + D_IN, { o: 1, x: 0 }]]);
+    trip(2.25, 'slot-up', 'slot-order');
+    tr('order', cardIn(2.35).concat(cardOut(6.7)));
+    tr('quote', cardIn(3.0).concat(satOut(6.5)));
+    for (i = 0; i < 4; i++) tr('ql' + i, [[3.1 + i * .08, { o: 0, x: 8 }], [3.1 + i * .08 + D_IN, { o: 1, x: 0 }]]);
+    tr('qt', [[3.3, { o: 0, x: 8 }], [3.3 + D_IN, { o: 1, x: 0 }]]);
+    /* accent: Sent rolls up to Accepted as Credit card selects */
+    tr('sent', [[4.1, { o: 1, y: 0 }], [4.3, { o: 0, y: -10 }, EXIT]]);
+    tr('accepted', [[4.1, { o: 0, y: 10 }], [4.3, { o: 1, y: 0 }]]);
+    tr('cardon', [[4.1, { o: 0 }], [4.3, { o: 1 }]]);
+    tr('qby', [[4.1, { o: 0, x: 8 }], [4.1 + D_IN, { o: 1, x: 0 }]]);
+    tr('t1', toastIn(4.5).concat(toastOut(6.5)));
+    tr('queued', [[4.5, { o: 0, y: -6 }], [4.5 + D_IN, { o: 1, y: 0 }]]);
+
+    /* Transition 1 (6.5) */
+    trip(6.8, 'slot-order', 'slot-sched', 1 / 3);
+
+    /* Stage 2 -- Production */
+    tr('sched', cardIn(7.15).concat(cardOut(11.75)));
+    var chip = S['slot-sched'], cx = chip.x + chip.w / 2, cy = chip.y + chip.h / 2;
+    /* the search: the two free slots light up in order, print then cut ... */
+    var gapKeys = { gap1: [[7.6, { o: 0 }], [7.85, { o: 1 }]], gap2: [[7.72, { o: 0 }], [7.97, { o: 1 }]] };
+    /* ... then the order splits into them, the print first, the cut 120 ms later */
+    ['p1', 'p2'].forEach(function (n, k) {
+      var r = rect(q(n)), t0 = 8.05 + k * .12, dx = cx - (r.x + r.w / 2), dy = cy - (r.y + r.h / 2);
+      var d = travelDur(Math.hypot(dx, dy));
+      tr(n, [[t0, { o: 0, x: dx, y: dy, l: 1 }], [t0 + .1, { o: 1 }], [t0 + d, { x: 0, y: 0, l: 0 }, TRAVEL]]);
+      gapKeys['gap' + (k + 1)].push([t0 + d, { o: 1 }], [t0 + d + D_SAT, { o: 0 }, EXIT]);   /* filled */
+    });
+    tr('gap1', gapKeys.gap1); tr('gap2', gapKeys.gap2);
+    tr('now', [[8.85, { o: 0, y: ty(g, '09:00') - ty(g, '11:24') }], [8.9, { o: 1 }, LIN], [8.9, { y: ty(g, '09:00') - ty(g, '11:24') }], [9.8, { y: 0 }, TRAVEL]]);
+    tr('ring', [[9.8, { o: 0 }], [10.1, { o: 1 }]]);
+
+    /* Transition 2 (11.6): no satellites */
+    trip(11.9, 'slot-sched', 'slot-done', 2 / 3);
+
+    /* Stage 3 -- Operations */
+    tr('done', cardIn(12.25).concat(cardOut(16.6)));
+    /* Task actions grows from the card's dots; on mobile it sits below the
+       card and leaves once the date has changed, making room for the comment */
+    var doneR = rect(q('done')), below = doneR.y + doneR.h + 16;
+    q('cmt').style.top = U(below);
+    if (M) q('menu').style.top = U(below);
+    var mr = rect(q('menu')), dots = rect(q('dots'));
+    q('menu').style.transformOrigin = U(dots.x + dots.w / 2 - mr.x) + ' ' + U(dots.y + dots.h / 2 - mr.y);
+    tr('menu', [[12.7, { o: 0, s: .96 }], [12.95, { o: 1, s: 1 }]].concat(M ? satOut(13.5) : satOut(16.45)));
+    tr('duehl', [[13.0, { o: 0 }], [13.2, { o: 1 }]]);
+    tr('due23', [[13.2, { o: 1, y: 0 }], [13.45, { o: 0, y: -12 }, TRAVEL]]);
+    tr('due22', [[13.2, { o: 0, y: 12 }], [13.45, { o: 1, y: 0 }, TRAVEL]]);
+    tr('knob', [[13.6, { x: 0 }], [14.3, { x: travel }, TRAVEL]]);
+    tr('knobok', [[14.3, { o: 0 }], [14.5, { o: 1 }]]);
+    tr('cmt', [[14.5, { o: 0, y: -12 }], [14.5 + D_IN, { o: 1, y: 0 }]].concat(satOut(16.45)));
+
+    /* Transition 3 (16.45) */
+    trip(16.75, 'slot-done', 'slot-track', 1);
+
+    /* Stage 4 -- Shipping */
+    tr('track', cardIn(17.1));
+    var seg = [[17.55, 17.9], [18.02, 18.37]];
+    tr(M ? 'vfill' : 'tfill', M ? [[seg[0][0], { sy: 0 }], [seg[0][1], { sy: 1 / 3 }, TRAVEL], [seg[1][0], { sy: 1 / 3 }], [seg[1][1], { sy: 2 / 3 }, TRAVEL]]
+                                : [[seg[0][0], { sx: 0 }], [seg[0][1], { sx: 1 / 3 }, TRAVEL], [seg[1][0], { sx: 1 / 3 }], [seg[1][1], { sx: 2 / 3 }, TRAVEL]]);
+    [17.4, seg[0][1], seg[1][1]].forEach(function (t0, k) {
+      tr('tn' + k, [[t0, { o: 0 }], [t0 + .15, { o: 1 }]]);
       tr('td' + k, [[t0, { o: 0 }], [t0 + .25, { o: 1 }]]);
     });
-    for (i = 0; i < 3; i++) tr('ur' + i, [[16.7 + i * .06, { o: 0, y: 6 }], [17.2 + i * .06, { o: 1, y: 0 }]]);
-    tr('t2', enter(17.3, .45, { x: -24, y: 24 }).concat([[FILL_END, { o: 1 }], [END, { o: 0 }]]));
+    for (i = 0; i < 3; i++) tr('ur' + i, [[18.6, { o: 0, x: 8 }], [18.6 + D_IN, { o: 1, x: 0 }]]);
+    tr('t2', toastIn(19.1));
 
+    /* captions: out with the card, in with the next one; never together */
+    var capOut = [6.65, 11.75, 16.6], capIn = [null, 7.15, 12.25, 17.1];
     for (i = 0; i < 4; i++) {
-      var a = S[i], b = i < 3 ? S[i + 1] : FILL_END;
-      tr('cap' + i, [[a, { o: 0 }], [a + .4, { o: 1 }], [b, { o: 1 }], [b + .3, { o: 0 }]]);
+      var k2 = [];
+      if (i > 0) k2.push([0, { o: 0 }], [capIn[i], { o: 0, x: 16 }], [capIn[i] + D_IN, { o: 1, x: 0 }]);
+      if (i < 3) k2.push([capOut[i], { o: 1, x: 0 }], [capOut[i] + D_SAT, { o: 0, x: -8 }, EXIT]);
+      tr('cap' + i, k2);
     }
-    return T;
+
+    tr('token', tk); tr('tokl', tl); tr('railfill', rl);
+    return { tracks: T, switches: switches };
   }
 
   /* --- frames ---------------------------------------------------------- */
-  /* Build a frame. Returns the element plus seek(); call init() once it is in
-     the document, since the tracks are measured from real layout. */
+  /* Build a frame inside a size container. Returns the element plus seek();
+     call init() once it is in the document, since slots are measured. */
   function create(mobile) {
     var el = document.createElement('div');
     el.className = 'pm' + (mobile ? ' pm--m' : '');
     el.innerHTML = rail() + '<div class="pm__anim" aria-hidden="true">' + captions() +
-      '<div class="pm__stage">' + (mobile ? mobileStage() : desktopStage()) + '</div></div>' +
+      '<div class="pm__stage">' + (mobile ? mobileStage() : desktopStage()) + '</div>' +
+      '<div class="pm__float">' + (mobile ? mobileFloat() : desktopFloat()) + '</div></div>' +
       '<p class="pm-sr">' + DESCRIPTION + '</p>';
-    var stage = el.querySelector('.pm__stage');
+    var stage = el.querySelector('.pm__stage'), W = mobile ? STAGE_W.m : STAGE_W.d;
     var nodes = Array.prototype.slice.call(el.querySelectorAll('.pm__node'));
-    var fill = el.querySelector('.pm__fill');
     var total = el.querySelector('[data-a="total"]');
-    var tracks = [], current = -1, lastFill = '';
+    var tracks = [], switches = [0], current = -1, now = 0;
     function q(n) { return el.querySelector('[data-a="' + n + '"]'); }
-
-    function stageAt(t) { return t >= S[3] ? 3 : t >= S[2] ? 2 : t >= S[1] ? 1 : 0; }
+    function px() { return stage.getBoundingClientRect().width / W; }   /* CSS px per design px */
+    function rect(e) {
+      var r = e.getBoundingClientRect(), s = stage.getBoundingClientRect(), k = s.width / W;
+      return { x: (r.left - s.left) / k, y: (r.top - s.top) / k, w: r.width / k, h: r.height / k };
+    }
+    function stageAt(t) { var s = 0; for (var i = 1; i < switches.length; i++) if (t >= switches[i]) s = i; return s; }
     function setStage(i) {
       if (i === current) return;
       current = i;
@@ -494,98 +493,110 @@
         if (k < i) n.setAttribute('data-done', ''); else n.removeAttribute('data-done');
       });
     }
-    /* the rail is the real clock: each segment fills over its stage's real
-       duration, holds included, and runs back during the reset */
-    function railFill(u) {
-      if (u >= US[4]) return 1 - INOUT((u - US[4]) / (U_END - US[4]));
-      var i = u >= US[3] ? 3 : u >= US[2] ? 2 : u >= US[1] ? 1 : 0;
-      return (i + (u - US[i]) / (US[i + 1] - US[i])) / 4;
-    }
-    /* seek by timeline time t, or by real time u (the live clock) */
-    function seekU(u) { render(tAt(u), u); }
-    function seek(t) { render(t, uAt(t)); }
-    function render(t, u) {
-      for (var i = 0; i < tracks.length; i++) tracks[i].apply(t);
-      setStage(stageAt(Math.min(t, FILL_END - .001)));
-      var f = 'scaleX(' + railFill(u).toFixed(4) + ')';
-      if (f !== lastFill) { fill.style.transform = f; lastFill = f; }
+    function seek(t) {
+      now = t;
+      var k = px();
+      for (var i = 0; i < tracks.length; i++) tracks[i].apply(t, k);
+      setStage(stageAt(t));
       if (total) {
-        var txt = '€' + Math.round(580 * OUT(Math.max(0, Math.min(1, (t - 3.2) / .6)))) + ',00';
+        var txt = '€' + Math.round(580 * ENTER(Math.max(0, Math.min(1, (t - 3.3) / .6)))) + ',00';
         if (total.textContent !== txt) total.textContent = txt;
       }
     }
     function init() {
-      tracks.forEach(function (tr) { tr.el.style.transform = ''; tr.el.style.opacity = ''; tr.el.style.visibility = ''; });
-      tracks = choreography(q, stage, mobile);
+      tracks.forEach(function (tr) { tr.el.style.transform = ''; tr.el.style.opacity = ''; tr.el.style.visibility = ''; tr.el.style.willChange = ''; });
+      var c = choreography(q, rect, mobile);
+      tracks = c.tracks; switches = c.switches;
     }
-    return { el: el, seek: seek, seekU: seekU, init: init, nodes: nodes, pp: el.querySelector('.pm__pp'), mobile: mobile };
+    /* resizing changes CSS px per design px: redraw the same instant */
+    function redraw() { tracks.forEach(function (tr) { tr.last = ''; }); seek(now); }
+    function dump() {
+      return tracks.map(function (tr) {
+        var keys = {}; for (var n in tr.p) keys[n] = tr.p[n].map(function (k) { return { t: k.t, v: k.v, ease: k.e.id || 'custom' }; });
+        return { target: '[data-a="' + tr.el.getAttribute('data-a') + '"]', props: keys };
+      });
+    }
+    return { el: el, seek: seek, init: init, redraw: redraw, dump: dump, nodes: nodes, pp: el.querySelector('.pm__pp'), mobile: mobile,
+             switches: function () { return switches; } };
   }
 
   /* --- the live component on the page --------------------------------- */
   function mount(host) {
     var narrow = window.matchMedia('(max-width: 767px)');
     var still = window.matchMedia('(prefers-reduced-motion: reduce)');
-    var f = null, u = uAt(FRAME_T[0]), userPaused = false, userPlayed = false, inView = false, hover = false, raf = 0, prev = 0;
+    var f = null, t = 0, state = 'ready', stopAt = END, inView = false, hover = false, raf = 0, prev = 0;
+    /* state: ready (first frame, waiting to be seen) | playing | paused | ended */
 
-    function moving() { return !userPaused && !(still.matches && !userPlayed); }
-    function playing() { return moving() && inView && !hover && !document.hidden; }
-
-    function scale() {
-      if (!f) return;
-      var W = f.mobile ? 340 : 600, H = f.mobile ? 680 : 760, k = host.clientWidth / W;
-      f.el.style.transform = 'scale(' + k + ')';
-      host.style.height = (H * k) + 'px';
-    }
+    function running() { return state === 'playing' && inView && !hover && !document.hidden; }
     function label() {
-      var on = moving();
-      f.pp.setAttribute('aria-label', on ? 'Pause animation' : 'Play animation');
-      f.pp.innerHTML = ic(on ? 'pause' : 'play');
+      if (still.matches) { f.pp.hidden = true; return; }
+      f.pp.hidden = false;
+      var m = state === 'playing' ? ['Pause animation', 'pause'] : state === 'ended' ? ['Replay animation', 'replay'] : ['Play animation', 'play'];
+      f.pp.setAttribute('aria-label', m[0]); f.pp.innerHTML = ic(m[1]);
     }
-    function tick(now) {
+    function tick(ts) {
       raf = 0;
-      if (!playing()) return;
-      var dt = prev ? Math.min(.1, (now - prev) / 1000) : 0;
-      prev = now;
-      u = (u + dt) % U_END;
-      f.seekU(u);
+      if (!running()) return;
+      var dt = prev ? Math.min(.1, (ts - prev) / 1000) : 0;
+      prev = ts;
+      t = Math.min(stopAt, t + dt);
+      f.seek(t);
+      if (t >= stopAt) { state = stopAt >= END ? 'ended' : 'paused'; stopAt = END; label(); return; }
       raf = requestAnimationFrame(tick);
     }
     function sync() {
-      if (playing() && !raf) { prev = 0; raf = requestAnimationFrame(tick); }
-      if (!playing() && raf) { cancelAnimationFrame(raf); raf = 0; }
+      if (running() && !raf) { prev = 0; raf = requestAnimationFrame(tick); }
+      if (!running() && raf) { cancelAnimationFrame(raf); raf = 0; }
     }
+    function play(from, until) { if (from != null) { t = from; f.seek(t); } stopAt = until || END; state = 'playing'; label(); sync(); }
+
     function build() {
       if (raf) { cancelAnimationFrame(raf); raf = 0; }
       host.innerHTML = '';
       f = create(narrow.matches);
       host.appendChild(f.el);
-      scale();
       f.init();
-      if (still.matches && !userPlayed) u = uAt(FRAME_T[0]);
-      f.seekU(u);
+      if (still.matches) { t = END; state = 'ended'; }
+      f.seek(t);
       f.nodes.forEach(function (n, i) {
-        n.addEventListener('click', function () { u = uAt(FRAME_T[i]); userPaused = true; f.seekU(u); label(); sync(); });
+        n.addEventListener('click', function () {
+          if (still.matches || i === 0) { t = FRAME_T[i]; f.seek(t); state = still.matches ? 'ended' : 'paused'; label(); sync(); return; }
+          play(TRANS_IN[i], i === 3 ? END : FRAME_T[i]);   /* the standard transition into that stage */
+        });
       });
       f.pp.addEventListener('click', function () {
-        if (moving()) userPaused = true; else { userPaused = false; userPlayed = true; }
-        label(); sync();
+        if (state === 'playing') { state = 'paused'; label(); sync(); }
+        else if (state === 'ended') play(0);
+        else play(null);
       });
       f.el.addEventListener('mouseenter', function () { hover = true; sync(); });
       f.el.addEventListener('mouseleave', function () { hover = false; sync(); });
-      label();
-      sync();
+      label(); sync();
+      /* dev only: drive the master timeline from the console or Playwright */
+      if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) {
+        window.__promo = {
+          frame: f, tracks: f.dump, END: END, FRAME_T: FRAME_T, TRANS_IN: TRANS_IN, switches: f.switches,
+          seek: function (sec) { state = 'paused'; label(); sync(); t = sec; f.seek(t); },
+          state: function () { return state; }
+        };
+      }
     }
 
-    new IntersectionObserver(function (es) { inView = es[0].intersectionRatio >= .5; sync(); }, { threshold: [0, .5, 1] }).observe(host);
-    if (window.ResizeObserver) new ResizeObserver(scale).observe(host);
+    new IntersectionObserver(function (es) {
+      inView = es[0].intersectionRatio >= .5;
+      if (inView && state === 'ready' && !still.matches) play(0);   /* once, from the start */
+      sync();
+    }, { threshold: [0, .5, 1] }).observe(host);
+    if (window.ResizeObserver) new ResizeObserver(function () { if (f) f.redraw(); }).observe(host);
     document.addEventListener('visibilitychange', sync);
-    (narrow.addEventListener ? narrow.addEventListener('change', build) : narrow.addListener(build));
-    if (still.addEventListener) still.addEventListener('change', function () { userPlayed = false; build(); });
+    (narrow.addEventListener ? narrow.addEventListener('change', function () { build(); }) : narrow.addListener(function () { build(); }));
+    if (still.addEventListener) still.addEventListener('change', function () { build(); });
     build();
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { if (f) { f.init(); f.seekU(u); } });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { if (f) { f.init(); f.seek(t); } });
   }
 
-  /* storyboard / QA: a standalone frame at stage n's final frame, or time t */
+  /* storyboard / QA: a standalone frame at stage n's final frame, or time t.
+     opts.into must be a size container (container-type: inline-size). */
   function frame(n, opts) {
     opts = opts || {};
     var f = create(!!opts.mobile);
@@ -595,8 +606,7 @@
     return f;
   }
 
-  window.Promo = { frame: frame, create: create, STAGES: STAGES, FRAME_T: FRAME_T, END: END, FILL_END: FILL_END,
-                   U_END: U_END, tAt: tAt, uAt: uAt };
+  window.Promo = { frame: frame, create: create, STAGES: STAGES, FRAME_T: FRAME_T, END: END };
 
   function boot() { var h = document.querySelector('.pmr__vis'); if (h) mount(h); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
