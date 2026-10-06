@@ -260,34 +260,38 @@
           display: flex; align-items: center; justify-content: center; margin-left: auto; }
 .pm .pc .ic { width: 14px; height: 14px; stroke-width: 2.2; }
 
-/* --- mobile frame: 340 wide, the token plus one card per stage ---------- */
+/* --- mobile frame: 340x680, the same story laid out narrow ------------- */
 /* Below 768px the 600px frame would scale under the 11px type floor, so the
-   composition is re-authored narrow instead of shrunk. */
-.pm--m { width: 340px; height: 600px; border-radius: 26px; }
+   composition is re-authored narrow instead of shrunk. Same components, same
+   choreography; only positions and a few narrow variants differ. */
+.pm--m { width: 340px; height: 680px; border-radius: 26px; }
 .pm--m .pm__rail { left: 18px; top: 18px; width: 304px; }   /* the full width: four labels need ~76px each */
 .pm--m .pm__pp { right: 12px; top: 62px; width: 34px; height: 34px; }   /* on the caption line instead */
 .pm--m .pm__cap { left: 18px; top: 74px; }
-.pm--m .pm__stage { left: 12px; top: 104px; width: 316px; height: 484px; border-radius: 20px; }
-.pm--m .mtok { position: absolute; left: 12px; top: 12px; width: 292px; display: flex; align-items: center; gap: 10px;
-               background: #fff; border-radius: 14px; box-shadow: var(--sh); padding: 8px; }
-.pm--m .mtok .job__bar { align-self: stretch; }
-.pm--m .mtok .job__art { width: 34px; height: 52px; }
-.pm--m .mtok .job__nm { font-size: 14px; }
-.pm--m .mp { position: absolute; left: 12px; top: 92px; width: 292px; }
-.pm--m .mp > .c, .pm--m .mp > .done { position: relative; left: auto; top: auto; }
-.pm .srow { display: flex; align-items: center; gap: 10px; height: 56px; }
-.pm .srow + .srow { border-top: 1px solid var(--hair); }
-.pm .srow img { width: 40px; height: 40px; object-fit: contain; border-radius: 8px; background: var(--well); flex: none; }
-.pm .srow__b { flex: 1; min-width: 0; }
-.pm .mjob { display: flex; align-items: center; gap: 6px; height: 34px; padding: 4px 8px 4px 4px; border-radius: 9px;
-            background: #fff; box-shadow: 0 0 0 1px var(--hair); font-size: 12px; color: var(--grey); }
-.pm .mjob .job__bar { align-self: stretch; width: 3px; }
-.pm .mjob img { width: 16px; height: 24px; object-fit: cover; border-radius: 4px; }
+.pm--m .pm__stage { left: 12px; top: 104px; width: 316px; height: 564px; border-radius: 20px; }
+/* station header: picture over name, the model is fine print and goes */
+.pm .st--m { flex-direction: column; justify-content: center; gap: 4px; height: 66px; padding: 6px 4px; border-radius: 12px; }
+.pm .st--m img { width: 40px; height: 28px; }
+.pm .st--m .st__n { font-size: 12px; }
+.pm .st--m .st__ring { border-radius: 13px; }
+/* job card in an 84px lane: bar and text, no thumbnail */
+.pm .job--m { gap: 5px; padding: 6px 4px; border-radius: 10px; }
+.pm .job--m .job__id { white-space: nowrap; letter-spacing: -.01em; }
+.pm .job--m .job__bar { width: 3px; }
+.pm .job--m .job__b { padding: 0; }
+.pm .job--m .job__nm { font-size: 12px; line-height: 1.25; }
+/* the token, narrowed */
+.pm .job--tokm .job__art { width: 64px; }
+.pm .job--tokm .job__nm { font-size: 16px; }
+/* the tracker runs down the card */
 .pm .vtrk { position: relative; padding-left: 34px; }
 .pm .vtrk__bar { position: absolute; left: 9px; top: 10px; bottom: 30px; width: 6px; border-radius: 3px; background: var(--tint); overflow: hidden; }
 .pm .vtrk__fill { position: absolute; inset: 0; background: var(--indigo); transform-origin: 50% 0; }
 .pm .vrow { position: relative; display: flex; justify-content: space-between; align-items: flex-start; height: 40px; font-size: 13px; }
-.pm .vrow .trk__n { left: -22px; top: 10px; margin: -10px 0 0 -10px; }
+.pm .vrow .trk__n { left: -22px; top: 10px; }
+.pm .upd--2 { grid-template-columns: 1fr auto; }
+.pm .upd--2 > :nth-child(n) { text-align: left; }
+.pm .upd--2 > :nth-child(2n) { text-align: right; }
 .pm .vrow__d { font-size: 12px; color: var(--grey); text-align: right; }
 
 /* ======================================================================
