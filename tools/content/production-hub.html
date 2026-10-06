@@ -3,6 +3,7 @@
 <p>HP PrintOS is the software large print companies use to run their
 production. Over the years it had grown into separate apps, and each one kept
 its own piece of every order.</p>
+
 <p>I rebuilt it around the order. Now one job carries its whole story, from the
 first request to the final delivery, and every team works from the same
 place.</p>
@@ -20,10 +21,14 @@ place.</p>
   <dd>Live</dd>
 </dl>
 
+<div class="pmr">
+<aside class="pmr__vis" aria-label="One order, #39208, through four teams"></aside>
+<div class="pmr__prose">
 <h2>The order was the product all along</h2>
 <p>Print people have always thought in jobs. The industry even has a standard
 format for job tickets, so putting the order at the center wasn&rsquo;t a new
 idea.</p>
+
 <p>What made it hard was history. PrintOS had grown one app at a time, and each
 app kept its own version of the job, looked after by a different team. We could
 have given every app the same look. It would have felt tidier, but the gaps
@@ -32,109 +37,55 @@ between them would still be there.</p>
 structure every service can read and write, and connected the existing apps to
 it. Moving all the data would have taken years. A shared definition let the apps
 keep running while they stopped disagreeing.</p>
+<p>What used to be an app is now something the order carries: its artwork, its
+place in the schedule, the state it is in, the conversation around it.</p>
 
 <h2>Built for the extreme case</h2>
 
-<div class="pair">
-  <div>
-    <p>One shared record works well for a box of business cards. I wanted it to
-    hold up at the other end too. Imagine a global brand wrapping buildings in a
-    dozen cities on the same morning. That&rsquo;s one client and one campaign,
-    but a dozen orders and hundreds of panels, printed alongside other
-    clients&rsquo; work.</p>
-    <p>That&rsquo;s where my first model broke. Operators don&rsquo;t think in
-    orders. They think in runs: a batch of panels, often from several clients, on
-    one machine at one time.</p>
-  </div>
-  <figure class="shot">
-    <img src="/assets/production-hub-runs.png" width="1080" height="749"
-         alt="A production timeline marked 10:30 to 12:30, with two job cards from different clients scheduled back to back on the same machine." loading="lazy">
-    <figcaption>A run as the operator sees it: jobs from different clients on one
-    machine, in one stretch of time</figcaption>
-  </figure>
-</div>
+<p>One shared record works well for a box of business cards. I wanted it to hold
+up at the other end too. Imagine a global brand wrapping buildings in a dozen
+cities on the same morning. That&rsquo;s one client and one campaign, but a
+dozen orders and hundreds of panels, printed alongside other clients&rsquo;
+work.</p>
 
-<div class="pair">
-  <div>
-    <p>So the model has two sides. On one side are the client, the campaign, the
-    order, and its items. On the other are the runs. Each item knows which run it
-    belongs to, and each run knows which orders it touches. If a printer stops,
-    every affected order shows it straight away, and the account team knows
-    before the client has to ask.</p>
-  </div>
-  <figure class="shot">
-    <img src="/assets/production-hub-machines.png" width="1080" height="784"
-         alt="A printer list beside a scheduled job, a card being dragged to mark it done, and a push notification reading: order ready to be cut, waiting at Laminator 1." loading="lazy">
-    <figcaption>The run side of the model, on the floor: machines, what is on
-    them, and what the next station is waiting for</figcaption>
-  </figure>
-</div>
+<p>That&rsquo;s where my first model broke. Operators don&rsquo;t think in
+orders. They think in runs: a batch of panels, often from several clients, on
+one machine at one time.</p>
+<p>So the model has two sides. On one side are the client, the campaign, the
+order, and its items. On the other are the runs. Each item knows which run it
+belongs to, and each run knows which orders it touches. If a printer stops,
+every affected order shows it straight away, and the account team knows before
+the client has to ask.</p>
 
 <h2>Orders can start with gaps</h2>
+<p>Big orders rarely arrive complete. Files come late, and a visual changes two
+days before launch. That&rsquo;s normal, so the system had to allow for it.</p>
 
-<div class="pair">
-  <div>
-    <p>Big orders rarely arrive complete. Files come late, and a visual changes
-    two days before launch. That&rsquo;s normal, so the system had to allow for
-    it.</p>
-    <p>An order can exist unfinished, and each step simply says what it needs
-    before it can begin. Scheduling needs sizes and dates, printing needs
-    approved files, and shipping needs an address for every destination.</p>
-  </div>
-  <figure class="shot">
-    <img src="/assets/production-hub-files.png" width="1080" height="1009"
-         alt="An upload panel with one artwork file part-way through uploading, a drag-and-drop target, and a list of files already attached to the order." loading="lazy">
-    <figcaption>Artwork arriving against an order that already exists, rather
-    than an order that cannot start until the artwork does</figcaption>
-  </figure>
-</div>
-
-<div class="pair">
-  <div>
-    <p>From there, orders move through a few clear states: waiting for files, in
-    proof, scheduled, on press, partly shipped, delivered. Reprint branches off
-    that path. Each state belongs to one team. Once a proof is approved, the
-    specs are locked, and any late change becomes a new version that goes back
-    through proof. Nothing gets quietly edited after sign-off.</p>
-  </div>
-  <figure class="shot">
-    <img src="/assets/production-hub-states.png" width="1080" height="885"
-         alt="An order tracker showing ordered, printed and shipped as completed steps with an estimated delivery still ahead, above a dated log of each event and where it happened." loading="lazy">
-    <figcaption>The same path, read from the client&rsquo;s side: which state the
-    order is in, and when each one happened</figcaption>
-  </figure>
-</div>
+<p>An order can exist unfinished, and each step simply says what it needs before
+it can begin. Scheduling needs sizes and dates, printing needs approved files,
+and shipping needs an address for every destination.</p>
+<p>From there, orders move through a few clear states: waiting for files, in
+proof, scheduled, on press, partly shipped, delivered. Reprint branches off that
+path. Each state belongs to one team. Once a proof is approved, the specs are
+locked, and any late change becomes a new version that goes back through proof.
+Nothing gets quietly edited after sign-off.</p>
 
 <h2>Automation that knows the work</h2>
 
-<div class="pair">
-  <div>
-    <p>The automation that matters starts on the production floor. If a machine
-    goes down, its runs are flagged and every affected delivery date is checked
-    again. When a run finishes, the finishing team gets its task. When a client
-    rejects a proof, the order goes back to the account team with the
-    client&rsquo;s notes attached.</p>
-  </div>
-  <figure class="shot">
-    <img src="/assets/production-hub-rules.png" width="1080" height="783"
-         alt="An automation panel with a list of triggers including approval completed, attachment added, task assigned and due date set, beside the actions they can fire." loading="lazy">
-    <figcaption>Triggers drawn from things that actually happen to a job, and the
-    actions each one can set off</figcaption>
-  </figure>
-</div>
+<p>The automation that matters starts on the production floor. If a machine goes
+down, its runs are flagged and every affected delivery date is checked again.
+When a run finishes, the finishing team gets its task. When a client rejects a
+proof, the order goes back to the account team with the client&rsquo;s notes
+attached.</p>
+<p>None of this is configured off to one side. A rule sits on a stage of the
+order&rsquo;s own path, and says what should happen the moment a job arrives
+there: who picks it up, and what they are told. The states aren&rsquo;t only
+labels. They are where the automation lives.</p>
 
-<div class="pair">
-  <div>
-    <p>Every automatic step leaves a note on the order. When a task appears and
-    nobody knows why, people stop trusting the system, and that trust is hard to
-    win back.</p>
-  </div>
-  <figure class="shot">
-    <img src="/assets/production-hub-notes.png" width="1080" height="784"
-         alt="An order thread with twenty-three comments, one explaining why a state changed, beside a task actions menu offering assignment, reminders and due dates." loading="lazy">
-    <figcaption>The order&rsquo;s own thread, where every change says who made it
-    and why</figcaption>
-  </figure>
+<p>Every automatic step leaves a note on the order. When a task appears and
+nobody knows why, people stop trusting the system, and that trust is hard to win
+back.</p>
+</div>
 </div>
 
 <h2>What it cost</h2>

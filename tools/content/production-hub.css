@@ -1,0 +1,314 @@
+/* Production Hub -- the promo: one order, #39208, through four teams.
+ *
+ * Authored at 600x760 logical px; the live page scales the whole frame to its
+ * column with a transform, so every number here is a design pixel and the
+ * choreography stays exact at any width. At the 560px desktop column that is
+ * x0.933, which is why nothing is set below 12px: 12 x 0.933 = 11.2, the
+ * 11px floor. Fine print that would not fit at 12px was cut, not shrunk.
+ *
+ * Colours sampled from the indigo promo references, one job each:
+ *   indigo  actions, selection, progress fills, the "Drag to mark done" card
+ *   navy    text, time pill, toasts
+ *   mint    success, Queued/Accepted, selected station, and #39208's bar
+ *   coral   the High priority pill
+ *   orange  warnings (unused in the loop)
+ * A bar colour is an order's identity, never its status.
+ */
+
+.pm {
+  --indigo: #4759F5;  --navy: #212248;  --grey: #7A7A91;
+  --mint: #4EF5AB;    --mint-ink: #156341;
+  --coral: #FF948A;   --coral-ink: #600F07;
+  --orange: #FF8C08;
+  --tile: #EDF4FD;    --tint: #EDEEFE;   --chip-ink: #6B79F3;
+  --icon: #4F8DF5;    --hair: #ECECF3;   --well: #F5F5F7;
+  --o-39208: #4EF5AB; --o-98410: #40DEFA; --o-618716: #B9A6FF;
+  --sh:      0 28px 56px -14px rgba(72, 64, 168, .18), 0 10px 22px -10px rgba(72, 64, 168, .10);
+  --sh-lift: 0 44px 80px -16px rgba(72, 64, 168, .32), 0 18px 32px -12px rgba(72, 64, 168, .16);
+  --ease: cubic-bezier(.22, 1, .36, 1);
+
+  position: relative; width: 600px; height: 760px; flex: none;
+  background: #F4F3FC; border-radius: 32px;
+  font-family: "SF Pro Text", "SF Pro Display", -apple-system, system-ui, "Helvetica Neue", Helvetica, sans-serif;
+  font-weight: 400; color: var(--navy); line-height: 1.3;
+  -webkit-font-smoothing: antialiased; text-align: left;
+}
+.pm *, .pm *::before, .pm *::after { box-sizing: border-box; }
+.pm p { margin: 0; }
+.pm .ic { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.5;
+          stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.pm .num { font-variant-numeric: tabular-nums; }
+
+/* --- rail: the tracker bar, doubling as the playback timer -------------- */
+.pm__rail { position: absolute; left: 32px; top: 22px; width: 480px; height: 52px; }
+.pm__track { position: absolute; left: 0; right: 0; top: 9px; height: 6px; border-radius: 3px;
+             background: #fff; overflow: hidden; }
+.pm__fill  { position: absolute; inset: 0; background: var(--indigo); border-radius: 3px;
+             transform-origin: 0 50%; transform: scaleX(0); }
+.pm__node  { position: absolute; top: 0; appearance: none; border: 0; background: none; padding: 0;
+             font: inherit; color: var(--grey); font-size: 12px; cursor: pointer;
+             display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.pm__node::before { content: ""; width: 14px; height: 14px; margin: 5px 0 0 -7px; border-radius: 50%;
+             background: #fff; box-shadow: inset 0 0 0 2px var(--tint); transition: background .3s, box-shadow .3s; }
+.pm__node span { margin-left: -7px; }
+.pm__node[data-done]::before { background: var(--indigo); box-shadow: 0 0 0 3px #fff; }
+.pm__node[aria-current="step"] { color: var(--navy); font-weight: 500; }
+.pm__node[aria-current="step"]::before { background: var(--indigo); box-shadow: 0 0 0 3px #fff, 0 0 0 5px rgba(71, 89, 245, .25); }
+.pm__node:focus-visible, .pm__pp:focus-visible { outline: 2px solid var(--indigo); outline-offset: 4px; border-radius: 6px; }
+.pm__pp { position: absolute; right: 24px; top: 14px; width: 36px; height: 36px; border-radius: 50%;
+          appearance: none; border: 0; padding: 0; background: #fff; color: var(--navy); cursor: pointer;
+          display: flex; align-items: center; justify-content: center; box-shadow: var(--sh); }
+.pm__pp .ic { width: 16px; height: 16px; }
+.pm__cap { position: absolute; left: 32px; top: 80px; font-size: 14px; color: var(--navy); white-space: nowrap; }
+
+/* --- stage -------------------------------------------------------------- */
+.pm__stage { position: absolute; left: 16px; top: 112px; width: 568px; height: 632px;
+             background: #fff; border-radius: 24px; overflow: hidden; }
+.pm .at { position: absolute; }
+
+/* --- card + card header ------------------------------------------------- */
+.pm .c   { position: absolute; background: #fff; border-radius: 20px; box-shadow: var(--sh); padding: 18px 20px; }
+.pm .c.lift { box-shadow: var(--sh-lift); }
+.pm .ch  { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.pm .ch__tile { width: 36px; height: 36px; border-radius: 10px; background: var(--tile); color: var(--icon);
+                display: flex; align-items: center; justify-content: center; flex: none; }
+.pm .ch__t { font-size: 16px; flex: 1; white-space: nowrap; }
+.pm .ch__x { color: var(--grey); width: 16px; height: 16px; }
+
+/* --- field row ---------------------------------------------------------- */
+.pm .fr  { display: grid; grid-template-columns: 92px 1fr; align-items: center; font-size: 14px; min-height: 28px; }
+.pm .fr + .fr { margin-top: 6px; }
+.pm .fr > :first-child { color: var(--grey); }
+.pm .hr  { height: 1px; background: var(--hair); margin: 14px 0; }
+
+/* --- pills (status lives only here) ------------------------------------- */
+.pm .pill { display: inline-flex; align-items: center; height: 26px; padding: 0 12px; border-radius: 13px;
+            font-size: 13px; white-space: nowrap; }
+.pm .pill--mint  { background: var(--mint);  color: var(--mint-ink); }
+.pm .pill--coral { background: var(--coral); color: var(--coral-ink); }
+.pm .pill--sent  { background: var(--tint);  color: var(--indigo); }
+
+/* --- payment chips ------------------------------------------------------ */
+.pm .chips { display: flex; gap: 6px; }
+.pm .chip { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border-radius: 9px;
+            background: var(--tint); color: var(--chip-ink); font-size: 12px; white-space: nowrap; }
+.pm .chip .ic { width: 15px; height: 15px; }
+.pm .chip--on { background: var(--indigo); color: #fff; }
+
+/* --- file rows, progress, drop zone ------------------------------------- */
+.pm .fi { width: 40px; height: 40px; border-radius: 10px; background: var(--tint); color: var(--indigo);
+          display: flex; align-items: center; justify-content: center; flex: none; position: relative; }
+.pm .fi .ic { width: 22px; height: 22px; }
+.pm .fi b { position: absolute; bottom: 6px; font-size: 8px; font-weight: 500; letter-spacing: .02em; display: none; }
+.pm .frow { display: flex; align-items: center; gap: 12px; }
+.pm .frow__n { font-size: 13px; }
+.pm .frow__s { font-size: 12px; color: var(--grey); margin-top: 2px; }
+.pm .prog { height: 6px; border-radius: 3px; background: var(--tint); overflow: hidden; margin-top: 12px; }
+.pm .prog > i { display: block; height: 100%; background: var(--indigo); border-radius: 3px; transform-origin: 0 50%; }
+.pm .drop { border: 1.5px dashed #B7BEF8; background: var(--tint); border-radius: 14px; height: 132px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+            font-size: 13px; color: var(--navy); }
+.pm .drop__i { width: 44px; height: 44px; border-radius: 11px; background: var(--indigo); color: #fff;
+               display: flex; align-items: center; justify-content: center; }
+.pm .drop__i .ic { width: 22px; height: 22px; }
+.pm .drop a { color: var(--indigo); text-decoration: underline; }
+.pm .fpill { height: 30px; padding: 0 14px; border-radius: 15px; background: var(--indigo); color: #fff;
+             font-size: 13px; display: inline-flex; align-items: center; white-space: nowrap; }
+
+/* --- artwork ------------------------------------------------------------ */
+.pm .art { display: block; object-fit: cover; border-radius: 8px; background: var(--well); }
+
+/* --- quote line rows ---------------------------------------------------- */
+.pm .ql  { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; height: 24px; align-items: center; }
+.pm .ql span:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pm .ql span:last-child  { color: var(--grey); white-space: nowrap; }
+.pm .ql em { font-style: normal; color: var(--grey); }
+.pm .qt  { display: flex; justify-content: space-between; align-items: baseline; font-size: 16px;
+           font-weight: 500; border-top: 1px solid var(--hair); margin-top: 8px; padding-top: 12px; }
+.pm .qby { font-size: 12px; color: var(--grey); margin: -6px 0 12px 48px; }
+
+/* --- job card (the order token and its split parts) --------------------- */
+.pm .job { position: absolute; display: flex; gap: 10px; background: #fff; border-radius: 12px;
+           box-shadow: var(--sh); padding: 6px; }
+.pm .job__bar { width: 4px; border-radius: 2px; flex: none; }
+.pm .job__art { width: 30px; object-fit: cover; border-radius: 6px; flex: none; }
+.pm .job__b   { min-width: 0; padding: 2px 0; }
+.pm .job__id  { font-size: 12px; color: var(--grey); }
+.pm .job__nm  { font-size: 13px; margin-top: 2px; }
+.pm .job--tok .job__nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* the full-size token */
+.pm .job--tok { gap: 16px; padding: 12px; border-radius: 18px; }
+.pm .job--tok .job__bar { width: 6px; border-radius: 3px; }
+.pm .job--tok .job__art { width: 92px; border-radius: 8px; }
+.pm .job--tok .job__b   { padding: 4px 26px 0 0; }
+.pm .job--tok .job__id  { font-size: 13px; }
+.pm .job--tok .job__nm  { font-size: 18px; margin-top: 4px; }
+.pm .job__sp  { font-size: 13px; color: var(--grey); margin-top: 8px; }
+.pm .job__dots{ position: absolute; right: 10px; top: 14px; color: var(--grey); }
+.pm .faces { display: flex; margin-top: 14px; }
+.pm .faces img { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; margin-right: -9px; }
+
+/* --- station header card ------------------------------------------------ */
+.pm .st { position: absolute; display: flex; align-items: center; gap: 8px; height: 60px; padding: 8px;
+          background: #fff; border-radius: 14px; box-shadow: 0 0 0 1px var(--hair); }
+.pm .st img { width: 44px; height: 44px; object-fit: contain; border-radius: 8px; background: var(--well); flex: none; }
+.pm .st__n { font-size: 13px; white-space: nowrap; }
+.pm .st__m { font-size: 12px; color: var(--grey); white-space: nowrap; margin-top: 1px; }
+.pm .st__ring { position: absolute; inset: -1px; border-radius: 15px; box-shadow: 0 0 0 2.5px var(--mint); }
+
+/* --- time axis ---------------------------------------------------------- */
+.pm .tick { position: absolute; font-size: 12px; color: var(--grey); transform: translateY(-50%); }
+.pm .grid { position: absolute; height: 1px; background: var(--hair); }
+.pm .lane { position: absolute; width: 1px; background: var(--hair); }
+.pm .now  { position: absolute; height: 1.5px; background: var(--navy); }
+.pm .now::after { content: ""; position: absolute; left: -3px; top: -2.25px; width: 6px; height: 6px;
+                  border-radius: 50%; background: var(--navy); }
+.pm .tpill { position: absolute; height: 26px; padding: 0 8px; border-radius: 7px; background: var(--navy);
+             color: #fff; font-size: 12px; display: flex; align-items: center; transform: translateY(-50%); }
+
+/* --- dark toast --------------------------------------------------------- */
+.pm .toast { position: absolute; display: flex; align-items: center; gap: 14px; background: var(--navy);
+             color: #fff; border-radius: 14px; padding: 14px 18px 14px 14px; box-shadow: var(--sh-lift); }
+.pm .toast__i { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center;
+                justify-content: center; flex: none; }
+.pm .toast__i .ic { width: 18px; height: 18px; stroke-width: 2; }
+.pm .toast__i--ok  { background: var(--mint); color: var(--navy); }
+.pm .toast__i--req { background: var(--indigo); color: #fff; }
+.pm .toast__t { font-size: 14px; }
+.pm .toast__s { font-size: 12px; color: #C3C5DD; margin-top: 3px; }
+.pm .toast .ch__x { color: #9EA1C2; margin-left: auto; }
+
+/* --- "Drag to mark done" card ------------------------------------------- */
+.pm .done { position: absolute; background: var(--indigo); color: #fff; border-radius: 22px; padding: 20px;
+            box-shadow: var(--sh-lift); }
+.pm .done__id { font-size: 13px; opacity: .85; }
+.pm .done__nm { font-size: 19px; margin-top: 8px; max-width: calc(100% - 60px); }
+.pm .done__sp { font-size: 13px; opacity: .85; margin-top: 4px; }
+.pm .done__art { position: absolute; right: 20px; top: 20px; width: 44px; height: 64px; }
+.pm .due  { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; margin-top: 14px;
+            border-radius: 8px; background: rgba(255, 255, 255, .16); font-size: 12px; overflow: hidden; }
+.pm .due .ic { width: 15px; height: 15px; }
+.pm .slide { position: relative; height: 56px; margin-top: 18px; border-radius: 28px; background: #fff;
+             color: var(--navy); display: flex; align-items: center; padding-left: 62px; font-size: 14px; }
+.pm .slide__chev { margin-left: auto; margin-right: 16px; display: flex; color: var(--indigo); }
+.pm .slide__chev .ic { width: 14px; height: 14px; margin-left: -4px; stroke-width: 1.8; }
+.pm .knob { position: absolute; left: 6px; top: 6px; width: 44px; height: 44px; border-radius: 50%;
+            background: var(--indigo); color: #fff; display: flex; align-items: center; justify-content: center; }
+.pm .knob .ic { width: 20px; height: 20px; stroke-width: 2; }
+.pm .knob--ok { background: var(--mint); color: var(--navy); }
+
+/* --- Task actions menu -------------------------------------------------- */
+.pm .menu .ch { margin-bottom: 6px; }
+.pm .mi { display: flex; align-items: center; gap: 12px; height: 46px; padding: 0 8px; margin: 0 -8px;
+          border-radius: 12px; font-size: 14px; white-space: nowrap; }
+.pm .mi__i { width: 32px; height: 32px; border-radius: 9px; background: var(--tile); color: var(--icon);
+             display: flex; align-items: center; justify-content: center; flex: none; }
+.pm .mi { position: relative; }
+.pm .mi > * { position: relative; }
+.pm .mi__hl { position: absolute !important; inset: 0; border-radius: 12px; background: var(--tint); }
+
+/* --- phone frame + thread ----------------------------------------------- */
+.pm .phone { position: absolute; background: #fff; border: 8px solid var(--navy); border-radius: 40px;
+             overflow: hidden; box-shadow: var(--sh); }
+.pm .ph__h  { position: relative; text-align: center; padding: 22px 0 16px; border-bottom: 1px solid var(--hair); }
+.pm .ph__h .ic { position: absolute; left: 18px; top: 30px; color: var(--indigo); width: 20px; height: 20px; }
+.pm .ph__id { font-size: 18px; font-weight: 500; }
+.pm .ph__c  { font-size: 13px; color: var(--grey); margin-top: 2px; }
+.pm .ph__day{ font-size: 13px; color: var(--grey); padding: 16px 18px 8px; }
+.pm .msg    { display: flex; gap: 10px; padding: 12px 18px; }
+.pm .msg img{ width: 34px; height: 34px; border-radius: 50%; flex: none; }
+.pm .msg__n { font-size: 14px; }
+.pm .msg__t { font-size: 12px; color: var(--grey); margin-top: 1px; }
+.pm .msg__b { font-size: 13px; margin-top: 8px; line-height: 1.4; }
+.pm .msg--new { background: var(--tile); margin: 0 10px; padding: 12px 8px; border-radius: 14px; }
+
+/* --- tracking card ------------------------------------------------------ */
+.pm .trk { position: relative; height: 10px; border-radius: 5px; background: var(--tint); margin: 6px 6px 0; }
+.pm .trk__fill { position: absolute; left: 0; top: 0; bottom: 0; width: 100%; border-radius: 5px;
+                 background: var(--indigo); transform-origin: 0 50%; }
+.pm .trk__n { position: absolute; top: 50%; width: 20px; height: 20px; margin: -10px 0 0 -10px; border-radius: 50%;
+              background: #fff; box-shadow: inset 0 0 0 2px var(--indigo); color: #fff;
+              display: flex; align-items: center; justify-content: center; }
+.pm .trk__n .ic { width: 13px; height: 13px; stroke-width: 2.2; }
+.pm .trk__n--on { background: var(--indigo); box-shadow: 0 0 0 2px #fff; }
+.pm .trk__labels { position: relative; height: 62px; margin-top: 16px; }
+.pm .trk__l { position: absolute; top: 0; font-size: 13px; }
+.pm .trk__l p + p { font-size: 12px; color: var(--grey); margin-top: 3px; }
+.pm .upd__h { font-size: 15px; margin: 18px 0 12px; }
+.pm .upd { display: grid; grid-template-columns: 1.3fr 1fr 1fr; font-size: 13px; }
+.pm .upd > .h { font-size: 12px; color: var(--grey); padding-bottom: 8px; border-bottom: 1px solid var(--hair); }
+.pm .upd > .r { padding-top: 12px; color: var(--grey); }
+.pm .upd > :nth-child(3n) { text-align: right; }
+.pm .upd .ev  { color: var(--navy); }
+
+/* --- engine helpers ----------------------------------------------------- */
+/* Every animated element is moved with transform and opacity only. A lifted
+   card's deeper shadow is this child, faded in -- box-shadow never tweens. */
+.pm .pm-lift { position: absolute; inset: 0; border-radius: inherit; box-shadow: var(--sh-lift);
+               opacity: 0; pointer-events: none; z-index: -1; }
+.pm .stack { display: inline-grid; }
+.pm .stack > * { grid-area: 1 / 1; }
+.pm .ch .stack { justify-items: end; }
+.pm .due .stack { justify-items: start; }
+.pm .knob .stack, .pm .knob { place-items: center; }
+.pm .knob > .knob--ok { position: absolute; inset: 0; border-radius: 50%; display: flex;
+                        align-items: center; justify-content: center; }
+.pm .pm__cap { will-change: opacity; }
+.pm-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden;
+         clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.pm .pc { color: var(--mint-ink); background: var(--mint); width: 22px; height: 22px; border-radius: 50%;
+          display: flex; align-items: center; justify-content: center; margin-left: auto; }
+.pm .pc .ic { width: 14px; height: 14px; stroke-width: 2.2; }
+
+/* --- mobile frame: 340 wide, the token plus one card per stage ---------- */
+/* Below 768px the 600px frame would scale under the 11px type floor, so the
+   composition is re-authored narrow instead of shrunk. */
+.pm--m { width: 340px; height: 600px; border-radius: 26px; }
+.pm--m .pm__rail { left: 18px; top: 18px; width: 304px; }   /* the full width: four labels need ~76px each */
+.pm--m .pm__pp { right: 12px; top: 62px; width: 34px; height: 34px; }   /* on the caption line instead */
+.pm--m .pm__cap { left: 18px; top: 74px; }
+.pm--m .pm__stage { left: 12px; top: 104px; width: 316px; height: 484px; border-radius: 20px; }
+.pm--m .mtok { position: absolute; left: 12px; top: 12px; width: 292px; display: flex; align-items: center; gap: 10px;
+               background: #fff; border-radius: 14px; box-shadow: var(--sh); padding: 8px; }
+.pm--m .mtok .job__bar { align-self: stretch; }
+.pm--m .mtok .job__art { width: 34px; height: 52px; }
+.pm--m .mtok .job__nm { font-size: 14px; }
+.pm--m .mp { position: absolute; left: 12px; top: 92px; width: 292px; }
+.pm--m .mp > .c, .pm--m .mp > .done { position: relative; left: auto; top: auto; }
+.pm .srow { display: flex; align-items: center; gap: 10px; height: 56px; }
+.pm .srow + .srow { border-top: 1px solid var(--hair); }
+.pm .srow img { width: 40px; height: 40px; object-fit: contain; border-radius: 8px; background: var(--well); flex: none; }
+.pm .srow__b { flex: 1; min-width: 0; }
+.pm .mjob { display: flex; align-items: center; gap: 6px; height: 34px; padding: 4px 8px 4px 4px; border-radius: 9px;
+            background: #fff; box-shadow: 0 0 0 1px var(--hair); font-size: 12px; color: var(--grey); }
+.pm .mjob .job__bar { align-self: stretch; width: 3px; }
+.pm .mjob img { width: 16px; height: 24px; object-fit: cover; border-radius: 4px; }
+.pm .vtrk { position: relative; padding-left: 34px; }
+.pm .vtrk__bar { position: absolute; left: 9px; top: 10px; bottom: 30px; width: 6px; border-radius: 3px; background: var(--tint); overflow: hidden; }
+.pm .vtrk__fill { position: absolute; inset: 0; background: var(--indigo); transform-origin: 50% 0; }
+.pm .vrow { position: relative; display: flex; justify-content: space-between; align-items: flex-start; height: 40px; font-size: 13px; }
+.pm .vrow .trk__n { left: -22px; top: 10px; margin: -10px 0 0 -10px; }
+.pm .vrow__d { font-size: 12px; color: var(--grey); text-align: right; }
+
+/* ======================================================================
+   Page layout: the prose range with the sticky promo beside it.
+   ====================================================================== */
+.pmr__vis { margin: 0 0 3.5rem; width: min(640px, 100%); }
+.pmr__vis .pm { transform-origin: 0 0; }
+.pmr__prose > h2:first-child { margin-top: 0; }
+
+@media (min-width: 900px) {
+  .pmr__prose > h2, .pmr__prose > p { max-width: var(--col); }
+}
+@media (min-width: 1200px) {
+  .pmr {
+    display: grid; grid-template-columns: minmax(0, 600px) 560px;
+    justify-content: space-between; column-gap: var(--col-gap); align-items: start;
+  }
+  .pmr__prose { grid-column: 1; grid-row: 1; }
+  .pmr__prose > h2, .pmr__prose > p { max-width: none; }
+  .pmr__vis {
+    grid-column: 2; grid-row: 1; margin: 0; width: 560px;
+    position: sticky; top: max(24px, calc(50vh - 355px));   /* 760 x 560/600 = 709 tall */
+  }
+}

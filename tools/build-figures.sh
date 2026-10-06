@@ -16,6 +16,9 @@
 # webfont and /tools paths resolve:
 #     python3 -m http.server 8000 --bind 127.0.0.1
 #
+# The trim step is pinned to /usr/bin/python3: that is the interpreter with
+# Pillow on it. Homebrew's python3 has none, so a bare python3 here fails.
+#
 # Run from the repo root.  ./tools/build-figures.sh [name ...]
 set -e
 
@@ -42,7 +45,7 @@ for name in "$@"; do
     --screenshot="assets/$name.png" \
     "$BASE/tools/figures/$name.html" 2>/dev/null
 
-  python3 - "assets/$name.png" "$SCALE" <<'PY'
+  /usr/bin/python3 - "assets/$name.png" "$SCALE" <<'PY'
 import sys
 from PIL import Image
 
