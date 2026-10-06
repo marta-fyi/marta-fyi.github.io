@@ -313,6 +313,9 @@ footer .copy:focus-visible {
 }
 
 .study .body {
+  /* flow-root so the floated figures below are contained and cannot
+     overlap the pager. */
+  display: flow-root;
   margin-top: 3.5rem;
   font-size: 1rem;
   line-height: 1.5;
@@ -373,8 +376,20 @@ footer .copy:focus-visible {
 .pair > figure { grid-column: 2; }
 .pair > .shot { margin-top: 0; }
 
-/* A figure placed straight in the body spans both columns. */
-.study .body > figure.shot { max-width: none; }
+/* Figures drop into the open right-hand column while the prose keeps flowing
+   past them -- the text is already capped at var(--col) above, so no line ever
+   has to wrap around one. clear stacks each figure under the last; without it
+   two half-width floats sit side by side and the second lands on the prose. */
+.study .body > figure.shot {
+  float: right;
+  clear: right;
+  /* Narrower than the prose column on purpose. A float cannot rise above the
+     text it follows, so once the stack of figures is taller than the prose
+     beside it they queue up, stop tracking what they illustrate, and the last
+     one hangs below the final paragraph. 0.90 is what makes the current six fit. */
+  width: calc(var(--col) * 0.90);
+  margin: 0 0 2rem;
+}
 
 .step-no {
   margin: 0 0 0.5rem;
@@ -479,6 +494,11 @@ footer .copy:focus-visible {
   .study .body > p,
   .study .body > dl,
   .study .body > ol { max-width: none; }
+  .study .body > figure.shot {
+    float: none;
+    width: auto;
+    margin: 1.5rem 0 2.5rem;
+  }
 }
 
 @media (max-width: 700px) {
