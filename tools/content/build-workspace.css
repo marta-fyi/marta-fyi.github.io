@@ -38,6 +38,10 @@
 .pm--bw .ic { width: calc(18 * var(--u)); height: calc(18 * var(--u)); fill: none; stroke: currentColor; stroke-width: 1.6;
               stroke-linecap: round; stroke-linejoin: round; flex: none; }
 .pm--bw .pm__anim { pointer-events: none; }   /* the story is decoration; the rail stays clickable */
+/* The case-study body styles every <p> (.study .body p: a bottom margin, and
+   text-wrap: pretty, which also undoes nowrap). The promo's own text is in
+   divs so that rule never reaches it; the engine's caption is a <p>. */
+.study .body .pm--bw .pm__cap { margin: 0; text-wrap: inherit; }
 
 /* --- rail: the deck's numbered phase badges ----------------------------- */
 .pm--bw .bw-rail { position: absolute; left: calc(24 * var(--u)); top: calc(18 * var(--u)); width: calc(500 * var(--u)); height: calc(32 * var(--u));
@@ -177,8 +181,8 @@
 .pm--bw .bw-scan__arrow svg { display: block; width: 100%; height: 100%; overflow: visible; }
 .pm--bw .bw-scan__arrow path { fill: none; stroke: var(--markup); stroke-width: 10; stroke-linecap: round; stroke-linejoin: round; }
 .pm--bw .bw-thumb__t { font-size: calc(13 * var(--u)); font-weight: 500; margin: calc(8 * var(--u)) calc(2 * var(--u)) 0; }
-.pm--bw .bw-thumb__s { font-size: calc(12 * var(--u)); color: var(--grey); margin: calc(2 * var(--u)) calc(2 * var(--u)) 0; display: flex; align-items: center; }
-.pm--bw .bw-dot { width: calc(8 * var(--u)); height: calc(8 * var(--u)); border-radius: 50%; background: var(--markup); margin-right: calc(5 * var(--u)); }
+.pm--bw .bw-thumb__s { font-size: calc(12 * var(--u)); color: var(--grey); margin: calc(2 * var(--u)) calc(2 * var(--u)) 0; }   /* block, not flex: flex would eat the spaces around the dot */
+.pm--bw .bw-dot { display: inline-block; vertical-align: calc(1 * var(--u)); width: calc(8 * var(--u)); height: calc(8 * var(--u)); border-radius: 50%; background: var(--markup); margin-right: calc(5 * var(--u)); }
 
 /* --- the printed sheet --------------------------------------------------- */
 .pm--bw .bw-paper { position: absolute; background: var(--paper); border-radius: calc(3 * var(--u)); padding: calc(14 * var(--u));
@@ -232,12 +236,12 @@
                      display: inline-flex; align-items: center; gap: calc(10 * var(--u)); white-space: nowrap; }
 .pm--bw .bw-banner__i { display: grid; place-items: center; }
 .pm--bw .bw-banner__i .ic { width: calc(20 * var(--u)); height: calc(20 * var(--u)); stroke-width: 2; }
-.pm--bw .bw-banner p { font-size: calc(13.5 * var(--u)); }
+.pm--bw .bw-banner__t { font-size: calc(13.5 * var(--u)); }
 .pm--bw .bw-banner__b { display: inline-flex; align-items: center; height: calc(32 * var(--u)); margin-left: calc(4 * var(--u)); padding: 0 calc(12 * var(--u));
                         border-radius: calc(8 * var(--u)); background: #fff; color: var(--banner); font-size: calc(12.5 * var(--u)); font-weight: 500; }
 /* narrow: the action drops under the message */
 .pm--bw.pm--m .bw-banner { height: auto; width: calc(296 * var(--u)); flex-wrap: wrap; white-space: normal; padding: calc(10 * var(--u)) calc(12 * var(--u)); row-gap: calc(8 * var(--u)); }
-.pm--bw.pm--m .bw-banner p { flex: 1 0 calc(220 * var(--u)); }   /* fills the first line, so the button wraps */
+.pm--bw.pm--m .bw-banner__t { flex: 1 0 calc(220 * var(--u)); }   /* fills the first line, so the button wraps */
 .pm--bw.pm--m .bw-banner__b { margin-left: calc(30 * var(--u)); }
 
 /* --- mobile frame: the same story, laid out narrow ---------------------- */

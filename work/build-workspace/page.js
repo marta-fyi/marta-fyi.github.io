@@ -97,8 +97,8 @@
     m: { W: 340, H: 740, card: [12, 100, 316, 300], pw: 434.3,
          cams: { full: { x: -84.5, y: 0, s: 1 }, west: { x: -131.2, y: -32.8, s: 1.4 } },
          rail: [8, 56, 40], bar: { left: 54, top: 10 },
-         vc: [12, 412, 316], task: { w: 230, at: [24, 420] }, thumb: [70, 560, 200], slot: [12, 16],
-         paper: [26, 300, 288], phone: [176, 392, 152], m: true }
+         vc: [12, 412, 316], task: { w: 230, at: [24, 420] }, thumb: [70, 560, 200], slot: [12, 104],   /* the slot meets the printout's lower edge */
+         paper: [12, 290, 316], phone: [176, 392, 152], m: true }
   };
   function cam(g, name) { return g.cams[name]; }
   /* where a plan point sits in frame coords under a camera */
@@ -159,12 +159,12 @@
     function row(i, extra) {
       return '<div class="bw-vrow' + (extra ? ' bw-vrow--open' : '') + '" data-a="vr' + i + '">' +
         '<span class="bw-node">' + (i === 0 ? '<i data-a="vnode"></i>' : '') + '</span>' +
-        '<p class="bw-vrow__v num">' + VER[i].v + '</p><p class="bw-vrow__d num">' + VER[i].d + '</p>' + (extra || '') + '</div>';
+        '<div class="bw-vrow__v num">' + VER[i].v + '</div><div class="bw-vrow__d num">' + VER[i].d + '</div>' + (extra || '') + '</div>';
     }
-    var open = '<p class="bw-k">Changes</p><p class="bw-vrow__t">West wall · Main door</p>' +
-      '<p class="bw-k">Note</p><p class="bw-vrow__t">Updated room 4.5 to fit plumbing around the ducts.</p>';
+    var open = '<div class="bw-k">Changes</div><div class="bw-vrow__t">West wall · Main door</div>' +
+      '<div class="bw-k">Note</div><div class="bw-vrow__t">Updated room 4.5 to fit plumbing around the ducts.</div>';
     return '<div class="c bw-panel" data-a="vc" style="' + at(v[0], v[1], v[2]) + '">' + LIFT +
-      '<div class="ch"><p class="ch__t">Version control</p>' + ic('close', 'ch__x') + '</div>' +
+      '<div class="ch"><div class="ch__t">Version control</div>' + ic('close', 'ch__x') + '</div>' +
       '<div class="bw-hist"><span class="bw-hist__line"></span>' + row(0, open) + row(1) + row(2) + '</div></div>';
   }
 
@@ -172,13 +172,13 @@
     var v = g.vc;
     var tiles = [['add', 1, 'Added', 'ca'], ['rem', 0, 'Removed', 'cr'], ['mod', 3, 'Modified', 'cm']];
     return '<div class="c bw-panel" data-a="cv" style="' + at(v[0], v[1], v[2]) + '">' + LIFT +
-      '<div class="ch"><p class="ch__t">Changes visualizer</p>' + ic('close', 'ch__x') + '</div>' +
-      '<p class="bw-sub num">v2.45.3 vs v2.43.4</p>' +
+      '<div class="ch"><div class="ch__t">Changes visualizer</div>' + ic('close', 'ch__x') + '</div>' +
+      '<div class="bw-sub num">v2.45.3 vs v2.43.4</div>' +
       '<div class="bw-tiles">' + tiles.map(function (t) {
-        return '<div class="bw-tile bw-tile--' + t[0] + '"><p class="bw-tile__n num" data-a="' + t[3] + '">0</p><p class="bw-tile__l">' + t[2] + '</p></div>';
+        return '<div class="bw-tile bw-tile--' + t[0] + '"><div class="bw-tile__n num" data-a="' + t[3] + '">0</div><div class="bw-tile__l">' + t[2] + '</div></div>';
       }).join('') + '</div>' +
-      '<p class="bw-k">Disciplines</p><div class="bw-chips"><span>Installation</span><span>Plumbing</span><span>Lighting</span></div>' +
-      (g.m ? '' : '<div class="bw-list"><p class="bw-li bw-li--add">Front Door</p><p class="bw-li bw-li--mod">Basic Wall <span class="num">×3</span></p></div>') +
+      '<div class="bw-k">Disciplines</div><div class="bw-chips"><span>Installation</span><span>Plumbing</span><span>Lighting</span></div>' +
+      (g.m ? '' : '<div class="bw-list"><div class="bw-li bw-li--add">Front Door</div><div class="bw-li bw-li--mod">Basic Wall <span class="num">×3</span></div></div>') +
       '</div>';
   }
 
@@ -195,10 +195,10 @@
 
   function taskCard(g) {
     return '<div class="c bw-task" data-a="taskc" style="width:' + U(g.task.w) + '">' + LIFT +
-      '<p class="bw-task__k">' + ic('tasks') + 'Task</p>' +
-      '<p class="bw-task__t">Move the west wall</p>' +
-      '<p><span class="bw-prio">High priority</span></p>' +
-      '<p class="bw-who"><span class="bw-av">JW</span>John Williams</p></div>';
+      '<div class="bw-task__k">' + ic('tasks') + 'Task</div>' +
+      '<div class="bw-task__t">Move the west wall</div>' +
+      '<div><span class="bw-prio">High priority</span></div>' +
+      '<div class="bw-who"><span class="bw-av">JW</span>John Williams</div></div>';
   }
 
   function markupThumb(g) {
@@ -206,9 +206,9 @@
     return '<div class="c bw-thumb" data-a="thumb" style="' + at(t[0], t[1], t[2]) + '">' + LIFT +
       '<div class="bw-scan" data-a="scan"><img src="' + A + 'plan.webp" alt="">' +
       '<span class="bw-scan__arrow" data-a="scanarrow">' + ARROW + '</span></div>' +
-      '<p class="bw-thumb__t">Paper markup</p>' +
-      '<p class="bw-thumb__s"><span class="num">11 Dec 2024</span> · John Williams</p>' +
-      '<p class="bw-thumb__s"><i class="bw-dot"></i>Red</p></div>';
+      '<div class="bw-thumb__t">Paper markup</div>' +
+      '<div class="bw-thumb__s"><span class="num">11 Dec 2024</span> · John Williams</div>' +
+      '<div class="bw-thumb__s"><i class="bw-dot"></i>Red</div></div>';
   }
 
   /* a QR-like tile that cannot be scanned: finder squares, no timing or
@@ -232,7 +232,7 @@
     return '<div class="bw-paper" data-a="paper" style="' + at(p[0], p[1], p[2]) + '">' +
       '<img src="' + A + 'plan.webp" alt="">' +
       '<span class="bw-qr" data-a="qr">' + qr() + '<i class="bw-scanner" data-a="brackets"><b></b><b></b><b></b><b></b></i></span>' +
-      '<p class="bw-paper__t num">T1 C3.1 – Level 1 · v2.43.4</p>' +
+      '<div class="bw-paper__t num">T1 C3.1 – Level 1 · v2.43.4</div>' +
       '<span class="bw-wm" data-a="wm"><span class="bw-wm__t">Old version</span><span class="bw-wm__v num">v2.43.4</span></span></div>';
   }
 
@@ -249,7 +249,7 @@
     return '<div class="bw-toast" data-a="toast"><span class="bw-toast__i">' + ic('check') + '</span>Markup updated</div>';
   }
   function banner() {
-    return '<div class="bw-banner" data-a="banner"><span class="bw-banner__i">' + ic('alert') + '</span><p>This is not the latest version</p>' +
+    return '<div class="bw-banner" data-a="banner"><span class="bw-banner__i">' + ic('alert') + '</span><div class="bw-banner__t">This is not the latest version</div>' +
       '<span class="bw-banner__b">Go to the latest one</span></div>';
   }
 
