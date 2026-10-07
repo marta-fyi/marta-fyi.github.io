@@ -64,6 +64,9 @@ def extras(item):
                                     case-study content, shared by all of them
       tools/content/<slug>.css      whatever only this one page needs
 
+    Pages with "promo": true also get the shared promo engine
+    (tools/shared/promo.{css,js}), ahead of their own files.
+
     The employer sheet is what keeps two Miro case studies looking like each
     other, and keeps Miro's visuals from leaking into HP's. Authored under
     tools/, copied into the served tree so work/ stays the only thing shipped.
@@ -75,6 +78,16 @@ def extras(item):
     if house.exists():
         write(ROOT / "work" / "_shared" / house.name, house.read_text())
         tags.append('<link rel="stylesheet" href="/work/_shared/%s">' % house.name)
+
+    # The promo engine, shared by every page with a promo ("promo": true in
+    # work.json). It loads before the page's own files: they build on it.
+    if item.get("promo"):
+        for name, tag in (
+            ("promo.css", '<link rel="stylesheet" href="/work/_shared/promo.css">'),
+            ("promo.js", '<script src="/work/_shared/promo.js" defer></script>'),
+        ):
+            write(ROOT / "work" / "_shared" / name, (ROOT / "tools" / "shared" / name).read_text())
+            tags.append(tag)
 
     for suffix, tag in (
         ("css", '<link rel="stylesheet" href="/work/%s/page.css">'),

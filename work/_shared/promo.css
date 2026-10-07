@@ -1,0 +1,46 @@
+/* The promo engine's shared rules -- see tools/shared/promo.js.
+ *
+ * Only what every promo needs regardless of its theme: box model, the lift
+ * and stack helpers, tabular numerals, the screen-reader description, and
+ * the page layout that puts a promo in a sticky column beside the prose.
+ * Colours, type, the rail's look and the frame's geometry belong to each
+ * promo's own stylesheet, which loads after this one.
+ */
+
+.pm *, .pm *::before, .pm *::after { box-sizing: border-box; }
+.pm p { margin: 0; }
+.pm .num { font-variant-numeric: tabular-nums; }
+.pm .at { position: absolute; }
+
+/* Every animated element is moved with transform and opacity only. A lifted
+   card's deeper shadow is this child, faded in -- box-shadow never tweens. */
+.pm .pm-lift { position: absolute; inset: 0; border-radius: inherit; box-shadow: var(--sh-lift);
+               opacity: 0; pointer-events: none; z-index: -1; }
+.pm .stack { display: inline-grid; }
+.pm .stack > * { grid-area: 1 / 1; }
+.pm-sr { position: absolute; width: calc(1 * var(--u)); height: calc(1 * var(--u)); margin: calc(-1 * var(--u)); padding: 0; overflow: hidden;
+         clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+/* ======================================================================
+   Page layout: the prose range with the sticky promo beside it.
+   --pmr-half is half the promo's rendered height in the 560px column, so
+   the sticky promo sits centred in the viewport.
+   ====================================================================== */
+.pmr__vis { margin: 0 0 3.5rem; width: min(640px, 100%); container-type: inline-size; }
+.pmr__prose > h2:first-child { margin-top: 0; }
+
+@media (min-width: 900px) {
+  .pmr__prose > h2, .pmr__prose > p { max-width: var(--col); }
+}
+@media (min-width: 1200px) {
+  .pmr {
+    display: grid; grid-template-columns: minmax(0, 600px) 560px;
+    justify-content: space-between; column-gap: var(--col-gap); align-items: start;
+  }
+  .pmr__prose { grid-column: 1; grid-row: 1; }
+  .pmr__prose > h2, .pmr__prose > p { max-width: none; }
+  .pmr__vis {
+    grid-column: 2; grid-row: 1; margin: 0; width: 560px;
+    position: sticky; top: max(24px, calc(50vh - var(--pmr-half, 355px)));
+  }
+}

@@ -21,7 +21,8 @@
     "company": "HP",
     "role": "Design Lab Lead",
     "year": "2023–24",
-    "live": "https://build.hp.com/landing"
+    "live": "https://build.hp.com/landing",
+    "promo": true
   },
   {
     "slug": "production-hub",
@@ -29,7 +30,8 @@
     "company": "HP",
     "role": "Product Design Lead",
     "year": "2023–24",
-    "live": "https://www.hp.com/us-en/printers/large-format/printos.html"
+    "live": "https://www.hp.com/us-en/printers/large-format/printos.html",
+    "promo": true
   },
   {
     "slug": "elisava-master",

@@ -24,7 +24,8 @@
  *   mobile   340x780 design px, the same story laid out narrow (< 768px)
  *
  * Geometry is kept in design px; the engine converts to CSS px at draw time.
- * window.__promo (localhost only) exposes seek() and the track dump for QA.
+ * Time, tracks, the rail, playback and the QA hook (window.__promo) live in
+ * the shared engine, tools/shared/promo.js; this file is content only.
  */
 (function () {
   'use strict';
@@ -64,26 +65,10 @@
     play:   '<path d="M8 5.5v13l10.5-6.5L8 5.5Z"/>',
     replay: '<path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.5 4.5v4h4"/>'
   };
-  function ic(n, cls) { return '<svg class="ic' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 24" aria-hidden="true">' + ICONS[n] + '</svg>'; }
-  function U(n) { return 'calc(' + n + ' * var(--u))'; }
-  function at(x, y, w, h) {
-    return 'left:' + U(x) + ';top:' + U(y) + (w != null ? ';width:' + U(w) : '') + (h != null ? ';height:' + U(h) : '');
-  }
-  function ext(a, b) { for (var k in b) a[k] = b[k]; return a; }
-  var LIFT = '<i class="pm-lift"></i>';
+  var E = window.PromoEngine;
+  var ic = E.icons(ICONS), U = E.U, at = E.at, ext = E.ext, LIFT = E.LIFT;
 
   /* --- components ------------------------------------------------------ */
-  function rail() {
-    return '<div class="pm__rail" role="group" aria-label="Stages"><div class="pm__track"><i class="pm__fill" data-a="railfill"></i></div>' +
-      STAGES.map(function (s, i) {
-        var cls = i === 0 ? '' : i === 3 ? ' pm__node--end' : ' pm__node--mid';
-        return '<button class="pm__node' + cls + '" type="button" data-stage="' + i + '" style="left:' + (i * 100 / 3) + '%"><span>' + s + '</span></button>';
-      }).join('') + '</div>' +
-      '<button class="pm__pp" type="button" aria-label="Pause animation">' + ic('pause') + '</button>';
-  }
-  function captions() {
-    return CAPTIONS.map(function (c, i) { return '<p class="pm__cap" data-a="cap' + i + '">' + c + '</p>'; }).join('');
-  }
   function slot(key, extra) { return '<span class="slot' + (extra ? ' ' + extra : '') + '" data-a="' + key + '"></span>'; }
 
   function uploadCard(x, y, w, M) {
@@ -286,65 +271,9 @@
       toast('t2', -6, 600, 300, 'ok', 'Order #39208 Shipped', 'Sent by Production Manager');
   }
 
-  /* --- engine ---------------------------------------------------------- */
-  function bez(x1, y1, x2, y2, id) {
-    function cx(t) { return 3 * x1 * t * (1 - t) * (1 - t) + 3 * x2 * t * t * (1 - t) + t * t * t; }
-    function cy(t) { return 3 * y1 * t * (1 - t) * (1 - t) + 3 * y2 * t * t * (1 - t) + t * t * t; }
-    var f = function (x) {
-      if (x <= 0) return 0; if (x >= 1) return 1;
-      var lo = 0, hi = 1, t = x;
-      for (var i = 0; i < 24; i++) { t = (lo + hi) / 2; if (cx(t) < x) lo = t; else hi = t; }
-      return cy(t);
-    };
-    f.id = id; return f;
-  }
-  var ENTER = bez(.22, 1, .36, 1, 'cubic-bezier(.22,1,.36,1)');
-  var EXIT = bez(.55, 0, 1, .45, 'cubic-bezier(.55,0,1,.45)');
-  var TRAVEL = bez(.65, 0, .35, 1, 'cubic-bezier(.65,0,.35,1)');
-  var LIN = function (p) { return p; }; LIN.id = 'linear';
-  var D_IN = .45, D_OUT = .25, D_SAT = .18;
-  function travelDur(px) { return px < 40 ? .3 : px <= 200 ? .45 : .55; }
-  var DEF = { x: 0, y: 0, s: 1, sx: 1, sy: 1, o: 1, l: 0 };
-  var PROPS = ['x', 'y', 's', 'sx', 'sy', 'o', 'l'];
-
-  /* Keys: [[time, {props}, ease], ...]. Each property is interpolated only
-     between the keys that set it, so opacity and position can have their
-     own timing on one element. The ease shapes the segment arriving at a key. */
-  function Track(el, keys) {
-    this.el = el; this.last = ''; this.p = {}; this.active = [];
-    this.lift = keys.some(function (k) { return 'l' in k[1]; }) ? el.querySelector(':scope > .pm-lift') : null;
-    keys.sort(function (a, b) { return a[0] - b[0]; });
-    for (var j = 0; j < PROPS.length; j++) {
-      var n = PROPS[j], list = [];
-      keys.forEach(function (k) { if (n in k[1]) list.push({ t: k[0], v: k[1][n], e: k[2] || ENTER }); });
-      if (list.length) {
-        this.p[n] = list;
-        for (var i = 1; i < list.length; i++) if (list[i].v !== list[i - 1].v) this.active.push([list[i - 1].t, list[i].t]);
-      }
-    }
-  }
-  Track.prototype.val = function (n, t) {
-    var k = this.p[n]; if (!k) return DEF[n];
-    if (t <= k[0].t) return k[0].v;
-    for (var i = 1; i < k.length; i++) if (t < k[i].t) {
-      var a = k[i - 1], b = k[i]; return a.v + (b.v - a.v) * b.e((t - a.t) / (b.t - a.t));
-    }
-    return k[k.length - 1].v;
-  };
-  Track.prototype.apply = function (t, px) {
-    var v = {}; for (var j = 0; j < PROPS.length; j++) v[PROPS[j]] = this.val(PROPS[j], t);
-    var tr = (v.x || v.y ? 'translate(' + (v.x * px).toFixed(2) + 'px,' + (v.y * px).toFixed(2) + 'px)' : '') +
-             (v.s * v.sx !== 1 || v.s * v.sy !== 1 ? ' scale(' + (v.s * v.sx).toFixed(4) + ',' + (v.s * v.sy).toFixed(4) + ')' : '');
-    var moving = this.active.some(function (r) { return t >= r[0] - .1 && t < r[1]; });
-    var key = tr + '|' + v.o.toFixed(3) + '|' + v.l.toFixed(3) + '|' + moving;
-    if (key === this.last) return;
-    this.last = key;
-    this.el.style.willChange = moving ? 'transform, opacity' : '';   /* only around a move */
-    this.el.style.transform = tr;
-    this.el.style.opacity = v.o >= 0.999 ? '1' : v.o.toFixed(3);   /* explicit: some elements default to 0 in CSS */
-    this.el.style.visibility = v.o <= 0.001 ? 'hidden' : '';
-    if (this.lift) this.lift.style.opacity = v.l.toFixed(3);
-  };
+  /* --- motion, from the engine --------------------------------------- */
+  var ENTER = E.ENTER, EXIT = E.EXIT, TRAVEL = E.TRAVEL, LIN = E.LIN, Track = E.Track;
+  var D_IN = E.D_IN, D_OUT = E.D_OUT, D_SAT = E.D_SAT, travelDur = E.travelDur;
 
   /* --- choreography ---------------------------------------------------- */
   function choreography(q, rect, M) {
@@ -464,150 +393,30 @@
     return { tracks: T, switches: switches };
   }
 
-  /* --- frames ---------------------------------------------------------- */
-  /* Build a frame inside a size container. Returns the element plus seek();
-     call init() once it is in the document, since slots are measured. */
-  function create(mobile) {
-    var el = document.createElement('div');
-    el.className = 'pm' + (mobile ? ' pm--m' : '');
-    el.innerHTML = rail() + '<div class="pm__anim" aria-hidden="true">' + captions() +
-      '<div class="pm__stage">' + (mobile ? mobileStage() : desktopStage()) + '</div>' +
-      '<div class="pm__float">' + (mobile ? mobileFloat() : desktopFloat()) + '</div></div>' +
-      '<p class="pm-sr">' + DESCRIPTION + '</p>';
-    var stage = el.querySelector('.pm__stage'), W = mobile ? STAGE_W.m : STAGE_W.d;
-    var nodes = Array.prototype.slice.call(el.querySelectorAll('.pm__node'));
-    var total = el.querySelector('[data-a="total"]');
-    var tracks = [], switches = [0], current = -1, now = 0;
-    function q(n) { return el.querySelector('[data-a="' + n + '"]'); }
-    function px() { return stage.getBoundingClientRect().width / W; }   /* CSS px per design px */
-    function rect(e) {
-      var r = e.getBoundingClientRect(), s = stage.getBoundingClientRect(), k = s.width / W;
-      return { x: (r.left - s.left) / k, y: (r.top - s.top) / k, w: r.width / k, h: r.height / k };
-    }
-    function stageAt(t) { var s = 0; for (var i = 1; i < switches.length; i++) if (t >= switches[i]) s = i; return s; }
-    function setStage(i) {
-      if (i === current) return;
-      current = i;
-      nodes.forEach(function (n, k) {
-        if (k === i) n.setAttribute('aria-current', 'step'); else n.removeAttribute('aria-current');
-        if (k < i) n.setAttribute('data-done', ''); else n.removeAttribute('data-done');
-      });
-    }
-    function seek(t) {
-      now = t;
-      var k = px();
-      for (var i = 0; i < tracks.length; i++) tracks[i].apply(t, k);
-      setStage(stageAt(t));
+  /* --- the promo, as the engine sees it ------------------------------- */
+  var PROMO = {
+    stages: STAGES, captions: CAPTIONS, description: DESCRIPTION, stageW: STAGE_W,
+    END: END, FRAME_T: FRAME_T, TRANS_IN: TRANS_IN,
+    markup: function (mobile) {
+      return mobile ? { stage: mobileStage(), float: mobileFloat() } : { stage: desktopStage(), float: desktopFloat() };
+    },
+    choreography: choreography,
+    /* the quote total counts up as its lines arrive */
+    onSeek: function (t, q) {
+      var total = q('total');
       if (total) {
         var txt = '€' + Math.round(580 * ENTER(Math.max(0, Math.min(1, (t - 3.3) / .6)))) + ',00';
         if (total.textContent !== txt) total.textContent = txt;
       }
     }
-    function init() {
-      tracks.forEach(function (tr) { tr.el.style.transform = ''; tr.el.style.opacity = ''; tr.el.style.visibility = ''; tr.el.style.willChange = ''; });
-      var c = choreography(q, rect, mobile);
-      tracks = c.tracks; switches = c.switches;
-    }
-    /* resizing changes CSS px per design px: redraw the same instant */
-    function redraw() { tracks.forEach(function (tr) { tr.last = ''; }); seek(now); }
-    function dump() {
-      return tracks.map(function (tr) {
-        var keys = {}; for (var n in tr.p) keys[n] = tr.p[n].map(function (k) { return { t: k.t, v: k.v, ease: k.e.id || 'custom' }; });
-        return { target: '[data-a="' + tr.el.getAttribute('data-a') + '"]', props: keys };
-      });
-    }
-    return { el: el, seek: seek, init: init, redraw: redraw, dump: dump, nodes: nodes, pp: el.querySelector('.pm__pp'), mobile: mobile,
-             switches: function () { return switches; } };
-  }
+  };
 
-  /* --- the live component on the page --------------------------------- */
-  function mount(host) {
-    var narrow = window.matchMedia('(max-width: 767px)');
-    var still = window.matchMedia('(prefers-reduced-motion: reduce)');
-    var f = null, t = 0, state = 'ready', stopAt = END, inView = false, hover = false, raf = 0, prev = 0;
-    /* state: ready (first frame, waiting to be seen) | playing | paused | ended */
+  window.Promo = {
+    frame: function (n, opts) { return E.frame(PROMO, n, opts); },
+    create: function (mobile) { return E.create(PROMO, mobile); },
+    STAGES: STAGES, FRAME_T: FRAME_T, END: END
+  };
 
-    function running() { return state === 'playing' && inView && !hover && !document.hidden; }
-    function label() {
-      if (still.matches) { f.pp.hidden = true; return; }
-      f.pp.hidden = false;
-      var m = state === 'playing' ? ['Pause animation', 'pause'] : state === 'ended' ? ['Replay animation', 'replay'] : ['Play animation', 'play'];
-      f.pp.setAttribute('aria-label', m[0]); f.pp.innerHTML = ic(m[1]);
-    }
-    function tick(ts) {
-      raf = 0;
-      if (!running()) return;
-      var dt = prev ? Math.min(.1, (ts - prev) / 1000) : 0;
-      prev = ts;
-      t = Math.min(stopAt, t + dt);
-      f.seek(t);
-      if (t >= stopAt) { state = stopAt >= END ? 'ended' : 'paused'; stopAt = END; label(); return; }
-      raf = requestAnimationFrame(tick);
-    }
-    function sync() {
-      if (running() && !raf) { prev = 0; raf = requestAnimationFrame(tick); }
-      if (!running() && raf) { cancelAnimationFrame(raf); raf = 0; }
-    }
-    function play(from, until) { if (from != null) { t = from; f.seek(t); } stopAt = until || END; state = 'playing'; label(); sync(); }
-
-    function build() {
-      if (raf) { cancelAnimationFrame(raf); raf = 0; }
-      host.innerHTML = '';
-      f = create(narrow.matches);
-      host.appendChild(f.el);
-      f.init();
-      if (still.matches) { t = END; state = 'ended'; }
-      f.seek(t);
-      f.nodes.forEach(function (n, i) {
-        n.addEventListener('click', function () {
-          if (still.matches || i === 0) { t = FRAME_T[i]; f.seek(t); state = still.matches ? 'ended' : 'paused'; label(); sync(); return; }
-          play(TRANS_IN[i], i === 3 ? END : FRAME_T[i]);   /* the standard transition into that stage */
-        });
-      });
-      f.pp.addEventListener('click', function () {
-        if (state === 'playing') { state = 'paused'; label(); sync(); }
-        else if (state === 'ended') play(0);
-        else play(null);
-      });
-      f.el.addEventListener('mouseenter', function () { hover = true; sync(); });
-      f.el.addEventListener('mouseleave', function () { hover = false; sync(); });
-      label(); sync();
-      /* dev only: drive the master timeline from the console or Playwright */
-      if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) {
-        window.__promo = {
-          frame: f, tracks: f.dump, END: END, FRAME_T: FRAME_T, TRANS_IN: TRANS_IN, switches: f.switches,
-          seek: function (sec) { state = 'paused'; label(); sync(); t = sec; f.seek(t); },
-          state: function () { return state; }
-        };
-      }
-    }
-
-    new IntersectionObserver(function (es) {
-      inView = es[0].intersectionRatio >= .5;
-      if (inView && state === 'ready' && !still.matches) play(0);   /* once, from the start */
-      sync();
-    }, { threshold: [0, .5, 1] }).observe(host);
-    if (window.ResizeObserver) new ResizeObserver(function () { if (f) f.redraw(); }).observe(host);
-    document.addEventListener('visibilitychange', sync);
-    (narrow.addEventListener ? narrow.addEventListener('change', function () { build(); }) : narrow.addListener(function () { build(); }));
-    if (still.addEventListener) still.addEventListener('change', function () { build(); });
-    build();
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { if (f) { f.init(); f.seek(t); } });
-  }
-
-  /* storyboard / QA: a standalone frame at stage n's final frame, or time t.
-     opts.into must be a size container (container-type: inline-size). */
-  function frame(n, opts) {
-    opts = opts || {};
-    var f = create(!!opts.mobile);
-    (opts.into || document.body).appendChild(f.el);
-    f.init();
-    f.seek(opts.t != null ? opts.t : FRAME_T[n]);
-    return f;
-  }
-
-  window.Promo = { frame: frame, create: create, STAGES: STAGES, FRAME_T: FRAME_T, END: END };
-
-  function boot() { var h = document.querySelector('.pmr__vis'); if (h) mount(h); }
+  function boot() { var h = document.querySelector('.pmr__vis'); if (h) E.mount(h, PROMO); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();
