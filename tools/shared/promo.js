@@ -200,10 +200,13 @@
     var END = P.END, FRAME_T = P.FRAME_T, TRANS_IN = P.TRANS_IN, last = P.stages.length - 1;
     var narrow = window.matchMedia('(max-width: 767px)');
     var still = window.matchMedia('(prefers-reduced-motion: reduce)');
-    var f = null, t = 0, state = 'ready', stopAt = END, inView = false, hover = false, raf = 0, prev = 0;
-    /* state: ready (first frame, waiting to be seen) | playing | paused | ended */
+    var f = null, t = 0, state = 'ready', stopAt = END, inView = false, hover = false, auto = false, raf = 0, prev = 0;
+    /* state: ready (first frame, waiting to be seen) | playing | paused | ended.
+       auto: the play-once-on-view run. Hovering pauses only that; playback the
+       reader asked for (a rail stage, Play, Replay) needs the pointer over the
+       promo to start, so hover must not hold it. */
 
-    function running() { return state === 'playing' && inView && !hover && !document.hidden; }
+    function running() { return state === 'playing' && inView && !(hover && auto) && !document.hidden; }
     function label() {
       if (still.matches) { f.pp.hidden = true; return; }
       f.pp.hidden = false;
@@ -224,7 +227,7 @@
       if (running() && !raf) { prev = 0; raf = requestAnimationFrame(tick); }
       if (!running() && raf) { cancelAnimationFrame(raf); raf = 0; }
     }
-    function play(from, until) { if (from != null) { t = from; f.seek(t); } stopAt = until || END; state = 'playing'; label(); sync(); }
+    function play(from, until, isAuto) { auto = !!isAuto; if (from != null) { t = from; f.seek(t); } stopAt = until || END; state = 'playing'; label(); sync(); }
     /* jump to a stage: the standard transition, or an instant cut when still */
     function goTo(i, cut) {
       if (cut || still.matches || i === 0) { t = i === last && still.matches ? END : FRAME_T[i]; f.seek(t); state = still.matches || i === last && t >= END ? 'ended' : 'paused'; label(); sync(); return; }
@@ -265,7 +268,7 @@
 
     new IntersectionObserver(function (es) {
       inView = es[0].intersectionRatio >= .5;
-      if (inView && state === 'ready' && !still.matches) play(0);   /* once, from the start */
+      if (inView && state === 'ready' && !still.matches) play(0, END, true);   /* once, from the start */
       sync();
     }, { threshold: [0, .5, 1] }).observe(host);
     if (window.ResizeObserver) new ResizeObserver(function () { if (f) f.redraw(); }).observe(host);
@@ -287,9 +290,9 @@
         if (!sticky.matches || !heads.length) return;
         var mid = window.innerHeight / 2, idx = -1;
         heads.forEach(function (h, i) { if (h.getBoundingClientRect().top <= mid) idx = i; });
-        if (idx === shown) return;
+        if (state === 'ready' || idx === shown) return;   /* not yet seen: leave it be, and record nothing */
         shown = idx;
-        if (idx < 0 || state === 'ready') return;   /* before the first heading, or not yet seen: leave it be */
+        if (idx < 0) return;                              /* before the first heading */
         goTo(idx, true);
       };
       window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });

@@ -87,15 +87,16 @@
 
   /* Layout per frame, design px. card: the drawing card in frame coords;
      cams: the plan's translate + scale for each framing (plan px -> card px
-     is k * s, k = plan width at s=1 / PLAN.w). */
+     is k * s, k = plan width at s=1 / PLAN.w). report: s=1.15 centred on
+     plan (1150, 800), the lobby and the west wall both in frame. */
   var GEO = {
     d: { W: 600, H: 580, card: [16, 96, 568, 392], pw: 568,
-         cams: { full: { x: 0, y: 0, s: 1 }, west: { x: -17.7, y: -25.7, s: 1.4 } },
+         cams: { full: { x: 0, y: 0, s: 1 }, west: { x: -17.7, y: -25.7, s: 1.4 }, report: { x: -38.7, y: -28.5, s: 1.15 } },
          rail: [12, 60, 60], bar: { right: 12, top: 12 },
          vc: [348, 132, 228], task: { w: 214, side: 'left', dx: -22, dy: -18 }, thumb: [196, 404, 200], slot: [16, 18],
          paper: [100, 300, 400], phone: [406, 238, 166] },
     m: { W: 340, H: 740, card: [12, 100, 316, 300], pw: 434.3,
-         cams: { full: { x: -84.5, y: 0, s: 1 }, west: { x: -131.2, y: -32.8, s: 1.4 } },
+         cams: { full: { x: -84.5, y: 0, s: 1 }, west: { x: -131.2, y: -32.8, s: 1.4 }, report: { x: -88.7, y: -21.6, s: 1.15 } },
          rail: [8, 56, 40], bar: { left: 54, top: 10 },
          vc: [12, 412, 316], task: { w: 230, at: [24, 420] }, thumb: [70, 560, 200], slot: [12, 104],   /* the slot meets the printout's lower edge */
          paper: [12, 290, 316], phone: [176, 392, 152], m: true }
@@ -285,7 +286,7 @@
 
     /* the camera: the plan's framing, and the moves between framings.
        Moves happen only in transitions, 300-900 ms in, with the rail. */
-    var MOVES = [[S[1] + .3, 'full', 'west'], [S[2] + .3, 'west', 'full']];
+    var MOVES = [[S[1] + .3, 'full', 'west'], [S[2] + .3, 'west', 'full'], [S[3] + .3, 'full', 'report']];
     var camKeys = [[0, ext0(cam(g, 'full'))]];
     function ext0(c) { return { x: c.x, y: c.y, s: c.s }; }
     MOVES.forEach(function (m) { camKeys.push([m[0], ext0(cam(g, m[1]))], [m[0] + .6, ext0(cam(g, m[2])), TRAVEL]); });
@@ -301,12 +302,18 @@
     function attach(name, p, from, own) {
       var keys = [];
       var base = function (t) { var c = camAt(t), xy = onCard(g, c, p); return { x: xy[0], y: xy[1] }; };
+      /* offsets are added only to the keys that set x or y: an opacity-only
+         key must not pin the position, or a travel snaps instead of moving */
       (own || []).forEach(function (k) {
-        var b = base(k[0]), v = {};
+        var b = base(Math.max(k[0], from)), v = {};             /* before it lands, it is hidden: hold the landing spot */
         for (var n in k[1]) v[n] = (n === 'x' ? b.x : n === 'y' ? b.y : 0) + k[1][n];
-        if (!('x' in v)) v.x = b.x; if (!('y' in v)) v.y = b.y;
         keys.push([k[0], v, k[2]]);
       });
+      /* an axis no key of its own sets sits on the spot */
+      var b0 = base(from), fill = {};
+      if (!keys.some(function (k) { return 'x' in k[1]; })) fill.x = b0.x;
+      if (!keys.some(function (k) { return 'y' in k[1]; })) fill.y = b0.y;
+      keys.push([from, fill]);
       MOVES.forEach(function (m) {
         if (m[0] < from) return;
         var a = onCard(g, cam(g, m[1]), p), b = onCard(g, cam(g, m[2]), p);
@@ -406,7 +413,7 @@
     /* the shot is the viewfinder's own size and shape, centred on the pin's
        spot; it starts over the viewfinder and shrinks uniformly to pin size */
     var vf = rect(q('vf')), shotEl = q('shot'), pinD = rect(q('pp')).w;
-    var ppAt = onCard(g, cam(g, 'full'), SPOT.photo);
+    var ppAt = onCard(g, cam(g, 'report'), SPOT.photo);
     shotEl.style.width = U(vf.w); shotEl.style.height = U(vf.h);
     shotEl.style.left = U(ppAt[0]); shotEl.style.top = U(ppAt[1]);
     shotEl.style.marginLeft = U(-vf.w / 2); shotEl.style.marginTop = U(-vf.h / 2);
