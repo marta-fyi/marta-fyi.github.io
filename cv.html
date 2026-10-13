@@ -144,13 +144,10 @@
     font-weight: 600;
   }
 
-  .roles {
-    margin: 2.5mm 0 0;
-    padding-left: 4mm;
-    border-left: 1px solid var(--rule);
-  }
+  .roles { margin: 2.5mm 0 0; }
 
-  .role { margin-bottom: 4.5mm; break-inside: avoid; }
+  /* Each role has its own stretch of line; the gap between them marks the step. */
+  .role { margin-bottom: 4.5mm; padding-left: 4mm; border-left: 1px solid var(--rule); break-inside: avoid; }
   .role:last-child { margin-bottom: 0; }
 
   .role-head h4 {
@@ -175,16 +172,16 @@
   }
 
   .duties {
-    margin: 1.4mm 0 0;
+    margin: 1.4mm 20mm 0 0;   /* stop short of the dates column */
     padding: 0;
     list-style: none;
-    line-height: 1.4;
+    line-height: 1.3;
   }
 
   .duties li {
     position: relative;
     padding-left: 3.2mm;
-    margin-bottom: 0.5mm;
+    margin-bottom: 0.4mm;
     text-wrap: pretty;
   }
 
@@ -208,7 +205,7 @@
       </p>
   </header>
 
-  <p class="profile">I&rsquo;m a designer with 10+ years of experience building products &ndash; shaping direction, working through interaction problems and staying close to the details. At Miro, I lead Design Platform, AI enablement and Growth. I&rsquo;ve worked across AI, collaboration tools and design systems, from early concepts to established products at scale.</p>
+  <p class="profile">I&rsquo;m a designer with 10+ years of experience building products &ndash; shaping direction, working through interaction problems and staying close to the details. At Miro, I lead Design Platform, AI&nbsp;enablement and Growth. I&rsquo;ve worked across AI, collaboration tools and design systems, from early concepts to established products at scale.</p>
 
   <div class="cols">
 
@@ -330,24 +327,24 @@
       <section>
         <h2>Lecturer at</h2>
         <div class="rec">
-          <h3>ELISAVA &mdash; Master&rsquo;s Program Director, Strategic Design and Innovation</h3>
-          <p class="dates">2023&ndash;2025</p>
+          <h3>Master&rsquo;s Program Director, Strategic Design and Innovation</h3>
+          <p>ELISAVA &middot; <span class="dates">2023&ndash;2025</span></p>
         </div>
         <div class="rec">
-          <h3>BAU &mdash; Lecturer, Master&rsquo;s in Experience Design</h3>
-          <p class="dates">2021&ndash;2025</p>
+          <h3>Lecturer, Master&rsquo;s in Experience Design</h3>
+          <p>BAU &middot; <span class="dates">2021&ndash;2025</span></p>
         </div>
         <div class="rec">
-          <h3>Massana School of Art and Design &mdash; Academic Advisor</h3>
-          <p class="dates">2021</p>
+          <h3>Academic Advisor</h3>
+          <p>Massana School of Art and Design &middot; <span class="dates">2021</span></p>
         </div>
         <div class="rec">
-          <h3>IED &mdash; Lecturer, Master&rsquo;s in Interaction Design</h3>
-          <p class="dates">2020</p>
+          <h3>Lecturer, Master&rsquo;s in Interaction Design</h3>
+          <p>IED &middot; <span class="dates">2020</span></p>
         </div>
         <div class="rec">
-          <h3>ELISAVA &mdash; Lecturer, Undergraduate Degree in Design</h3>
-          <p class="dates">2016&ndash;2021</p>
+          <h3>Lecturer, Undergraduate Degree in Design</h3>
+          <p>ELISAVA &middot; <span class="dates">2016&ndash;2021</span></p>
         </div>
       </section>
     </div>
