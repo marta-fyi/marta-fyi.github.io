@@ -91,11 +91,11 @@
   header { position: relative; }
   .mark {
     position: absolute;
-    top: 2mm;
-    right: 14mm;
+    top: -2mm;
+    right: 10mm;
     transform: rotate(-8deg);
-    width: 25mm;
-    height: 25mm;
+    width: 33mm;
+    height: 33mm;
     object-fit: contain;
   }
 
@@ -147,6 +147,9 @@
     margin: 0.3mm 0 0;
     color: var(--grey);
   }
+
+  /* A programme under a teaching role: content, so ink rather than grey. */
+  .rec p.prog { color: var(--ink); }
 
   .rec .dates { font-variant-numeric: tabular-nums; }
 
@@ -358,23 +361,27 @@
       <section>
         <h2>Lecturer at</h2>
         <div class="rec">
-          <h3>Master&rsquo;s Program Director, Strategic Design and Innovation</h3>
+          <h3>Master&rsquo;s Program Director</h3>
+          <p class="prog">Strategic Design and Innovation</p>
           <p>ELISAVA &middot; <span class="dates">2023&ndash;2025</span></p>
         </div>
         <div class="rec">
-          <h3>Lecturer, Master&rsquo;s in Experience Design</h3>
+          <h3>Lecturer</h3>
+          <p class="prog">Master&rsquo;s in Experience Design</p>
           <p>BAU &middot; <span class="dates">2021&ndash;2025</span></p>
         </div>
         <div class="rec">
           <h3>Academic Advisor</h3>
-          <p>Massana School of Art and Design &middot; <span class="dates">2021</span></p>
+          <p>Massana &middot; <span class="dates">2021</span></p>
         </div>
         <div class="rec">
-          <h3>Lecturer, Master&rsquo;s in Interaction Design</h3>
+          <h3>Lecturer</h3>
+          <p class="prog">Master&rsquo;s in Interaction Design</p>
           <p>IED &middot; <span class="dates">2020</span></p>
         </div>
         <div class="rec">
-          <h3>Lecturer, Undergraduate Degree in Design</h3>
+          <h3>Lecturer</h3>
+          <p class="prog">Undergraduate Degree in Design</p>
           <p>ELISAVA &middot; <span class="dates">2016&ndash;2021</span></p>
         </div>
       </section>
