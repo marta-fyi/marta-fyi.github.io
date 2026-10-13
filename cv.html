@@ -41,7 +41,7 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  main { max-width: 182mm; margin: 0 auto; padding: 14mm; }
+  main { max-width: 182mm; margin: 0 auto; padding: 14mm; isolation: isolate; }   /* the mark's z-index stays above the page background */
   @media print { main { max-width: none; margin: 0; padding: 11mm 13mm; } }
 
   /* Header ---------------------------------------------------------------- */
@@ -92,10 +92,11 @@
   .mark {
     position: absolute;
     top: 0;
-    right: 12mm;
+    right: 5mm;
+    z-index: -1;   /* behind the text; its fill is the page grey, so text crossing it stays clean */
     transform: rotate(-8deg);
-    width: 29mm;
-    height: 29mm;
+    width: 56mm;
+    height: 56mm;
     object-fit: contain;
   }
 
