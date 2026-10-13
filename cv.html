@@ -57,12 +57,23 @@
     letter-spacing: -0.015em;
   }
 
-  /* Plain text, no glyphs: the web footer marks each action with one, the PDF
-     does not need to. mailto and https still survive as link annotations
-     through Chrome's print, so the addresses stay clickable. */
-  .contact { margin: 1.5mm 0 0; color: var(--grey); }
+  /* The site footer's glyph after each link, in place of separators. mailto
+     and https survive Chrome's print as link annotations, so they stay
+     clickable in the PDF. */
+  .contact { display: flex; gap: 5mm; margin: 1.5mm 0 0; color: var(--grey); }
 
-  .contact a { color: inherit; text-decoration: none; }
+  .contact a { display: inline-flex; align-items: center; gap: 1.2mm; color: inherit; text-decoration: none; }
+
+  .glyph {
+    width: 0.9em;
+    height: 0.9em;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.55;
+  }
 
   /* The mark closes the sidebar: pushed to the foot of its column, so its
      base lines up with the last line of Experience. */
@@ -71,12 +82,15 @@
     display: block;
     margin-top: auto;
     align-self: flex-end;
-    width: 19mm;
-    height: 19mm;
+    width: 25mm;
+    height: 25mm;
     object-fit: contain;
   }
 
   /* The bio spans the Experience column, not the full page. */
+  .profile p { margin: 0; }
+  .profile p + p { margin-top: 2mm; }
+
   .profile {
     max-width: calc(100% - var(--side) - var(--gap));
     margin: 0 0 7mm;
@@ -200,13 +214,16 @@
   <header>
       <h1>Marta Domingo</h1>
       <p class="contact">
-        <a href="mailto:hello@marta.fyi">hello@marta.fyi</a> &middot;
-        <a href="https://www.linkedin.com/in/marta-domingo/">LinkedIn</a> &middot;
-        <a href="https://marta.fyi/">marta.fyi</a>
+        <a href="mailto:hello@marta.fyi">hello@marta.fyi<svg class="glyph" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V5M4.5 8.5 8 5l3.5 3.5"/></svg></a>
+        <a href="https://www.linkedin.com/in/marta-domingo/">LinkedIn<svg class="glyph" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V5M4.5 8.5 8 5l3.5 3.5"/></svg></a>
+        <a href="https://marta.fyi/">marta.fyi<svg class="glyph" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V5M4.5 8.5 8 5l3.5 3.5"/></svg></a>
       </p>
   </header>
 
-  <p class="profile">I&rsquo;m a designer with 10+ years of experience building products &ndash; shaping direction, working through interaction problems and staying close to the details. At Miro, I lead Design Platform, AI&nbsp;enablement and Growth. I&rsquo;ve worked across AI, collaboration tools and design systems, from early concepts to established products at scale.</p>
+  <div class="profile">
+    <p>I&rsquo;m a designer with 10+ years of experience building products &ndash; shaping direction, working through interaction problems and staying close to the details.</p>
+    <p>At Miro, I lead Design Platform, AI&nbsp;enablement and Growth. I&rsquo;ve worked across AI, collaboration tools and design systems, from early concepts to established products at scale.</p>
+  </div>
 
   <div class="cols">
 
