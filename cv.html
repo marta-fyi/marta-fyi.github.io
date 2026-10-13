@@ -12,14 +12,15 @@
   /* Source for assets/marta-domingo-cv.pdf -- regenerate with tools/build-cv.sh.
      Two columns because one A4 page cannot hold this much at a readable size in
      a single measure: the sidebar absorbs the short records so Experience gets
-     the full height. Ink on white -- a full-bleed tint prints heavy. */
+     the full height. The page carries the site's background, edge to edge. */
 
   @page {
     size: A4;
-    margin: 11mm 13mm;
+    margin: 0;   /* the page margin lives on main, so the background runs to the edge */
   }
 
   :root {
+    --bg: #F2F2F7;   /* the site's background */
     --ink: #1C1C1E;
     --grey: rgba(28, 28, 30, 0.62);
     --side: 46mm;   /* the sidebar column */
@@ -29,7 +30,7 @@
 
   * { box-sizing: border-box; }
 
-  html, body { margin: 0; padding: 0; background: #fff; }
+  html, body { margin: 0; padding: 0; background: var(--bg); print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 
   body {
     font-family: 'Archivo', system-ui, -apple-system, sans-serif;
@@ -41,7 +42,7 @@
   }
 
   main { max-width: 182mm; margin: 0 auto; padding: 14mm; }
-  @media print { main { max-width: none; margin: 0; padding: 0; } }
+  @media print { main { max-width: none; margin: 0; padding: 11mm 13mm; } }
 
   /* Header ---------------------------------------------------------------- */
 
