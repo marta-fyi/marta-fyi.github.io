@@ -7,7 +7,7 @@
 <title>Marta Domingo — CV</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   /* Source for assets/marta-domingo-cv.pdf -- regenerate with tools/build-cv.sh.
      Two columns because one A4 page cannot hold this much at a readable size in
@@ -21,8 +21,8 @@
 
   :root {
     --ink: #1C1C1E;
-    --ink-60: rgba(28, 28, 30, 0.58);
-    --ink-45: rgba(28, 28, 30, 0.45);
+    --ink-60: rgba(28, 28, 30, 0.72);
+    --ink-45: rgba(28, 28, 30, 0.60);
     --rule: rgba(28, 28, 30, 0.14);
   }
 
@@ -74,6 +74,9 @@
     height: 19mm;
     object-fit: contain;
   }
+  /* On the page, Experience runs to the foot of the right column; the
+     sidebar ends well short of it, so the mark takes that corner. */
+  @media print { .mark { right: auto; left: 0; } }
 
   .profile {
     margin: 0 0 12mm;
@@ -121,10 +124,13 @@
 
   .rec .dates { color: var(--ink-45); font-variant-numeric: tabular-nums; }
 
-  /* Experience: dates ride on the title line to free up the measure. */
-  .role { margin-bottom: 4.5mm; }
-  .role:last-child { margin-bottom: 0; }
+  /* Experience: one heading per company, its roles nested beneath on a
+     thin line, newest first, so promotions read as one ladder. Dates ride
+     on the title lines to free up the measure. */
+  .org { margin-bottom: 6mm; }
+  .org:last-child { margin-bottom: 0; }
 
+  .org-head,
   .role-head {
     display: flex;
     align-items: baseline;
@@ -133,41 +139,66 @@
     break-after: avoid;
   }
 
-  .role-head h3 {
+  .org-head h3 {
+    margin: 0;
+    font-size: 10.5pt;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .org-head .dates {
+    flex: none;
+    margin: 0;
+    font-size: 8pt;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .roles {
+    margin: 2.5mm 0 0;
+    padding-left: 4mm;
+    border-left: 1px solid var(--rule);
+  }
+
+  .role { margin-bottom: 4.5mm; break-inside: avoid; }
+  .role:last-child { margin-bottom: 0; }
+
+  .role-head h4 {
     margin: 0;
     font-size: 9pt;
-    font-weight: 500;
+    font-weight: 600;
   }
 
   .role-head .dates {
     flex: none;
     margin: 0;
     font-size: 8pt;
-    color: var(--ink-45);
+    color: var(--ink-60);
     font-variant-numeric: tabular-nums;
   }
 
-  /* Team size, under the title: the same quiet line as a sidebar record's org. */
+  /* Team size, under the title. */
   .role .scope {
-    margin: 0.3mm 0 0;
+    margin: 0.4mm 0 0;
     font-size: 8pt;
+    font-weight: 500;
     color: var(--ink-60);
     font-variant-numeric: tabular-nums;
     break-after: avoid;
   }
 
   .duties {
-    margin: 1mm 0 0;
+    margin: 1.4mm 0 0;
     padding: 0;
     list-style: none;
     font-size: 7.5pt;
-    line-height: 1.3;
+    line-height: 1.4;
   }
 
   .duties li {
     position: relative;
     padding-left: 3.2mm;
-    margin-bottom: 0.2mm;
+    margin-bottom: 0.5mm;
     text-wrap: pretty;
   }
 
@@ -177,6 +208,9 @@
     left: 0;
     color: var(--ink-45);
   }
+
+  /* The numbers carry the claims: they lead the eye down the list. */
+  .duties b { font-weight: 600; }
 </style>
 </head>
 <body>
@@ -248,75 +282,91 @@
     <div>
       <section>
         <h2>Experience</h2>
-        <div class="role">
-          <div class="role-head">
-            <h3>Miro &mdash; Design Manager, AI Growth</h3>
-            <p class="dates">2026&ndash;Present</p>
+        <div class="org">
+          <div class="org-head">
+            <h3>Miro</h3>
+            <p class="dates">2025&ndash;Present</p>
           </div>
-          <p class="scope">4 teams &middot; 6 direct reports</p>
-          <ul class="duties">
-            <li>Lead Acquisition, Retention and Growth streams, working on activation and expansion impacting 100M+ users.</li>
-            <li>Lead the design of the AI onboarding experience that delivered a meaningful increase in paid conversion and ARR.</li>
-            <li>Set up shared standards and practical frameworks that help teams make stronger decisions autonomously.</li>
-          </ul>
+          <div class="roles">
+          <div class="role">
+            <div class="role-head">
+              <h4>Design Manager, AI Growth</h4>
+              <p class="dates">2026&ndash;Present</p>
+            </div>
+            <p class="scope">4 teams &middot; 6 direct reports</p>
+            <ul class="duties">
+              <li>Lead Acquisition, Retention and Growth streams, working on activation and expansion impacting <b>100M+ users</b>.</li>
+              <li>Lead the design of the AI onboarding experience that delivered a meaningful increase in paid conversion and ARR.</li>
+              <li>Set up shared standards and practical frameworks that help teams make stronger decisions autonomously.</li>
+            </ul>
+          </div>
+          <div class="role">
+            <div class="role-head">
+              <h4>Design Manager, Core Experiences</h4>
+              <p class="dates">2025&ndash;2026</p>
+            </div>
+            <p class="scope">2 teams &middot; 4 direct reports</p>
+            <ul class="duties">
+              <li>Built and led a design-platform team supporting <b>four product squads</b>, giving clear ownership to Miro&rsquo;s design language.</li>
+              <li>Made the case for a shared design-to-code workflow and aligned leadership around the investment, moving the work from a local initiative to an organizational priority.</li>
+              <li>Led a refresh of Miro&rsquo;s design language, raising visual quality and making the product feel more distinctive and recognizably Miro.</li>
+            </ul>
+          </div>
+          </div>
         </div>
-        <div class="role">
-          <div class="role-head">
-            <h3>Miro &mdash; Design Manager, Core Experiences</h3>
-            <p class="dates">2025&ndash;2026</p>
+        <div class="org">
+          <div class="org-head">
+            <h3>HP</h3>
+            <p class="dates">2017&ndash;2025</p>
           </div>
-          <p class="scope">2 teams &middot; 4 direct reports</p>
-          <ul class="duties">
-            <li>Built and led a design-platform team supporting four product squads, giving clear ownership to Miro&rsquo;s design language.</li>
-            <li>Made the case for a shared design-to-code workflow and aligned leadership around the investment, moving the work from a local initiative to an organizational priority.</li>
-            <li>Led a refresh of Miro&rsquo;s design language, raising visual quality and making the product feel more distinctive and recognizably Miro.</li>
-          </ul>
-        </div>
-        <div class="role">
-          <div class="role-head">
-            <h3>HP &mdash; Design Lab Lead</h3>
-            <p class="dates">2024&ndash;2025</p>
+          <div class="roles">
+          <div class="role">
+            <div class="role-head">
+              <h4>Design Lab Lead</h4>
+              <p class="dates">2024&ndash;2025</p>
+            </div>
+            <p class="scope">1 team &middot; 5 direct reports</p>
+            <ul class="duties">
+              <li>Led HP&rsquo;s early-stage innovation team, exploring new markets, emerging technologies and unmet customer needs.</li>
+              <li>Framed new product opportunities and used prototypes to test whether they were worth developing.</li>
+              <li>Focused on the riskiest assumptions first, giving teams stronger evidence for investment decisions.</li>
+            </ul>
           </div>
-          <p class="scope">1 team &middot; 5 direct reports</p>
-          <ul class="duties">
-            <li>Led HP&rsquo;s early-stage innovation team, exploring new markets, emerging technologies and unmet customer needs.</li>
-            <li>Framed new product opportunities and used prototypes to test whether they were worth developing.</li>
-            <li>Focused on the riskiest assumptions first, giving teams stronger evidence for investment decisions.</li>
-          </ul>
-        </div>
-        <div class="role">
-          <div class="role-head">
-            <h3>HP &mdash; Product Design Lead</h3>
-            <p class="dates">2021&ndash;2023</p>
+          <div class="role">
+            <div class="role-head">
+              <h4>Product Design Lead</h4>
+              <p class="dates">2021&ndash;2023</p>
+            </div>
+            <p class="scope">1 team &middot; 2 direct reports</p>
+            <ul class="duties">
+              <li>Led the move to a shared design-system platform, common interaction patterns and consistent product standards.</li>
+              <li>Increased component reuse by <b>40%</b> and shortened update cycles by <b>25%</b>.</li>
+              <li>Set standards for quality, consistency, usability and metrics for adoption across products.</li>
+            </ul>
           </div>
-          <p class="scope">1 team &middot; 2 direct reports</p>
-          <ul class="duties">
-            <li>Led the move to a shared design-system platform, common interaction patterns and consistent product standards.</li>
-            <li>Increased component reuse by 40% and shortened update cycles by 25%.</li>
-            <li>Set standards for quality, consistency, usability and metrics for adoption across products.</li>
-          </ul>
-        </div>
-        <div class="role">
-          <div class="role-head">
-            <h3>HP &mdash; Senior Product Designer</h3>
-            <p class="dates">2019&ndash;2021</p>
+          <div class="role">
+            <div class="role-head">
+              <h4>Senior Product Designer</h4>
+              <p class="dates">2019&ndash;2021</p>
+            </div>
+            <p class="scope">Solo contributor</p>
+            <ul class="duties">
+              <li>Led design for several initiatives, including the consolidation of <b>10+ applications</b> used by <b>36k enterprises</b> into a single platform.</li>
+              <li>Led design research to discover new customer needs, shape longer-term product direction and create an experimentation team culture.</li>
+            </ul>
           </div>
-          <p class="scope">Solo contributor</p>
-          <ul class="duties">
-            <li>Led design for several initiatives, including the consolidation of 10+ applications used by 36k enterprises into a single platform.</li>
-            <li>Led design research to discover new customer needs, shape longer-term product direction and create an experimentation team culture.</li>
-          </ul>
-        </div>
-        <div class="role">
-          <div class="role-head">
-            <h3>HP &mdash; Product Designer</h3>
-            <p class="dates">2017&ndash;2019</p>
+          <div class="role">
+            <div class="role-head">
+              <h4>Product Designer</h4>
+              <p class="dates">2017&ndash;2019</p>
+            </div>
+            <p class="scope">Solo contributor</p>
+            <ul class="duties">
+              <li>Designed product experiences from early concepts and user flows through detailed interactions and delivery.</li>
+              <li>Built prototypes, tested ideas with customers and worked with Product and Engineering to refine solutions before development.</li>
+            </ul>
           </div>
-          <p class="scope">Solo contributor</p>
-          <ul class="duties">
-            <li>Designed product experiences from early concepts and user flows through detailed interactions and delivery.</li>
-            <li>Built prototypes, tested ideas with customers and worked with Product and Engineering to refine solutions before development.</li>
-          </ul>
+          </div>
         </div>
       </section>
     </div>
