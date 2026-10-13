@@ -22,6 +22,8 @@
   :root {
     --ink: #1C1C1E;
     --grey: rgba(28, 28, 30, 0.62);
+    --side: 46mm;   /* the sidebar column */
+    --gap: 16mm;
     --rule: rgba(28, 28, 30, 0.14);
   }
 
@@ -46,7 +48,7 @@
   /* The mark used to sit here and, being taller than the name and contact
      line, it set the white band beneath the header. With the mark moved to the
      page corner that band has to be stated, or it collapses to the margin. */
-  header { margin-bottom: 10mm; }
+  header { margin-bottom: 7mm; }
 
   h1 {
     margin: 0;
@@ -73,12 +75,11 @@
     height: 19mm;
     object-fit: contain;
   }
-  /* On the page, Experience runs to the foot of the right column; the
-     sidebar ends well short of it, so the mark takes that corner. */
-  @media print { .mark { right: auto; left: 0; } }
 
+  /* The bio spans the Experience column, not the full page. */
   .profile {
-    margin: 0 0 12mm;
+    max-width: calc(100% - var(--side) - var(--gap));
+    margin: 0 0 7mm;
     line-height: 1.5;
     text-wrap: pretty;
   }
@@ -87,8 +88,8 @@
 
   .cols {
     display: grid;
-    grid-template-columns: 46mm 1fr;
-    gap: 0 16mm;
+    grid-template-columns: 1fr var(--side);
+    gap: 0 var(--gap);
     align-items: start;
   }
 
@@ -207,59 +208,9 @@
       </p>
   </header>
 
-  <p class="profile">I&rsquo;m a designer with 10+ years of experience building products &ndash; shaping direction, working through interaction problems and staying close to the details. Currently at Miro, I lead Design Platform, AI enablement and Growth initiatives. I&rsquo;ve worked across a range of product areas&mdash;from AI and collaboration tools to design systems&mdash;and at different stages, from early concepts to established products at scale.</p>
+  <p class="profile">I&rsquo;m a designer with 10+ years of experience building products &ndash; shaping direction, working through interaction problems and staying close to the details. At Miro, I lead Design Platform, AI enablement and Growth. I&rsquo;ve worked across AI, collaboration tools and design systems, from early concepts to established products at scale.</p>
 
   <div class="cols">
-
-    <div>
-      <section>
-        <h2>Background</h2>
-        <div class="rec">
-          <h3>MPhil, Contemporary Philosophy</h3>
-          <p>Universitat Oberta de Catalunya &middot; <span class="dates">2023&ndash;Present</span></p>
-        </div>
-        <div class="rec">
-          <h3>MBA, Business Administration</h3>
-          <p>EAE Business School &middot; <span class="dates">2020&ndash;2022</span></p>
-        </div>
-        <div class="rec">
-          <h3>MA, Advanced Studies in Art History</h3>
-          <p>University of Barcelona &middot; <span class="dates">2015&ndash;2016</span></p>
-        </div>
-        <div class="rec">
-          <h3>Bachelor&rsquo;s Degree, Product Design</h3>
-          <p>ELISAVA &middot; <span class="dates">2011&ndash;2015</span></p>
-        </div>
-        <div class="rec">
-          <h3>Experience Design Program</h3>
-          <p>KAOSPILOT &middot; <span class="dates">2019</span></p>
-        </div>
-      </section>
-
-      <section>
-        <h2>Lecturer at</h2>
-        <div class="rec">
-          <h3>ELISAVA &mdash; Master&rsquo;s Program Director, Strategic Design and Innovation</h3>
-          <p class="dates">2023&ndash;2025</p>
-        </div>
-        <div class="rec">
-          <h3>BAU &mdash; Lecturer, Master&rsquo;s in Experience Design</h3>
-          <p class="dates">2021&ndash;2025</p>
-        </div>
-        <div class="rec">
-          <h3>Massana School of Art and Design &mdash; Academic Advisor</h3>
-          <p class="dates">2021</p>
-        </div>
-        <div class="rec">
-          <h3>IED &mdash; Lecturer, Master&rsquo;s in Interaction Design</h3>
-          <p class="dates">2020</p>
-        </div>
-        <div class="rec">
-          <h3>ELISAVA &mdash; Lecturer, Undergraduate Degree in Design</h3>
-          <p class="dates">2016&ndash;2021</p>
-        </div>
-      </section>
-    </div>
 
     <div>
       <section>
@@ -347,6 +298,56 @@
             </ul>
           </div>
           </div>
+        </div>
+      </section>
+    </div>
+
+    <div>
+      <section>
+        <h2>Background</h2>
+        <div class="rec">
+          <h3>MPhil, Contemporary Philosophy</h3>
+          <p>Universitat Oberta de Catalunya &middot; <span class="dates">2023&ndash;Present</span></p>
+        </div>
+        <div class="rec">
+          <h3>MBA, Business Administration</h3>
+          <p>EAE Business School &middot; <span class="dates">2020&ndash;2022</span></p>
+        </div>
+        <div class="rec">
+          <h3>MA, Advanced Studies in Art History</h3>
+          <p>University of Barcelona &middot; <span class="dates">2015&ndash;2016</span></p>
+        </div>
+        <div class="rec">
+          <h3>Bachelor&rsquo;s Degree, Product Design</h3>
+          <p>ELISAVA &middot; <span class="dates">2011&ndash;2015</span></p>
+        </div>
+        <div class="rec">
+          <h3>Experience Design Program</h3>
+          <p>KAOSPILOT &middot; <span class="dates">2019</span></p>
+        </div>
+      </section>
+
+      <section>
+        <h2>Lecturer at</h2>
+        <div class="rec">
+          <h3>ELISAVA &mdash; Master&rsquo;s Program Director, Strategic Design and Innovation</h3>
+          <p class="dates">2023&ndash;2025</p>
+        </div>
+        <div class="rec">
+          <h3>BAU &mdash; Lecturer, Master&rsquo;s in Experience Design</h3>
+          <p class="dates">2021&ndash;2025</p>
+        </div>
+        <div class="rec">
+          <h3>Massana School of Art and Design &mdash; Academic Advisor</h3>
+          <p class="dates">2021</p>
+        </div>
+        <div class="rec">
+          <h3>IED &mdash; Lecturer, Master&rsquo;s in Interaction Design</h3>
+          <p class="dates">2020</p>
+        </div>
+        <div class="rec">
+          <h3>ELISAVA &mdash; Lecturer, Undergraduate Degree in Design</h3>
+          <p class="dates">2016&ndash;2021</p>
         </div>
       </section>
     </div>
