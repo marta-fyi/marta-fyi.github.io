@@ -124,6 +124,10 @@
   section { margin-bottom: 4mm; }
   section:last-child { margin-bottom: 0; }
 
+  /* Measured, not derived: drops "Lecturer at" so its baseline sits on the HP
+     heading's across the gutter. Re-measure if Experience above HP changes. */
+  .teaching { margin-top: 16mm; }
+
   h2 {
     margin: 0 0 2.5mm;
     padding-bottom: 1.2mm;
@@ -359,7 +363,7 @@
         </div>
       </section>
 
-      <section>
+      <section class="teaching">
         <h2>Lecturer at</h2>
         <div class="rec">
           <h3>Master&rsquo;s Program Director</h3>
