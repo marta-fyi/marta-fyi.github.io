@@ -122,7 +122,7 @@
   .rec .dates { color: var(--ink-45); font-variant-numeric: tabular-nums; }
 
   /* Experience: dates ride on the title line to free up the measure. */
-  .role { margin-bottom: 2mm; }
+  .role { margin-bottom: 4.5mm; }
   .role:last-child { margin-bottom: 0; }
 
   .role-head {
@@ -141,9 +141,19 @@
 
   .role-head .dates {
     flex: none;
+    margin: 0;
     font-size: 8pt;
     color: var(--ink-45);
     font-variant-numeric: tabular-nums;
+  }
+
+  /* Team size, under the title: the same quiet line as a sidebar record's org. */
+  .role .scope {
+    margin: 0.3mm 0 0;
+    font-size: 8pt;
+    color: var(--ink-60);
+    font-variant-numeric: tabular-nums;
+    break-after: avoid;
   }
 
   .duties {
@@ -243,6 +253,7 @@
             <h3>Miro &mdash; Design Manager, AI Growth</h3>
             <p class="dates">2026&ndash;Present</p>
           </div>
+          <p class="scope">4 teams &middot; 6 direct reports</p>
           <ul class="duties">
             <li>Lead Acquisition, Retention and Growth streams, working on activation and expansion impacting 100M+ users.</li>
             <li>Lead the design of the AI onboarding experience that delivered a meaningful increase in paid conversion and ARR.</li>
@@ -254,6 +265,7 @@
             <h3>Miro &mdash; Design Manager, Core Experiences</h3>
             <p class="dates">2025&ndash;2026</p>
           </div>
+          <p class="scope">2 teams &middot; 4 direct reports</p>
           <ul class="duties">
             <li>Built and led a design-platform team supporting four product squads, giving clear ownership to Miro&rsquo;s design language.</li>
             <li>Made the case for a shared design-to-code workflow and aligned leadership around the investment, moving the work from a local initiative to an organizational priority.</li>
@@ -265,6 +277,7 @@
             <h3>HP &mdash; Design Lab Lead</h3>
             <p class="dates">2024&ndash;2025</p>
           </div>
+          <p class="scope">1 team &middot; 5 direct reports</p>
           <ul class="duties">
             <li>Led HP&rsquo;s early-stage innovation team, exploring new markets, emerging technologies and unmet customer needs.</li>
             <li>Framed new product opportunities and used prototypes to test whether they were worth developing.</li>
@@ -276,6 +289,7 @@
             <h3>HP &mdash; Product Design Lead</h3>
             <p class="dates">2021&ndash;2023</p>
           </div>
+          <p class="scope">1 team &middot; 2 direct reports</p>
           <ul class="duties">
             <li>Led the move to a shared design-system platform, common interaction patterns and consistent product standards.</li>
             <li>Increased component reuse by 40% and shortened update cycles by 25%.</li>
@@ -287,6 +301,7 @@
             <h3>HP &mdash; Senior Product Designer</h3>
             <p class="dates">2019&ndash;2021</p>
           </div>
+          <p class="scope">Solo contributor</p>
           <ul class="duties">
             <li>Led four designers working on different products and platform projects.</li>
             <li>Consolidated 10+ applications used by 36k enterprises into a single platform.</li>
@@ -298,6 +313,7 @@
             <h3>HP &mdash; Product Designer</h3>
             <p class="dates">2017&ndash;2019</p>
           </div>
+          <p class="scope">Solo contributor</p>
           <ul class="duties">
             <li>Designed product experiences from early concepts and user flows through detailed interactions and delivery.</li>
             <li>Built prototypes, tested ideas with customers and worked with Product and Engineering to refine solutions before development.</li>
