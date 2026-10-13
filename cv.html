@@ -7,7 +7,7 @@
 <title>Marta Domingo — CV</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600&display=swap" rel="stylesheet">
 <style>
   /* Source for assets/marta-domingo-cv.pdf -- regenerate with tools/build-cv.sh.
      Two columns because one A4 page cannot hold this much at a readable size in
@@ -21,8 +21,7 @@
 
   :root {
     --ink: #1C1C1E;
-    --ink-60: rgba(28, 28, 30, 0.72);
-    --ink-45: rgba(28, 28, 30, 0.60);
+    --grey: rgba(28, 28, 30, 0.62);
     --rule: rgba(28, 28, 30, 0.14);
   }
 
@@ -33,7 +32,7 @@
   body {
     font-family: 'Archivo', system-ui, -apple-system, sans-serif;
     font-weight: 400;
-    font-size: 8.5pt;
+    font-size: 8pt;
     line-height: 1.4;
     color: var(--ink);
     -webkit-font-smoothing: antialiased;
@@ -52,14 +51,14 @@
   h1 {
     margin: 0;
     font-size: 14pt;
-    font-weight: 500;
+    font-weight: 600;
     letter-spacing: -0.015em;
   }
 
   /* Plain text, no glyphs: the web footer marks each action with one, the PDF
      does not need to. mailto and https still survive as link annotations
      through Chrome's print, so the addresses stay clickable. */
-  .contact { margin: 1.5mm 0 0; font-size: 8pt; color: var(--ink-60); }
+  .contact { margin: 1.5mm 0 0; color: var(--grey); }
 
   .contact a { color: inherit; text-decoration: none; }
 
@@ -80,7 +79,6 @@
 
   .profile {
     margin: 0 0 12mm;
-    font-size: 8.5pt;
     line-height: 1.5;
     text-wrap: pretty;
   }
@@ -101,8 +99,9 @@
     margin: 0 0 2.5mm;
     padding-bottom: 1.2mm;
     border-bottom: 1px solid var(--rule);
-    font-size: 8.5pt;
-    font-weight: 500;
+    font-size: inherit;
+    font-weight: 400;
+    color: var(--grey);
   }
 
   /* Sidebar records: title, then org and dates beneath. */
@@ -111,18 +110,17 @@
 
   .rec h3 {
     margin: 0;
-    font-size: 8.5pt;
-    font-weight: 500;
+    font-size: inherit;
+    font-weight: 600;
     line-height: 1.3;
   }
 
   .rec p {
     margin: 0.3mm 0 0;
-    font-size: 8pt;
-    color: var(--ink-60);
+    color: var(--grey);
   }
 
-  .rec .dates { color: var(--ink-45); font-variant-numeric: tabular-nums; }
+  .rec .dates { font-variant-numeric: tabular-nums; }
 
   /* Experience: one heading per company, its roles nested beneath on a
      thin line, newest first, so promotions read as one ladder. Dates ride
@@ -141,9 +139,8 @@
 
   .org-head h3 {
     margin: 0;
-    font-size: 10.5pt;
-    font-weight: 700;
-    letter-spacing: -0.01em;
+    font-size: 9pt;
+    font-weight: 600;
   }
 
   .roles {
@@ -157,24 +154,21 @@
 
   .role-head h4 {
     margin: 0;
-    font-size: 9pt;
+    font-size: inherit;
     font-weight: 600;
   }
 
   .role-head .dates {
     flex: none;
     margin: 0;
-    font-size: 8pt;
-    color: var(--ink-60);
+    color: var(--grey);
     font-variant-numeric: tabular-nums;
   }
 
   /* Team size, under the title. */
   .role .scope {
     margin: 0.4mm 0 0;
-    font-size: 8pt;
-    font-weight: 500;
-    color: var(--ink-60);
+    color: var(--grey);
     font-variant-numeric: tabular-nums;
     break-after: avoid;
   }
@@ -183,7 +177,6 @@
     margin: 1.4mm 0 0;
     padding: 0;
     list-style: none;
-    font-size: 7.5pt;
     line-height: 1.4;
   }
 
@@ -198,11 +191,8 @@
     content: "–";
     position: absolute;
     left: 0;
-    color: var(--ink-45);
+    color: var(--grey);
   }
-
-  /* The numbers carry the claims: they lead the eye down the list. */
-  .duties b { font-weight: 600; }
 </style>
 </head>
 <body>
@@ -286,7 +276,7 @@
             </div>
             <p class="scope">4 teams &middot; 6 direct reports</p>
             <ul class="duties">
-              <li>Lead Acquisition, Retention and Growth streams, working on activation and expansion impacting <b>100M+ users</b>.</li>
+              <li>Lead Acquisition, Retention and Growth streams, working on activation and expansion impacting 100M+ users.</li>
               <li>Lead the design of the AI onboarding experience that delivered a meaningful increase in paid conversion and ARR.</li>
               <li>Set up shared standards and practical frameworks that help teams make stronger decisions autonomously.</li>
             </ul>
@@ -298,7 +288,7 @@
             </div>
             <p class="scope">2 teams &middot; 4 direct reports</p>
             <ul class="duties">
-              <li>Built and led a design-platform team supporting <b>four product squads</b>, giving clear ownership to Miro&rsquo;s design language.</li>
+              <li>Built and led a design-platform team supporting four product squads, giving clear ownership to Miro&rsquo;s design language.</li>
               <li>Made the case for a shared design-to-code workflow and aligned leadership around the investment, moving the work from a local initiative to an organizational priority.</li>
               <li>Led a refresh of Miro&rsquo;s design language, raising visual quality and making the product feel more distinctive and recognizably Miro.</li>
             </ul>
@@ -330,7 +320,7 @@
             <p class="scope">1 team &middot; 2 direct reports</p>
             <ul class="duties">
               <li>Led the move to a shared design-system platform, common interaction patterns and consistent product standards.</li>
-              <li>Increased component reuse by <b>40%</b> and shortened update cycles by <b>25%</b>.</li>
+              <li>Increased component reuse by 40% and shortened update cycles by 25%.</li>
               <li>Set standards for quality, consistency, usability and metrics for adoption across products.</li>
             </ul>
           </div>
@@ -341,7 +331,7 @@
             </div>
             <p class="scope">Solo contributor</p>
             <ul class="duties">
-              <li>Led design for several initiatives, including the consolidation of <b>10+ applications</b> used by <b>36k enterprises</b> into a single platform.</li>
+              <li>Led design for several initiatives, including the consolidation of 10+ applications used by 36k enterprises into a single platform.</li>
               <li>Led design research to discover new customer needs, shape longer-term product direction and create an experimentation team culture.</li>
             </ul>
           </div>
