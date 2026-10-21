@@ -16,7 +16,7 @@
  *                QR code is caught as outdated.
  *   Fri  office  The week, clash resolved, becomes a report for the
  *                contractors; the phase completes, next week begins.
- * The clock chip names each day's feature (office · Store, ...).
+ * The clock chip says the time and where the day happens (office or site).
  *
  * Grammar (deliberately unlike Production Hub's cards and travelling token):
  *   - One drawing fills the frame and one continuous camera moves over it.
@@ -59,11 +59,10 @@
   var FRAME_T = [6.15, 12.55, 18.55, 25.55, END];
   var NEXT = S[4] + 6.3;                             /* Friday's close: the calendar rolls to next week */
   var TRANS_IN = [null, S[1], S[2], S[3], S[4]];
-  /* the clock: from each time on, hh:mm, where, and the day's feature; it
+  /* the clock: from each time on, hh:mm and where; it
      ticks a minute every 1.5 s */
-  var CLOCK = [[0, 9, 12, 'office', 0], [S[1] + .3, 8, 40, 'site', 1], [S[2] + .3, 11, 5, 'site', 2],
-               [S[3] + .3, 10, 5, 'office', 3], [S[3] + 3.0, 14, 30, 'site', 3], [S[4] + .3, 16, 56, 'office', 4], [NEXT, 8, 0, 'office', 0]];   /* next week starts again at Store */
-  var FEAT_M = ['Store', 'Collab', 'Markup', 'Review', 'Report'];   /* narrow: the chip has room for one short word */
+  var CLOCK = [[0, 9, 12, 'office'], [S[1] + .3, 8, 40, 'site'], [S[2] + .3, 11, 5, 'site'],
+               [S[3] + .3, 10, 5, 'office'], [S[3] + 3.0, 14, 30, 'site'], [S[4] + .3, 16, 56, 'office'], [NEXT, 8, 0, 'office']];   /* next week starts again in the office */
 
   /* --- icons ----------------------------------------------------------- */
   var ic = E.icons({
@@ -136,8 +135,7 @@
     });
     return s + '</span><span class="bw-cal__t"><span class="stack bw-cal__i"><span data-a="ioffice">' + ic('office') + '</span>' +
       '<span data-a="isite">' + ic('site') + '</span></span><span><b class="num" data-a="clock">09:12</b>' +
-      '<span class="bw-cal__w"><span data-a="where">office</span> · <span data-a="feat">' + FEATURES[0] + '</span></span>' +
-      '<span class="bw-cal__f" data-a="featm">' + FEAT_M[0] + '</span></span></span></div>';
+      '<span class="bw-cal__w" data-a="where">office</span></span></span></div>';
   }
 
   /* John's mark, in sketch units: one quick marker loop round the duct that
@@ -652,8 +650,6 @@
       var m = c[1] * 60 + c[2] + Math.floor(Math.max(0, t - c[0]) / 1.5), txt = pad(Math.floor(m / 60)) + ':' + pad(m % 60);
       var el = q('clock'); if (el && el.textContent !== txt) el.textContent = txt;
       var w = q('where'); if (w && w.textContent !== c[3]) w.textContent = c[3];
-      var f = q('feat'); if (f && f.textContent !== FEATURES[c[4]]) f.textContent = FEATURES[c[4]];
-      var fm = q('featm'); if (fm && fm.textContent !== FEAT_M[c[4]]) fm.textContent = FEAT_M[c[4]];
       /* the engine keeps Friday as the current day; next week, Monday is */
       var cs = q('calsel'), nx = t >= NEXT + .2;
       if (cs) { var cal = cs.parentNode.parentNode; if (cal.hasAttribute('data-next') !== nx) { if (nx) cal.setAttribute('data-next', ''); else cal.removeAttribute('data-next'); } }
