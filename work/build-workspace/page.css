@@ -302,7 +302,7 @@
 .pm--bw.pm--m .bw-cal__w { display: none; }   /* narrow: the glyph says office or site */
 .pm--bw.pm--m .pm__pp { right: calc(12 * var(--u)); top: calc(20 * var(--u)); width: calc(32 * var(--u)); height: calc(32 * var(--u)); }
 
-/* sticky centring: 580 x 560/600 = 541 tall in the 560px column */
+/* pinned height: 580 x 560/600 = 541 tall in the 560px column */
 .pmr__vis { --pmr-half: 271px; }
 
 /* --- the prose beside the promo: the four steps, the three decisions ---- */

@@ -22,14 +22,19 @@
          clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 
 /* ======================================================================
-   Page layout: the prose range with the sticky promo beside it.
-   --pmr-half is half the promo's rendered height in the 560px column, so
-   the sticky promo sits centred in the viewport.
+   Page layout: the overview (.pmr__lead), then the promo, then the prose.
+   Narrow, they stack in that order, so the promo follows the overview.
+   Wide, the promo takes the top of the right column, level with the
+   overview, and stays pinned there while the prose scrolls past. It pins
+   just below the corner mascot (6vh + 88px), or higher if the viewport is
+   too short to show the whole promo there. --pmr-half is half the promo's
+   rendered height in the 560px column.
    ====================================================================== */
 .pmr__vis { margin: 0 0 3.5rem; width: min(640px, 100%); container-type: inline-size; }
 .pmr__prose > h2:first-child { margin-top: 0; }
 
 @media (min-width: 900px) {
+  .pmr__lead > h2, .pmr__lead > p, .pmr__lead > dl,
   .pmr__prose > h2, .pmr__prose > p { max-width: var(--col); }
 }
 @media (min-width: 1200px) {
@@ -37,10 +42,13 @@
     display: grid; grid-template-columns: minmax(0, 600px) 560px;
     justify-content: space-between; column-gap: var(--col-gap); align-items: start;
   }
-  .pmr__prose { grid-column: 1; grid-row: 1; }
+  .pmr__lead { grid-column: 1; grid-row: 1; }
+  .pmr__prose { grid-column: 1; grid-row: 2; }
+  .pmr__lead > h2, .pmr__lead > p, .pmr__lead > dl,
   .pmr__prose > h2, .pmr__prose > p { max-width: none; }
   .pmr__vis {
-    grid-column: 2; grid-row: 1; margin: 0; width: 560px;
-    position: sticky; top: max(24px, calc(50vh - var(--pmr-half, 355px)));
+    grid-column: 2; grid-row: 1 / span 2; margin: 0; width: 560px;
+    position: sticky;
+    top: max(24px, min(calc(6vh + 112px), calc(100vh - 2 * var(--pmr-half, 355px) - 24px)));
   }
 }
