@@ -210,7 +210,9 @@
     function label() {
       if (still.matches) { f.pp.hidden = true; return; }
       f.pp.hidden = false;
-      var m = state === 'playing' ? ['Pause animation', 'pause'] : state === 'ended' ? ['Replay animation', 'replay'] : ['Play animation', 'play'];
+      /* held by hover counts as paused: the button offers Play, not Pause */
+      var held = state === 'playing' && hover && auto;
+      var m = state === 'playing' && !held ? ['Pause animation', 'pause'] : state === 'ended' ? ['Replay animation', 'replay'] : ['Play animation', 'play'];
       f.pp.setAttribute('aria-label', m[0]); f.pp.innerHTML = ic(m[1]);
     }
     function tick(ts) {
@@ -249,12 +251,13 @@
         });
       });
       f.pp.addEventListener('click', function () {
-        if (state === 'playing') { state = 'paused'; label(); sync(); }
+        if (state === 'playing' && hover && auto) { auto = false; label(); sync(); }   /* held by hover: Play means play */
+        else if (state === 'playing') { state = 'paused'; label(); sync(); }
         else if (state === 'ended') play(0);
         else play(null);
       });
-      f.el.addEventListener('mouseenter', function () { hover = true; sync(); });
-      f.el.addEventListener('mouseleave', function () { hover = false; sync(); });
+      f.el.addEventListener('mouseenter', function () { hover = true; label(); sync(); });
+      f.el.addEventListener('mouseleave', function () { hover = false; label(); sync(); });
       label(); sync();
       /* dev only: drive the master timeline from the console or Playwright */
       if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) {
