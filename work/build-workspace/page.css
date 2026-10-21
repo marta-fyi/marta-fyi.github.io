@@ -9,10 +9,12 @@
  *
  * Look measured from build.hp.com/landing (its bundle and a render):
  *   hp       #024AD8 actions, pins, the current day, the moved wall
- *   deep     #0E3191 the new wall's ink
+ *   deep     #0E3191 the moved wall's ink, apart from the plan's lines
  *   sheet    a pale-blue blueprint; plan lines turned HP blue
  *   glass    white chips over the drawing, soft blue shadows
- *   ink      #16141D, greys #858585 / #525252
+ *   ink      #16141D, greys #6E6E6E / #525252 (small text keeps 4.5:1)
+ *   duct     amber, dashed: the services run the moved wall crosses; the
+ *            crossing turns clash red until v.017 opens the wall for it
  *   CMY      cyan added, magenta removed (the comparison): a nod to print
  *   marker   #1F1D2B John's loop, on paper and on the plan
  * The landing sets Forma DJR UI, HP's face and not ours to serve; this is
@@ -21,8 +23,8 @@
 
 .pm--bw {
   --hp: #024AD8;   --hp-deep: #0E3191;  --hp-line: #2E66DE;  --hp-pale: #E6EEFC;
-  --ink: #16141D;  --grey: #858585;     --grey-2: #525252;   --hair: rgba(22, 20, 29, .08);
-  --sheet: #F5F8FE; --ok: #1F9D55;
+  --ink: #16141D;  --grey: #6E6E6E;     --grey-2: #525252;   --hair: rgba(22, 20, 29, .08);
+  --sheet: #F5F8FE; --ok: #15803D;      --ahead: #8E8E96;    --duct: #D97706;  --clash: #E5484D;
   --cyan: #00D3FF; --magenta: #FE6AFF;  --marker: #1F1D2B;
   --glass: rgba(255, 255, 255, .9);
   --sh:    0 calc(18 * var(--u)) calc(40 * var(--u)) calc(-16 * var(--u)) rgba(2, 74, 216, .22), 0 calc(4 * var(--u)) calc(10 * var(--u)) calc(-4 * var(--u)) rgba(22, 20, 29, .08);
@@ -52,19 +54,20 @@
 .pm--bw .bw-cal__d { position: relative; width: calc(34 * var(--u)); height: calc(40 * var(--u)); display: flex; flex-direction: column;
                      align-items: center; justify-content: center; color: var(--grey); font-size: calc(12 * var(--u)); line-height: 1.1; }
 .pm--bw .bw-cal__n { overflow: hidden; }
-.pm--bw .bw-cal__d b { font-size: calc(15 * var(--u)); font-weight: 600; color: #B8B8BE; }
+.pm--bw .bw-cal__d b { font-size: calc(15 * var(--u)); font-weight: 600; color: var(--ahead); }
 .pm--bw .bw-cal__d[data-done] b { color: var(--grey-2); }
 .pm--bw .bw-cal__d[aria-current="step"], .pm--bw .bw-cal__d[aria-current="step"] b { color: #fff; }
 /* next week: every day ahead again, and Monday the current one */
 .pm--bw .bw-cal[data-next] .bw-cal__d { color: var(--grey); }
-.pm--bw .bw-cal[data-next] .bw-cal__d b { color: #B8B8BE; }
+.pm--bw .bw-cal[data-next] .bw-cal__d b { color: var(--ahead); }
 .pm--bw .bw-cal[data-next] .bw-cal__d:nth-child(2), .pm--bw .bw-cal[data-next] .bw-cal__d:nth-child(2) b { color: #fff; }
 .pm--bw .bw-cal__t { display: flex; align-items: center; gap: calc(8 * var(--u)); height: calc(32 * var(--u)); padding-left: calc(12 * var(--u));
                      border-left: calc(1 * var(--u)) solid var(--hair); }
 .pm--bw .bw-cal__i { color: var(--hp); }
 .pm--bw .bw-cal__i .ic { width: calc(18 * var(--u)); height: calc(18 * var(--u)); }
 .pm--bw .bw-cal__t b { display: block; font-size: calc(15 * var(--u)); font-weight: 600; line-height: 1.1; }
-.pm--bw .bw-cal__w { display: block; font-size: calc(12 * var(--u)); color: var(--grey); }
+.pm--bw .bw-cal__w { display: block; font-size: calc(12 * var(--u)); color: var(--grey); white-space: nowrap; }
+.pm--bw .bw-cal__f { display: none; font-size: calc(12 * var(--u)); color: var(--grey); white-space: nowrap; }   /* narrow: the feature alone */
 .pm--bw .pm__node:focus-visible, .pm--bw .pm__pp:focus-visible { outline: 2px solid var(--hp); outline-offset: 4px; border-radius: 6px; }   /* real px */
 .pm--bw .pm__pp { position: absolute; right: calc(20 * var(--u)); top: calc(18 * var(--u)); width: calc(36 * var(--u)); height: calc(36 * var(--u)); border-radius: 50%;
                   appearance: none; border: 0; padding: 0; background: #fff; color: var(--ink); cursor: pointer;
@@ -87,9 +90,11 @@
 .pm--bw .bw-walls { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; fill: none; stroke-linecap: round; }
 .pm--bw .bw-erase { stroke: var(--sheet); stroke-width: 26; opacity: 0; }
 .pm--bw .bw-ghost { stroke: var(--hp-line); stroke-width: 4; stroke-dasharray: 14 12; opacity: 0; }
-.pm--bw .bw-wall { stroke: var(--hp); stroke-width: 11; stroke-dasharray: 1; stroke-dashoffset: 1; stroke-linecap: butt; }
+.pm--bw .bw-wall { stroke: var(--hp-deep); stroke-width: 11; stroke-dasharray: 1; stroke-dashoffset: 1; stroke-linecap: butt; }
 .pm--bw .bw-wall--17 { stroke-dasharray: none; stroke-dashoffset: 0; opacity: 0; }
 .pm--bw .bw-dimline { stroke: var(--hp); stroke-width: 4; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.pm--bw .bw-duct { stroke: var(--duct); stroke-width: 9; stroke-dasharray: 22 12; }
+.pm--bw .bw-clash { stroke: var(--clash); stroke-width: 16; opacity: 0; }
 
 /* the +600 mm tag: the tracked wrapper sits on the spot, its label centres on it */
 .pm--bw .bw-dim { position: absolute; left: 0; top: 0; opacity: 0; }
@@ -102,7 +107,7 @@
                     -webkit-backdrop-filter: blur(10px) saturate(1.3); backdrop-filter: blur(10px) saturate(1.3);
                     border: calc(1 * var(--u)) solid rgba(255, 255, 255, .9); }
 .pm--bw .bw-ver { display: flex; align-items: center; gap: calc(8 * var(--u)); height: calc(36 * var(--u));
-                                     padding: 0 calc(12 * var(--u)) 0 calc(9 * var(--u)); font-size: calc(14 * var(--u)); font-weight: 500; white-space: nowrap; }
+                  padding: 0 calc(12 * var(--u)) 0 calc(9 * var(--u)); font-size: calc(14 * var(--u)); font-weight: 500; white-space: nowrap; }
 .pm--bw .bw-ok { width: calc(20 * var(--u)); height: calc(20 * var(--u)); flex: none; overflow: visible; }
 .pm--bw .bw-ok__ring { fill: none; stroke: #C9C9CF; stroke-width: 1.6; }
 .pm--bw .bw-ok__fill { fill: var(--ok); opacity: 0; }
@@ -175,7 +180,10 @@
 .pm--bw .bw-pick__r b { display: block; font-size: calc(13 * var(--u)); font-weight: 600; }
 .pm--bw .bw-pick__r small { display: block; font-size: calc(12 * var(--u)); color: var(--grey); }
 .pm--bw .bw-av--2 { background: #EEF0F3; color: var(--grey-2); }
-.pm--bw .bw-tap, .pm--bw .bw-tb { position: absolute; left: 0; top: 0; transform-origin: 0 0; opacity: 0; pointer-events: none; }
+.pm--bw .bw-tap, .pm--bw .bw-tb, .pm--bw .bw-cur { position: absolute; left: 0; top: 0; transform-origin: 0 0; opacity: 0; pointer-events: none; }
+.pm--bw .bw-cur { z-index: 5; }
+.pm--bw .bw-cur svg { position: absolute; left: 0; top: 0; width: calc(16 * var(--u)); height: calc(20 * var(--u)); overflow: visible;
+                      fill: var(--ink); stroke: #fff; stroke-width: 1.4; stroke-linejoin: round; }
 .pm--bw .bw-tap i { position: absolute; left: calc(-15 * var(--u)); top: calc(-15 * var(--u)); width: calc(30 * var(--u)); height: calc(30 * var(--u)); border-radius: 50%;
                     background: rgba(2, 74, 216, .22); box-shadow: 0 0 0 calc(2 * var(--u)) rgba(2, 74, 216, .35); }
 .pm--bw .bw-tb > span { position: absolute; left: calc(-10 * var(--u)); top: calc(-10 * var(--u)); width: calc(20 * var(--u)); height: calc(20 * var(--u)); border-radius: 50%;
@@ -195,6 +203,14 @@
                          filter: grayscale(1) contrast(.9); opacity: .8; }
 .pm--bw .bw-print__vec { position: absolute; inset: 0; isolation: isolate; clip-path: inset(0 100% 0 0); }
 .pm--bw .bw-print__vec .bw-print__img { filter: none; opacity: 1; }
+/* v.016 on the print: the old wall erased, the moved wall, the duct */
+.pm--bw .bw-pwalls { position: absolute; overflow: visible; fill: none; }
+.pm--bw .bw-pwalls__erase { stroke: #fff; stroke-width: 26; }
+.pm--bw .bw-pwalls__wall { stroke: #3A3A40; stroke-width: 11; }
+.pm--bw .bw-pwalls__duct { stroke: #8A8A90; stroke-width: 9; stroke-dasharray: 22 12; }
+.pm--bw .pw1 .bw-pwalls__erase { stroke: var(--sheet); }
+.pm--bw .pw1 .bw-pwalls__wall { stroke: var(--hp-deep); }
+.pm--bw .pw1 .bw-pwalls__duct { stroke: var(--duct); }
 .pm--bw .bw-sketch, .pm--bw .bw-vecsk { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 .pm--bw .bw-sketch path { stroke-dasharray: 1; stroke-dashoffset: 1; }
 .pm--bw .bw-pen { stroke: var(--marker); stroke-width: 3.4; opacity: .92; }                       /* John's marker */
@@ -210,14 +226,13 @@
 .pm--bw .bw-pchip .stack > span { display: inline-flex; align-items: center; gap: calc(6 * var(--u)); color: var(--hp); white-space: nowrap; }
 .pm--bw .bw-pchip .ic { width: calc(14 * var(--u)); height: calc(14 * var(--u)); }
 /* the vector loop on the plan, centred on (0,0): marker, no fill */
-.pm--bw .bw-mk { --w: calc(64 * var(--u)); }
-.pm--bw.pm--m .bw-mk { --w: calc(50 * var(--u)); }
+.pm--bw .bw-mk { --w: calc(96 * var(--u)); }   /* = GEO.mkW: wide enough that the pin and its badge sit inside */
 .pm--bw .bw-mk svg { position: absolute; width: var(--w); height: calc(var(--w) * 68 / 88); left: calc(var(--w) / -2); top: calc(var(--w) * 68 / 88 / -2);
                      overflow: visible; fill: none; stroke: var(--marker); stroke-width: 4.4; stroke-linecap: round; }
 
 /* --- Thursday: the comparison, the old print, the phone ---------------- */
 .pm--bw .bw-cmp { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; fill: none; opacity: 0; clip-path: inset(0 100% 0 0); }
-.pm--bw .bw-cmp__rem { stroke: var(--magenta); stroke-width: 18; }
+.pm--bw .bw-cmp__rem { stroke: var(--magenta); stroke-width: 7; stroke-dasharray: 18 12; }
 .pm--bw .bw-cmp__add { stroke: var(--cyan); stroke-width: 18; }
 .pm--bw .bw-cdiv { position: absolute; top: 0; bottom: 0; left: 0; width: calc(2 * var(--u)); margin-left: calc(-1 * var(--u)); opacity: 0;
                    background: var(--hp); box-shadow: 0 0 0 calc(4 * var(--u)) rgba(2, 74, 216, .14); }
@@ -234,8 +249,8 @@
 .pm--bw .bw-stack > i:nth-child(2) { transform: translate(calc(7 * var(--u)), calc(5 * var(--u))) rotate(1.5deg); }
 .pm--bw .bw-stack__top { background: #FBFAF6; overflow: hidden; }
 .pm--bw .bw-stack__top .bw-print__img { inset: calc(44 * var(--u)) calc(12 * var(--u)) calc(12 * var(--u)); }
-.pm--bw .bw-stack__qr { position: absolute; right: calc(10 * var(--u)); top: calc(8 * var(--u)); }
-.pm--bw .bw-stack__v { position: absolute; left: calc(12 * var(--u)); top: calc(14 * var(--u)); font-size: calc(12 * var(--u)); color: var(--grey-2); }
+.pm--bw .bw-stack__qr { position: absolute; left: calc(10 * var(--u)); top: calc(8 * var(--u)); }   /* left: the phone stands on the right */
+.pm--bw .bw-stack__v { position: absolute; left: calc(50 * var(--u)); top: calc(14 * var(--u)); font-size: calc(12 * var(--u)); color: var(--grey-2); }
 .pm--bw .bw-phone { position: absolute; aspect-ratio: 172 / 352; padding: calc(7 * var(--u)); border-radius: calc(30 * var(--u)); background: var(--ink); opacity: 0;
                     box-shadow: 0 calc(40 * var(--u)) calc(70 * var(--u)) calc(-24 * var(--u)) rgba(2, 30, 90, .5); }
 .pm--bw .bw-phone__scr { position: relative; height: 100%; display: flex; flex-direction: column; border-radius: calc(24 * var(--u)); overflow: hidden; background: #fff; }
@@ -299,7 +314,8 @@
 .pm--bw.pm--m .bw-cal__m { display: none; }
 .pm--bw.pm--m .bw-cal__d, .pm--bw.pm--m .bw-cal__sel { width: calc(30 * var(--u)); height: calc(38 * var(--u)); }
 .pm--bw.pm--m .bw-cal__t { padding-left: calc(8 * var(--u)); }
-.pm--bw.pm--m .bw-cal__w { display: none; }   /* narrow: the glyph says office or site */
+.pm--bw.pm--m .bw-cal__w { display: none; }   /* narrow: the glyph says office or site, */
+.pm--bw.pm--m .bw-cal__f { display: block; }     /* and the short feature word says what */
 .pm--bw.pm--m .pm__pp { right: calc(12 * var(--u)); top: calc(20 * var(--u)); width: calc(32 * var(--u)); height: calc(32 * var(--u)); }
 
 /* pinned height: 580 x 560/600 = 541 tall in the 560px column */

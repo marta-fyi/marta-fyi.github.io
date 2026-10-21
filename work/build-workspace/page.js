@@ -1,15 +1,20 @@
 /* Build Workspace -- the promo: "One wall, Monday to Friday".
  *
  * One architect's change followed through a week on one drawing, T1 C3.1 -
- * Level 1:
- *   Mon  office  Elena moves the west wall 600 mm and uploads v.016.
- *   Tue  site    John pins a photo of a duct clash; a task goes to Elena.
+ * Level 1, and one problem on it: the duct the moved wall runs into. Every
+ * day acts on that one spot until it is resolved.
+ *   Mon  office  Elena moves the west wall 600 mm and uploads v.016; the new
+ *                wall draws across the duct.
+ *   Tue  site    John pins a photo where wall meets duct; the crossing shows
+ *                as a clash, and a task goes to Elena.
  *   Wed  site    John circles the clash in marker on a printout; it is
- *                scanned and vectorized back onto the drawing.
- *   Thu  both    Elena issues v.017 and the comparison shows what moved; on
- *                site an old printout's QR code is caught as outdated.
- *   Fri  office  The week becomes a report for the contractors; the phase
- *                completes, the next one is lined up, next week begins.
+ *                scanned and vectorized and lands round his pin.
+ *   Thu  both    Elena issues v.017: the wall comes back 250 mm with an
+ *                opening the duct runs through, the clash clears and the task
+ *                closes; on site an old print's QR code is caught as outdated.
+ *   Fri  office  The week, clash resolved, becomes a report for the
+ *                contractors; the phase completes, next week begins.
+ * The clock chip names each day's feature (office · Store, ...).
  *
  * Grammar (deliberately unlike Production Hub's cards and travelling token):
  *   - One drawing fills the frame and one continuous camera moves over it.
@@ -37,12 +42,12 @@
   var STAGES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
   var DAYS = [['M', '14', 'Monday', '21'], ['T', '15', 'Tuesday', '22'], ['W', '16', 'Wednesday', '23'], ['T', '17', 'Thursday', '24'], ['F', '18', 'Friday', '25']];   /* this week, and next */
   var FEATURES = ['Store', 'Collaborate', 'Paper markup', 'Review', 'Report'];   /* the days' accessible names */
-  var DESCRIPTION = 'One wall, followed through a week on drawing T1 C3.1, Level 1. ' +
-    'Monday, in the office: Elena Marsh moves the west wall 600 mm and uploads version 016, which becomes the latest; versions 015 and 014 stay in its history, and the drawing is shared with John Williams on site. ' +
-    'Tuesday, on site: John pins a photo of a duct clash to the wall and creates a task, check the duct clearance, which he assigns to Elena; she is notified and picks it up, and the task stays pinned to the place. ' +
-    'Wednesday: John circles the clash in marker on a printout; it is scanned and vectorized, and lands on the drawing as an editable markup. ' +
-    'Thursday: Elena issues version 017 and a comparison shows the wall that moved and the door that was added, which closes the task; on site an old printout is scanned by its QR code, flagged as outdated, and opened at version 017. ' +
-    'Friday: the week folds into a report, sent to three contractors; the Level 1 walls and services phase is marked complete, the next phase, Level 2 ceilings, is lined up, and the calendar rolls on to next week.';
+  var DESCRIPTION = 'One wall, followed through a week on drawing T1 C3.1, Level 1, and the duct it runs into. ' +
+    'Monday, in the office, Store: Elena Marsh moves the west wall 600 mm and uploads version 016, which becomes the latest, and shares the drawing with John Williams on site. The new wall now crosses a duct. ' +
+    'Tuesday, on site, Collaborate: John pins a photo where the wall meets the duct, the crossing is marked as a clash, and he creates a task, check the duct clearance, assigned to Elena, who is notified and picks it up. ' +
+    'Wednesday, on site, Paper markup: John circles the clash in marker on a printout; it is scanned and vectorized, and lands on the drawing round his pin as an editable markup. ' +
+    'Thursday, Review: Elena issues version 017, which brings the wall back 250 mm with an opening for the duct; the comparison shows the change, the clash clears and the task closes. On site, an old printout is scanned by its QR code, flagged as outdated, and opened at version 017. ' +
+    'Friday, in the office, Report: the week, with the clash resolved, folds into a report sent to three contractors; the Level 1 walls and services phase is marked complete, the next phase, Level 2 ceilings, is lined up, and the calendar rolls on to next week.';
 
   /* chapter starts, final frames, the closing frame */
   var S = [0, 6.2, 12.6, 18.6, 25.6];
@@ -50,9 +55,11 @@
   var FRAME_T = [6.15, 12.55, 18.55, 25.55, END];
   var NEXT = S[4] + 6.3;                             /* Friday's close: the calendar rolls to next week */
   var TRANS_IN = [null, S[1], S[2], S[3], S[4]];
-  /* the clock: from each time on, hh:mm and where; it ticks a minute every 1.5 s */
-  var CLOCK = [[0, 9, 12, 'office'], [S[1] + .3, 8, 40, 'site'], [S[2] + .3, 11, 5, 'site'],
-               [S[3] + .3, 10, 5, 'office'], [S[3] + 3.0, 14, 30, 'site'], [S[4] + .3, 16, 56, 'office'], [NEXT, 8, 0, 'office']];
+  /* the clock: from each time on, hh:mm, where, and the day's feature; it
+     ticks a minute every 1.5 s */
+  var CLOCK = [[0, 9, 12, 'office', 0], [S[1] + .3, 8, 40, 'site', 1], [S[2] + .3, 11, 5, 'site', 2],
+               [S[3] + .3, 10, 5, 'office', 3], [S[3] + 3.0, 14, 30, 'site', 3], [S[4] + .3, 16, 56, 'office', 4], [NEXT, 8, 0, 'office', 4]];
+  var FEAT_M = ['Store', 'Collab', 'Markup', 'Review', 'Report'];   /* narrow: the chip has room for one short word */
 
   /* --- icons ----------------------------------------------------------- */
   var ic = E.icons({
@@ -74,10 +81,14 @@
      v.017 pulls it back to 1022.5 and opens a door where the duct runs. */
   var PLAN = { w: 2328, h: 1608 };
   var WALL = { x0: 977.5, x1: 1047.5, x2: 1022.5, y0: 292, y1: 1269, door: [700, 790] };
-  var DIM = { y: 560, tag: [1012.5, 505] };          /* the +600 mm dimension line and its tag */
-  var PIN = [1047.5, 760];                           /* John's photo pin, on the wall at the duct */
-  var MK = [1215, 505];                              /* where the vectorized loop lands: by the duct, above and right of the pin,
-                                                        clear of its badge at the west zoom and at Friday's wider one */
+  var DIM = { y: 560, tag: [1012.5, 505], tag2: [1035, 505] };   /* Monday's +600 mm and Thursday's -250 mm */
+  /* The duct: a services run starting just east of the old wall, so only the
+     moved wall crosses it. Its crossing is the week's one problem. */
+  var DUCT = { x0: 1000, x1: 1300, y: 745 };
+  var CROSS = [WALL.x1, DUCT.y];
+  var PIN = CROSS;                                   /* John's photo pin, on the crossing */
+  var MK = CROSS;                                    /* the vectorized loop lands round the pin */
+  var MK_OFF = [15, -15];                            /* design px: centred on the pin's body, so pin and badge sit inside the loop */
   var BADGE = [28, -28];                             /* the task badge on the pin's shoulder, design px from the spot */
   var CMP = [250, 1600];                             /* the comparison sweeps across these plan x */
 
@@ -90,12 +101,12 @@
          cams: { full: { x: -66.4, y: 0, s: 1 }, west: { x: -157.4, y: -87.1, s: 1.6 }, fri: { x: -120, y: 0, s: 1 } },   /* fri: the pins clear of the report */
          ver: [30, 94], hist: [30, 142, 214], share: { right: 30, top: 512 },
          bub: [388, 118, 172], task: [90, 360, 214], pick: [100, 462, 204], cmpc: [30, 518], ph: [30, 512],
-         paper: [306, 104, 256, 446], stack: [272, 206, 236, 336], phone: [390, 168, 172], rep: [312, 100, 248], mkW: 64 },
+         paper: [306, 104, 256, 446], stack: [272, 206, 236, 336], phone: [390, 168, 172], rep: [312, 100, 248], mkW: 96 },
     m: { W: 340, H: 740, card: [12, 76, 316, 380], pw: 550.2,
          cams: { full: { x: -117.1, y: 0, s: 1 }, west: { x: -212.6, y: -74.7, s: 1.6 }, fri: { x: -117.1, y: 0, s: 1 } },
          ver: [24, 88], hist: [12, 470, 316], share: { left: 24, top: 402 },
          bub: [12, 470, 316], task: [12, 588, 316], pick: [36, 560, 260], cmpc: [24, 406], ph: [24, 134],
-         paper: [24, 236, 292, 466], stack: [20, 326, 220, 336], phone: [142, 296, 176], rep: [12, 404, 316], mkW: 50, m: true }   /* the report overlaps the sheet so its button stays in frame */
+         paper: [24, 236, 292, 466], stack: [20, 326, 220, 336], phone: [142, 296, 176], rep: [12, 404, 316], mkW: 96, m: true }   /* the report overlaps the sheet so its button stays in frame */
   };
   /* camera moves: [start, from, to, duration] */
   var GLIDE = E.bez(.45, 0, .15, 1, 'cubic-bezier(.45,0,.15,1)');   /* long, unhurried */
@@ -118,7 +129,8 @@
     });
     return s + '</span><span class="bw-cal__t"><span class="stack bw-cal__i"><span data-a="ioffice">' + ic('office') + '</span>' +
       '<span data-a="isite">' + ic('site') + '</span></span><span><b class="num" data-a="clock">09:12</b>' +
-      '<span class="bw-cal__w" data-a="where">office</span></span></span></div>';
+      '<span class="bw-cal__w"><span data-a="where">office</span> · <span data-a="feat">' + FEATURES[0] + '</span></span>' +
+      '<span class="bw-cal__f" data-a="featm">' + FEAT_M[0] + '</span></span></span></div>';
   }
 
   /* John's mark, in sketch units: one quick marker loop round the duct that
@@ -126,6 +138,23 @@
   var LOOP_HAND = 'M140 128C124 114 86 116 74 138C62 162 86 186 116 185C146 184 162 162 152 140C146 127 130 121 114 123';
   var LOOP_VEC = 'M112 124C138 124 152 138 152 154C152 171 136 184 112 184C88 184 72 171 72 154C72 138 86 124 112 124Z';
   var LOOP_PTS = [[112, 124], [152, 154], [112, 184], [72, 154]];
+
+  /* v.017's wall: back to x, with an opening the duct runs through; the
+     short caps at the opening's ends make it read as a doorway, not a gap */
+  function wall17(x) {
+    var w = WALL, c = 18;
+    return 'M' + x + ' ' + w.y0 + 'V' + w.door[0] + 'M' + x + ' ' + w.door[1] + 'V' + w.y1 +
+      'M' + (x - c) + ' ' + w.door[0] + 'H' + (x + c) + 'M' + (x - c) + ' ' + w.door[1] + 'H' + (x + c);
+  }
+  /* what a print of v.016 shows over the clean sheet: the old wall gone, the
+     moved wall, the duct it crosses. Plan coordinates; sized to the print's crop. */
+  function printWalls(cls) {
+    var w = WALL;
+    return '<svg class="bw-pwalls ' + cls + '" data-a="' + cls + '" viewBox="0 0 ' + PLAN.w + ' ' + PLAN.h + '" preserveAspectRatio="none" aria-hidden="true">' +
+      '<path class="bw-pwalls__erase" d="M' + w.x0 + ' ' + w.y0 + 'V' + w.y1 + '"/>' +
+      '<path class="bw-pwalls__wall" d="M' + w.x1 + ' ' + w.y0 + 'V' + w.y1 + '"/>' +
+      '<path class="bw-pwalls__duct" d="M' + DUCT.x0 + ' ' + DUCT.y + 'H' + DUCT.x1 + '"/></svg>';
+  }
 
   function sheet(g) {
     var c = g.card, w = WALL, x2 = w.x2;
@@ -137,14 +166,17 @@
       '<path class="bw-erase" data-a="erase" d="M' + w.x0 + ' ' + w.y0 + 'V' + w.y1 + '"/>' +
       '<path class="bw-ghost" data-a="ghost" d="M' + w.x0 + ' ' + w.y0 + 'V' + w.y1 + '"/>' +
       '<path class="bw-wall" data-a="wnew" pathLength="1" d="M' + w.x1 + ' ' + w.y0 + 'V' + w.y1 + '"/>' +
-      '<path class="bw-wall bw-wall--17" data-a="w17" d="M' + x2 + ' ' + w.y0 + 'V' + w.door[0] + 'M' + x2 + ' ' + w.door[1] + 'V' + w.y1 + '"/>' +
+      '<path class="bw-duct" d="M' + DUCT.x0 + ' ' + DUCT.y + 'H' + DUCT.x1 + '"/>' +
+      '<path class="bw-clash" data-a="clash" d="M' + (CROSS[0] - 34) + ' ' + DUCT.y + 'H' + (CROSS[0] + 34) + '"/>' +
+      '<path class="bw-wall bw-wall--17" data-a="w17" d="' + wall17(x2) + '"/>' +
       '<path class="bw-dimline" data-a="dimline" pathLength="1" d="M' + w.x0 + ' ' + (DIM.y - 18) + 'v36M' + w.x0 + ' ' + DIM.y + 'H' + w.x1 + 'M' + w.x1 + ' ' + (DIM.y - 18) + 'v36"/>' +
+      '<path class="bw-dimline" data-a="dimline2" pathLength="1" d="M' + w.x1 + ' ' + (DIM.y - 18) + 'v36M' + w.x1 + ' ' + DIM.y + 'H' + x2 + 'M' + x2 + ' ' + (DIM.y - 18) + 'v36"/>' +
       '</svg>' +
       /* Thursday's comparison: what v.017 removed (magenta) and added (cyan),
          revealed behind the divider; onSeek sets the clip */
       '<svg class="bw-cmp" data-a="cmp" viewBox="0 0 ' + PLAN.w + ' ' + PLAN.h + '" aria-hidden="true">' +
       '<path class="bw-cmp__rem" d="M' + w.x1 + ' ' + w.y0 + 'V' + w.y1 + '"/>' +
-      '<path class="bw-cmp__add" d="M' + x2 + ' ' + w.y0 + 'V' + w.door[0] + 'M' + x2 + ' ' + w.door[1] + 'V' + w.y1 + '"/></svg>' +
+      '<path class="bw-cmp__add" d="' + wall17(x2) + '"/></svg>' +
       '<i class="bw-cdiv" data-a="cdiv"></i>' +
       '</div></div>';
   }
@@ -158,8 +190,7 @@
   }
 
   var HIST = [['v.016', 'Today, 09:12', 'Moved the west wall 600 mm', 'EM', 'Elena Marsh'],
-              ['v.015', '3 Oct', 'Room 4.5 resized for plumbing'],
-              ['v.014', '12 Sep', 'Initial upload']];
+              ['v.015', '3 Apr', 'Room 4.5 resized for plumbing']];
   function history(g) {
     var h = g.hist;
     return '<div class="bw-glass bw-hist" data-a="hist" style="' + at(h[0], h[1], h[2]) + '">' +
@@ -179,7 +210,7 @@
       '<div><div class="bw-share__t">Shared with John Williams</div><div class="bw-share__s">Site · Palo Alto</div></div>' + ic('send') + '</div>';
   }
 
-  function dimTag() { return '<span class="bw-dim" data-a="dim"><span>+600 mm</span></span>'; }
+  function dimTag() { return '<span class="bw-dim" data-a="dim"><span>+600 mm</span></span><span class="bw-dim" data-a="dim2"><span>−250 mm</span></span>'; }
 
   /* John's pin: a comment bubble with his initials, its one sharp corner on
      the spot; the task badge sits on its shoulder once the task is handed on */
@@ -215,6 +246,10 @@
   }
   /* a fingertip: John is on his phone, so taps, not a cursor */
   function tap() { return '<span class="bw-tap" data-a="tap"><i></i></span>'; }
+  /* Friday is at a desk: a pointer, its tip on (0,0) */
+  function cursor() {
+    return '<span class="bw-cur" data-a="cur"><svg viewBox="0 0 16 20" aria-hidden="true"><path d="M1 1v15.5l4.2-3.9 2.7 6.1 2.6-1.1-2.7-6h5.7Z"/></svg></span>';
+  }
 
   /* a QR-like tile that cannot be scanned: finder squares, no timing or
      format information, modules from a fixed seed */
@@ -236,14 +271,14 @@
   var SK = 'viewBox="0 0 228 300" preserveAspectRatio="xMidYMid meet"';   /* never stretched: a loop stays a loop */
   function paper(g) {
     var p = g.paper;
-    var sketch = '<svg class="bw-sketch" ' + SK + ' aria-hidden="true"><path class="bw-pen" data-a="sk0" pathLength="1" d="' + LOOP_HAND + '"/></svg>';
+    var sketch = '<svg class="bw-sketch" ' + SK + ' aria-hidden="true"><g data-a="skg"><path class="bw-pen" data-a="sk0" pathLength="1" d="' + LOOP_HAND + '"/></g></svg>';
     /* vectorized: the loop smoothed, at the same marker weight; handles while it's being made */
-    var vector = '<svg class="bw-vecsk" ' + SK + ' aria-hidden="true"><path class="bw-vloop" data-a="pvloop" d="' + LOOP_VEC + '"/>' +
-      LOOP_PTS.map(function (h) { return '<circle cx="' + h[0] + '" cy="' + h[1] + '" r="3.5"/>'; }).join('') + '</svg>';
+    var vector = '<svg class="bw-vecsk" ' + SK + ' aria-hidden="true"><g data-a="vkg"><path class="bw-vloop" data-a="pvloop" d="' + LOOP_VEC + '"/>' +
+      LOOP_PTS.map(function (h) { return '<circle cx="' + h[0] + '" cy="' + h[1] + '" r="3.5"/>'; }).join('') + '</g></svg>';
     return '<div class="bw-paper" data-a="paper" style="' + at(p[0], p[1], p[2], p[3]) + '">' +
       '<div class="bw-paper__top"><span class="num">T1 C3.1 – Level 1 · v.016</span><span class="bw-paper__qr">' + qr() + '</span></div>' +
-      '<div class="bw-print"><div class="bw-print__img"></div>' + sketch +
-      '<div class="bw-print__vec" data-a="pvec"><div class="bw-print__img"></div><i class="bw-tint bw-tint--line"></i><i class="bw-tint bw-tint--sheet"></i>' + vector + '</div>' +
+      '<div class="bw-print"><div class="bw-print__img"></div>' + printWalls('pw0') + sketch +
+      '<div class="bw-print__vec" data-a="pvec"><div class="bw-print__img"></div><i class="bw-tint bw-tint--line"></i><i class="bw-tint bw-tint--sheet"></i>' + printWalls('pw1') + vector + '</div>' +
       '<i class="bw-pdiv" data-a="pdiv"></i><i class="bw-pscan" data-a="pscan"></i></div>' +
       '<span class="bw-glass bw-pchip"><span class="stack"><span data-a="pc1">' + ic('scan') + 'Scanned · HP DesignJet</span>' +
       '<span data-a="pc2">' + ic('spark') + 'AI Vectorize</span></span></span></div>';
@@ -260,8 +295,8 @@
   /* Thursday's comparison chip */
   function cmpChip(g) {
     return '<div class="bw-glass bw-cmpc" data-a="cmpc" style="' + at(g.cmpc[0], g.cmpc[1]) + '">' +
-      '<span class="num">v.016 → v.017</span><span class="bw-cmpc__k"><i class="bw-dot bw-dot--rem"></i>1 moved</span>' +
-      '<span class="bw-cmpc__k"><i class="bw-dot bw-dot--add"></i>1 door added</span></div>';
+      '<span class="bw-cmpc__k"><i class="bw-dot bw-dot--rem"></i><span class="num">v.016</span></span>' +
+      '<span class="bw-cmpc__k"><i class="bw-dot bw-dot--add"></i><span class="num">v.017</span> · opening for duct</span></div>';
   }
 
   /* Thursday on site: a stack of old prints and the phone that checks one */
@@ -280,12 +315,12 @@
       '<div class="bw-res__t">This print is outdated</div><div class="bw-res__s num">Printed v.016 · Latest v.017</div>' +
       '<span class="bw-btn" data-a="qbtn">Open v.017</span></div>' +
       '<div class="bw-res bw-res--ok" data-a="qok"><span class="bw-res__i">' + ic('check') + '</span>' +
-      '<div class="bw-res__t">Drawing version is up to date</div><div class="bw-res__s num">v.017 · Latest</div></div>' +
+      '<div class="bw-res__t">Now on v.017</div><div class="bw-res__s">Opening for duct</div></div>' +
       '</div></div>';
   }
 
   /* Friday: the week, as a report */
-  var REP = [['Versions', 'v.016 · v.017'], ['Site photos', '1'], ['Markups from paper', '1'], ['Tasks', '1 closed'], ['Prints checked', '1']];
+  var REP = [['Versions', 'v.016 · v.017'], ['Site photos', '1'], ['Markups from paper', '1'], ['Clash', 'resolved'], ['Prints checked', '1']];
   function report(g) {
     var r = g.rep;
     return '<div class="bw-glass bw-rep" data-a="rep" style="' + at(r[0], r[1], r[2]) + '">' +
@@ -316,7 +351,7 @@
        the paper); Thursday's prints and phone over everything on the plan;
        the report last */
     return sheet(g) + dimTag() + pin() + verChip(g) + history(g) + share(g) +
-      bubble(g) + task(g) + picker(g) + cmpChip(g) + paper(g) + mark() + stack(g) + phone(g) + phase(g) + report(g) + tap();
+      bubble(g) + task(g) + picker(g) + cmpChip(g) + paper(g) + mark() + stack(g) + phone(g) + phase(g) + report(g) + tap() + cursor();
   }
 
   /* --- choreography ---------------------------------------------------- */
@@ -426,8 +461,10 @@
 
     /* Tuesday -- the pin -------------------------------------------- */
     var s1 = S[1], pinAt = onCard(g, C.west, PIN);
-    /* John's pin grows out of its corner on the wall; a ripple marks the spot */
+    /* John's pin grows out of its corner where wall meets duct; a ripple marks
+       the spot, and the crossing shows as a clash until v.017 clears it */
     attach('pin', PIN, [[0, { o: 0, s: .6 }], [s1 + .7, { o: 0, s: .6 }], [s1 + .8, { o: 1 }, LIN], [s1 + 1.15, { s: 1 }, SETTLE]]);
+    tr('clash', fadeIn(s1 + 1.0, .3).concat(fadeOut(S[3] + 2.0, .3)));
     ripple('pinr', PIN, [s1 + 1.1, S[4] + 1.7]);
     /* his photo blooms out of the pin */
     origin(q('bub'), [pinAt[0] + 15, pinAt[1] - 15]);
@@ -452,10 +489,10 @@
     tr('task', bloom(s1 + 2.0).concat([[S[2], { o: 1, s: 1, x: 0, y: 0 }],
       [S[2] + .45, { o: 0, s: .15, x: bAt[0] - tko[0], y: bAt[1] - tko[1] }, TRAVEL]]));
     attach('tb', PIN, [[0, { o: 0, s: .4 }], [S[2] + .3, { o: 0, s: .4 }], [S[2] + .4, { o: 1 }, LIN], [S[2] + .65, { s: 1 }, SETTLE]], BADGE);
-    tr('tbok', fadeIn(S[3] + 2.3, .2));
+    tr('tbok', fadeIn(S[3] + 2.0, .2));   /* with the clash clearing: v.017 closes it */
     /* the fingertip: two taps here, one on Friday's send */
     function center(el) { var r = rect(el); return [r.x + r.w / 2, r.y + r.h / 2]; }
-    var taps = [[s1 + 2.6, center(q('asgph'))], [s1 + 3.1, center(q('pickem'))], [S[4] + 3.2, center(q('rbtn'))]];
+    var taps = [[s1 + 2.6, center(q('asgph'))], [s1 + 3.1, center(q('pickem'))]];
     var tp = [[0, { o: 0, s: .6, x: taps[0][1][0], y: taps[0][1][1] }]];
     taps.forEach(function (k) {
       /* it stays where it pressed until it has faded, then moves on unseen */
@@ -466,6 +503,15 @@
 
     /* Wednesday -- paper comes back --------------------------------- */
     var s2 = S[2];
+    /* The print shows the sheet cropped as .bw-print__img's background
+       (42% 44% / 320% wide); size the v.016 walls to that crop, and move
+       John's loop (sketch units, centred near 112,154) onto the crossing. */
+    var prt = rect(q('pscan').parentNode), bw = prt.w * 3.2, bh = bw * PLAN.h / PLAN.w;
+    var bx = (prt.w - bw) * .42, by = (prt.h - bh) * .44;
+    ['pw0', 'pw1'].forEach(function (k) { var e = q(k); e.style.left = U(bx); e.style.top = U(by); e.style.width = U(bw); e.style.height = U(bh); });
+    var cx = bx + CROSS[0] / PLAN.w * bw, cy = by + CROSS[1] / PLAN.h * bh;
+    var sk = Math.min(prt.w / 228, prt.h / 300), skx = (cx - (prt.w - 228 * sk) / 2) / sk, sky = (cy - (prt.h - 300 * sk) / 2) / sk;
+    ['skg', 'vkg'].forEach(function (k) { q(k).setAttribute('transform', 'translate(' + (skx - 112).toFixed(1) + ' ' + (sky - 154).toFixed(1) + ')'); });
     tr('paper', rise(s2 + .45, 60).concat(sink(s2 + 4.4, 60)));
     /* John's marker loop draws on, one stroke */
     tr('sk0', [[0, { dp: 0 }], [s2 + 1.1, { dp: 0 }], [s2 + 1.75, { dp: 1 }, TRAVEL]]);
@@ -483,8 +529,9 @@
     var c0 = [va.x + va.w / 2, va.y + va.h / 2];
     tr('pvloop', [[0, { o: 1 }], [lift, { o: 1 }], [lift + .01, { o: 0 }, LIN]]);
     var mkAt = onCard(g, C.west, MK);
+    mkAt = [mkAt[0] + MK_OFF[0], mkAt[1] + MK_OFF[1]];
     attach('mk', MK, [[0, { o: 0 }], [lift, { o: 0, x: c0[0] - mkAt[0], y: c0[1] - mkAt[1], s: va.w / (g.mkW * 80 / 88) }],
-                      [lift + .01, { o: 1 }, LIN], [land, { x: 0, y: 0, s: 1 }, TRAVEL]]);
+                      [lift + .01, { o: 1 }, LIN], [land, { x: 0, y: 0, s: 1 }, TRAVEL]], MK_OFF);
     ripple('mkr', MK, [land, S[4] + 1.85]);
 
     /* Thursday -- what moved, and an old print ---------------------- */
@@ -495,6 +542,9 @@
     tr('cdiv', fadeIn(s3 + .95, .15).concat(fadeOut(s3 + 2.0, .2)));
     tr('w17', fadeIn(s3 + 2.0, .25));
     tr('cmpc', bloom(s3 + 2.1).concat(dissolve(s3 + 3.0)));
+    /* how far it came back: Monday's tag, answered */
+    tr('dimline2', [[0, { dp: 0, o: 1 }], [s3 + 2.0, { dp: 0 }], [s3 + 2.3, { dp: 1 }, TRAVEL], [s3 + 3.0, { o: 1 }], [s3 + 3.25, { o: 0 }]]);
+    attach('dim2', DIM.tag2, bloom(s3 + 2.15).concat(dissolve(s3 + 3.0)));
     /* on site: the prints and the phone rise; the brackets lock on the code */
     tr('stack', rise(s3 + 3.15, 70).concat(sink(S[4], 70)));
     tr('phone', rise(s3 + 3.3, 90).concat(sink(S[4] + .05, 90)));
@@ -514,6 +564,11 @@
     tr('rtick', [[0, { dp: 0 }], [s4 + 2.85, { dp: 0 }], [s4 + 3.15, { dp: 1 }, TRAVEL]]);
     /* tap send: the three contractors pop in, and it's sent */
     tr('rbtn', [[0, { s: 1 }], [s4 + 3.22, { s: 1 }], [s4 + 3.3, { s: .96 }, TRAVEL], [s4 + 3.42, { s: 1 }, TRAVEL]]);
+    /* Elena's pointer comes to Send, clicks, and leaves */
+    var sb = rect(q('rbtn')), sp = [sb.x + sb.w * .62, sb.y + sb.h * .55];
+    tr('cur', [[0, { o: 0, x: sp[0] + 46, y: sp[1] + 40, s: 1 }], [s4 + 2.7, { o: 0, x: sp[0] + 46, y: sp[1] + 40 }], [s4 + 2.85, { o: 1 }, LIN],
+               [s4 + 3.2, { x: sp[0], y: sp[1] }, TRAVEL], [s4 + 3.22, { s: 1 }], [s4 + 3.3, { s: .88 }, TRAVEL], [s4 + 3.42, { s: 1 }, TRAVEL],
+               [s4 + 3.9, { o: 1 }], [s4 + 4.15, { o: 0 }]]);
     for (i = 0; i < 3; i++) tr('ra' + i, [[0, { o: 0, s: .5 }], [s4 + 3.35 + i * .08, { o: 0, s: .5 }], [s4 + 3.45 + i * .08, { o: 1 }, LIN], [s4 + 3.75 + i * .08, { s: 1 }, SETTLE]]);
     tr('rs1', [[0, { o: 1, y: 0 }], [s4 + 3.8, { o: 1, y: 0 }], [s4 + 4.0, { o: 0, y: -8 }, TRAVEL]]);
     tr('rs2', [[0, { o: 0, y: 8 }], [s4 + 3.8, { o: 0, y: 8 }], [s4 + 4.0, { o: 1, y: 0 }, TRAVEL]]);
@@ -546,6 +601,8 @@
       var m = c[1] * 60 + c[2] + Math.floor(Math.max(0, t - c[0]) / 1.5), txt = pad(Math.floor(m / 60)) + ':' + pad(m % 60);
       var el = q('clock'); if (el && el.textContent !== txt) el.textContent = txt;
       var w = q('where'); if (w && w.textContent !== c[3]) w.textContent = c[3];
+      var f = q('feat'); if (f && f.textContent !== FEATURES[c[4]]) f.textContent = FEATURES[c[4]];
+      var fm = q('featm'); if (fm && fm.textContent !== FEAT_M[c[4]]) fm.textContent = FEAT_M[c[4]];
       /* the engine keeps Friday as the current day; next week, Monday is */
       var cs = q('calsel'), nx = t >= NEXT + .2;
       if (cs) { var cal = cs.parentNode.parentNode; if (cal.hasAttribute('data-next') !== nx) { if (nx) cal.setAttribute('data-next', ''); else cal.removeAttribute('data-next'); } }
