@@ -329,12 +329,13 @@ footer .copy:focus-visible {
 
 .study .body h2:first-child { margin-top: 0; }
 
-.study .body p {
+/* prose only: a promo (.pm) sets its own text, and text-wrap would undo its nowrap */
+.study .body p:not(.pm *) {
   margin: 0 0 1rem;
   text-wrap: pretty;
 }
 
-.study .body p:last-child { margin-bottom: 0; }
+.study .body p:not(.pm *):last-child { margin-bottom: 0; }
 
 /* Case study body elements ---------------------------------------------- */
 
