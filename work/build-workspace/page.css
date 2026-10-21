@@ -366,9 +366,3 @@
 
 /* pinned height: 580 x 560/600 = 541 tall in the 560px column */
 .pmr__vis { --pmr-half: 271px; }
-
-/* --- the prose beside the promo: the four steps, the three decisions ---- */
-/* scoped like style.css's .study .body rules, which would otherwise win */
-.study .body .pmr__prose > .step-no { margin-top: 3rem; }
-.study .body .pmr__prose > h2 + .step-no { margin-top: 0; }
-.study .body .pmr__prose > .bw-dec { margin-top: 3rem; }
