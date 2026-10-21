@@ -327,7 +327,7 @@
     var p = g.phone;
     return '<div class="bw-phone" data-a="phone" style="' + at(p[0], p[1], p[2]) + '"><div class="bw-phone__scr">' +
       '<div class="bw-phone__bar">Scan a print</div>' +
-      '<div class="bw-vf"><span class="bw-vf__qr">' + qr() + '</span><i class="bw-brk" data-a="brk"><b></b><b></b><b></b><b></b></i></div>' +
+      '<div class="bw-vf"><div class="bw-print__img bw-vf__cam"></div><i class="bw-vf__frost"></i><span class="bw-vf__qr">' + qr() + '</span><i class="bw-brk" data-a="brk"><b></b><b></b><b></b><b></b></i></div>' +
       '<div class="bw-res bw-res--bad" data-a="qbad"><span class="bw-res__i">' + ic('alert') + '</span>' +
       '<div class="bw-res__t">This print is outdated</div><div class="bw-res__s num">Printed v.016 · Latest v.017</div>' +
       '<span class="bw-btn" data-a="qbtn">Open v.017</span></div>' +
