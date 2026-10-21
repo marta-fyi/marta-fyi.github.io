@@ -13,8 +13,8 @@
  *   mint    success, Queued/Accepted, selected station, and #39208's bar
  *   coral   the High priority pill
  * A bar colour is an order's identity, never its status.
- * Small text keeps 4.5:1 on its background; the rail's rings and the free
- * slots' outlines keep 3:1.
+ * Small text keeps 4.5:1 on its background; the rail's rings keep 3:1. The
+ * free slots' pale blue outline is deliberately quiet: a hint, not a control.
  */
 
 .pm {
@@ -22,7 +22,7 @@
   --mint: #4EF5AB;    --mint-ink: #156341;
   --coral: #FF948A;   --coral-ink: #600F07;
   --tile: #EDF4FD;    --tint: #EDEEFE;   --chip-ink: #4F5DE6;
-  --gap: #1A9C61;     --ring: #8A90CA;
+  --gap: #B7BEF8;     --ring: #8A90CA;
   --icon: #4F8DF5;    --hair: #ECECF3;   --well: #F5F5F7;
   --o-39208: #4EF5AB; --o-98410: #40DEFA; --o-618716: #B9A6FF;
   --sh:      0 calc(28 * var(--u)) calc(56 * var(--u)) calc(-14 * var(--u)) rgba(72, 64, 168, .18), 0 calc(10 * var(--u)) calc(22 * var(--u)) calc(-10 * var(--u)) rgba(72, 64, 168, .10);
@@ -144,7 +144,7 @@
 .pm .st__n { font-size: calc(13 * var(--u)); white-space: nowrap; }
 .pm .st__m { font-size: calc(12 * var(--u)); color: var(--grey); white-space: nowrap; margin-top: calc(1 * var(--u)); }
 .pm .gap { position: absolute; border: calc(1.5 * var(--u)) dashed var(--gap); border-radius: calc(12 * var(--u));
-           background: rgba(78, 245, 171, .10); }
+           background: rgba(71, 89, 245, .04); }
 
 /* --- time axis ---------------------------------------------------------- */
 .pm .tick { position: absolute; font-size: calc(12 * var(--u)); color: var(--grey); transform: translateY(-50%); }
@@ -284,11 +284,6 @@
                    display: flex; align-items: center; gap: calc(4 * var(--u)); }
 .pm .tokn__hist .ic { width: calc(11 * var(--u)); height: calc(11 * var(--u)); stroke-width: 2.2; }
 .pm .tokn__hist .num { min-width: calc(31 * var(--u)); }   /* times line up, so the steps do too */
-/* the parts the order splits into, on their way to the schedule */
-.pm .tokn--part { width: calc(120 * var(--u)); height: calc(60 * var(--u)); align-items: center; z-index: 5; }
-.pm .tokn--part img { width: calc(27 * var(--u)); height: calc(36 * var(--u)); }
-.pm .tokn--part p { font-size: calc(12 * var(--u)); white-space: nowrap; }
-.pm--m .tokn--part { width: calc(80 * var(--u)); gap: calc(5 * var(--u)); padding: calc(6 * var(--u)) calc(4 * var(--u)); }
 /* where the token docks in each card */
 .pm .slot { display: block; width: calc(176 * var(--u)); height: calc(118 * var(--u)); border-radius: calc(12 * var(--u)); flex: none; }   /* invisible: only the token shows */
 .pm .slot--ghost { position: absolute; background: none; }
