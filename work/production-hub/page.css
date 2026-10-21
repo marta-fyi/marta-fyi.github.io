@@ -277,7 +277,10 @@
                   background: var(--tint); color: var(--indigo); font-size: calc(12 * var(--u)); white-space: nowrap; }
 /* the history: the last three states, newest on top, stepping down */
 .pm .tokn__hist { position: relative; flex: 1; margin-top: calc(8 * var(--u)); overflow: hidden; }
-.pm .tokn__hist p { position: absolute; left: 0; top: 0; font-size: calc(12 * var(--u)); line-height: calc(15 * var(--u)); color: var(--grey); white-space: nowrap; }
+.pm .tokn__hist p { position: absolute; left: 0; top: 0; font-size: calc(12 * var(--u)); line-height: calc(15 * var(--u)); color: var(--grey); white-space: nowrap;
+                   display: flex; align-items: center; gap: calc(4 * var(--u)); }
+.pm .tokn__hist .ic { width: calc(11 * var(--u)); height: calc(11 * var(--u)); stroke-width: 2.2; }
+.pm .tokn__hist .num { min-width: calc(31 * var(--u)); }   /* times line up, so the steps do too */
 /* the parts the order splits into, on their way to the schedule */
 .pm .tokn--part { width: calc(120 * var(--u)); height: calc(60 * var(--u)); align-items: center; z-index: 5; }
 .pm .tokn--part img { width: calc(27 * var(--u)); height: calc(36 * var(--u)); }
