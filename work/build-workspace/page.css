@@ -33,13 +33,13 @@
   --sh-sm: 0 calc(6 * var(--u)) calc(16 * var(--u)) calc(-6 * var(--u)) rgba(2, 74, 216, .22), 0 0 0 calc(.5 * var(--u)) rgba(22, 20, 29, .05);
 
   --u: calc(100cqw / 600);
-  position: relative; width: 100%; height: calc(580 * var(--u)); flex: none; overflow: hidden;
+  position: relative; width: 100%; height: calc(760 * var(--u)); flex: none; overflow: hidden;
   background: linear-gradient(160deg, #F6F8FC 0%, #E7EEF9 100%); border-radius: calc(28 * var(--u));
   font-family: -apple-system, BlinkMacSystemFont, system-ui, "Helvetica Neue", Helvetica, sans-serif;   /* one face; the system picks SF's text or display cut by size */
   font-weight: 400; color: var(--ink); line-height: 1.3; letter-spacing: -.01em;
   -webkit-font-smoothing: antialiased; text-align: left;
 }
-.pm--bw.pm--m { --u: calc(100cqw / 340); height: calc(740 * var(--u)); border-radius: calc(24 * var(--u)); }
+.pm--bw.pm--m { --u: calc(100cqw / 340); height: calc(780 * var(--u)); border-radius: calc(24 * var(--u)); }
 .pm--bw b { font-weight: inherit; }   /* <b> is structure here, not emphasis */
 .pm--bw .ic { width: calc(16 * var(--u)); height: calc(16 * var(--u)); fill: none; stroke: currentColor; stroke-width: 1.6;
               stroke-linecap: round; stroke-linejoin: round; flex: none; }
@@ -78,9 +78,9 @@
 .pm--bw .pm__pp .ic { width: calc(14 * var(--u)); height: calc(14 * var(--u)); }
 
 /* stage coordinates are frame coordinates */
-.pm--bw .pm__stage, .pm--bw .pm__float { position: absolute; left: 0; top: 0; width: calc(600 * var(--u)); height: calc(580 * var(--u)); }
+.pm--bw .pm__stage, .pm--bw .pm__float { position: absolute; left: 0; top: 0; width: calc(600 * var(--u)); height: calc(760 * var(--u)); }
 .pm--bw .pm__float { z-index: 3; }
-.pm--bw.pm--m .pm__stage, .pm--bw.pm--m .pm__float { width: calc(340 * var(--u)); height: calc(740 * var(--u)); }
+.pm--bw.pm--m .pm__stage, .pm--bw.pm--m .pm__float { width: calc(340 * var(--u)); height: calc(780 * var(--u)); }
 
 /* --- the drawing: a pale-blue blueprint --------------------------------- */
 .pm--bw .bw-sheet { position: absolute; overflow: hidden; border-radius: calc(20 * var(--u)); background: var(--sheet);
@@ -364,5 +364,5 @@
 .pm--bw.pm--m .bw-cal__f { display: block; }     /* and the short feature word says what */
 .pm--bw.pm--m .pm__pp { right: calc(12 * var(--u)); top: calc(20 * var(--u)); width: calc(32 * var(--u)); height: calc(32 * var(--u)); }
 
-/* pinned height: 580 x 560/600 = 541 tall in the 560px column */
-.pmr__vis { --pmr-half: 271px; }
+/* pinned height: 760 x 560/600 = 709 tall in the 560px column */
+.pmr__vis { --pmr-half: 355px; }

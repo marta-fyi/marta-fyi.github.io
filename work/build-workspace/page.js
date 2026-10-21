@@ -33,7 +33,8 @@
  *     chips, tight large headlines; CMY accents mark change.
  *
  * Two authored frames share one choreography, sized with container query
- * units:  desktop 600x580 design px (>= 768px), mobile 340x740 (< 768px).
+ * units:  desktop 600x760 design px (>= 768px), mobile 340x780 (< 768px),
+ * the same ratios as Production Hub's.
  * Time, tracks, the rail hook, playback and the QA hook live in the shared
  * engine, work/_shared/promo.js; this file is content only.
  */
@@ -103,16 +104,16 @@
      plan's translate and scale for each framing; plan px -> card px is
      s * pw / PLAN.w. Everything else is in frame coords. */
   var GEO = {
-    d: { W: 600, H: 580, card: [16, 80, 568, 484], pw: 700.7,
-         cams: { full: { x: -66.4, y: 0, s: 1 }, west: { x: -157.4, y: -87.1, s: 1.6 }, fri: { x: -120, y: 0, s: 1 } },   /* fri: the pins clear of the report */
-         ver: [30, 94], hist: [30, 142, 244], share: { right: 30, top: 512 },
-         bub: [376, 118, 188], task: [90, 360, 214], pick: [100, 462, 204], cmpc: [30, 518], ph: [30, 512],
-         paper: [306, 104, 256, 446], stack: [272, 206, 236, 336], phone: [390, 168, 172], rep: [304, 100, 264], notes: [30, 142, 236], mkW: 64 },
-    m: { W: 340, H: 740, card: [12, 76, 316, 380], pw: 550.2,
-         cams: { full: { x: -117.1, y: 0, s: 1 }, west: { x: -212.6, y: -74.7, s: 1.6 }, fri: { x: -117.1, y: 0, s: 1 } },
-         ver: [24, 88], hist: [12, 470, 316], share: { left: 24, top: 402 },
-         bub: [12, 470, 316], task: [12, 588, 316], pick: [36, 560, 260], cmpc: [24, 406], ph: [24, 134],
-         paper: [24, 236, 292, 466], stack: [20, 326, 220, 336], phone: [142, 296, 176], rep: [12, 404, 316], notes: [12, 470, 316], mkW: 50, m: true }   /* the report overlaps the sheet so its button stays in frame */
+    d: { W: 600, H: 760, card: [16, 80, 568, 664], pw: 961.3,
+         cams: { full: { x: -196.7, y: 0, s: 1 }, west: { x: -157.4, y: -3.1, s: 1.166 }, fri: { x: -270.3, y: 0, s: 1 } },   /* fri: the pins clear of the report */
+         ver: [30, 94], hist: [30, 142, 244], share: { right: 30, top: 692 },
+         bub: [376, 118, 188], task: [90, 450, 214], pick: [100, 552, 204], cmpc: [30, 698], ph: [30, 692],
+         paper: [306, 194, 256, 446], stack: [272, 296, 236, 336], phone: [390, 258, 172], rep: [304, 100, 264], notes: [30, 142, 236], mkW: 64 },
+    m: { W: 340, H: 780, card: [12, 76, 316, 420], pw: 608.1,
+         cams: { full: { x: -146.1, y: 0, s: 1 }, west: { x: -212.6, y: -54.7, s: 1.448 }, fri: { x: -146.1, y: 0, s: 1 } },
+         ver: [24, 88], hist: [12, 510, 316], share: { left: 24, top: 442 },
+         bub: [12, 510, 316], task: [12, 628, 316], pick: [36, 600, 260], cmpc: [24, 446], ph: [24, 134],
+         paper: [24, 256, 292, 466], stack: [20, 346, 220, 336], phone: [142, 316, 176], rep: [12, 444, 316], notes: [12, 510, 316], mkW: 50, m: true }   /* the report overlaps the sheet so its button stays in frame */
   };
   /* camera moves: [start, from, to, duration] */
   var GLIDE = E.bez(.45, 0, .15, 1, 'cubic-bezier(.45,0,.15,1)');   /* long, unhurried */
