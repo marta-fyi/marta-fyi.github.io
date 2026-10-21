@@ -23,9 +23,10 @@
  *     Chapters are camera moves, never card swaps.
  *   - UI blooms from the spot it belongs to (scale .94 -> 1 and fade, with
  *     its origin at that spot) and dissolves in place.
- *   - Lines draw on (dp) and comparisons wipe behind a blue divider; nothing
- *     slides in from a side. Field things (the printout, the phone) rise
- *     from below and stop fully in frame.
+ *   - Lines draw on (dp) and comparisons wipe behind a blue divider. Field
+ *     things move, never fade: Wednesday's printout rises from below;
+ *     Thursday's old prints and the phone come in from the right edge, solid,
+ *     and leave the same way.
  *   - Progress is a calendar chip: the week's five days, the selection
  *     sliding to each, and a clock that ticks.
  *   - Look from build.hp.com: HP blue on a pale-blue blueprint, white glass
@@ -568,9 +569,14 @@
     /* how far it came back: Monday's tag, answered */
     tr('dimline2', [[0, { dp: 0, o: 1 }], [s3 + 2.0, { dp: 0 }], [s3 + 2.3, { dp: 1 }, TRAVEL], [s3 + 3.0, { o: 1 }], [s3 + 3.25, { o: 0 }]]);
     attach('dim2', DIM.tag2, bloom(s3 + 2.15).concat(dissolve(s3 + 3.0)));
-    /* on site: the prints and the phone rise; the brackets lock on the code */
-    tr('stack', rise(s3 + 3.15, 70).concat(sink(S[4], 70)));
-    tr('phone', rise(s3 + 3.3, 90).concat(sink(S[4] + .05, 90)));
+    /* on site: the prints, then the phone, come in from the right edge (the
+       frame clips them until then), the brackets lock on the code; on Friday
+       they leave the way they came, phone first. Solid all the way: no fade. */
+    function slideIn(t0, dx) { return [[0, { o: 1, x: dx }], [t0, { x: dx }], [t0 + .6, { x: 0 }, ENTER]]; }
+    function slideOut(t0, dx) { return [[t0, { x: 0 }], [t0 + .45, { x: dx }, EXIT]]; }
+    var offS = g.W - g.stack[0] + 40, offP = g.W - g.phone[0] + 40;   /* far enough that the shadow is out too */
+    tr('stack', slideIn(s3 + 3.15, offS).concat(slideOut(S[4] + .05, offS)));
+    tr('phone', slideIn(s3 + 3.3, offP).concat(slideOut(S[4], offP)));
     tr('brk', [[0, { o: 0, s: 1.3 }], [s3 + 3.9, { o: 0, s: 1.3 }], [s3 + 3.95, { o: 1 }, LIN], [s3 + 4.25, { s: 1 }, TRAVEL]]);
     /* outdated; the button presses; up to date */
     tr('qbad', [[0, { o: 0, y: 24 }], [s3 + 4.45, { o: 0, y: 24 }], [s3 + 4.45 + D_IN, { o: 1, y: 0 }], [s3 + 5.35, { o: 1 }], [s3 + 5.55, { o: 0 }]]);
