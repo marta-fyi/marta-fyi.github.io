@@ -53,6 +53,27 @@ toTop?.addEventListener('click', event => {
   window.scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'auto' });
 });
 
+// Homepage nudge: after five seconds without scrolling, a blinking arrow says
+// there is more below. Any scroll hides it and restarts the wait; at the bottom
+// it stays away. Clicking moves down a screen and the snap picks the section.
+const nudge = document.querySelector('.nudge');
+if (nudge) {
+  let idle;
+  const atBottom = () =>
+    window.scrollY >= document.documentElement.scrollHeight - window.innerHeight - 2;
+  const wait = () => {
+    nudge.hidden = true;
+    clearTimeout(idle);
+    idle = setTimeout(() => { nudge.hidden = atBottom(); }, 5000);
+  };
+  window.addEventListener('scroll', wait, { passive: true });
+  wait();
+  nudge.addEventListener('click', () => {
+    const smooth = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollBy({ top: window.innerHeight, behavior: smooth ? 'smooth' : 'auto' });
+  });
+}
+
 // Mascot on a case study: unwind to the start angle, then go home. The plain
 // href="/" is the no-JS fallback.
 const toHome = document.querySelector('.home[href="/"]');

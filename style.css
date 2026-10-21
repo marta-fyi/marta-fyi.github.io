@@ -107,6 +107,44 @@ a:hover {
   }
 }
 
+/* Homepage nudge: the CV's down arrow, a little bigger, blinking on the
+   6vh / gutter line once the reader has paused for a while. The box is the
+   hit area; the glyph sits on the text's left edge. */
+.nudge {
+  position: fixed;
+  bottom: calc(6vh - 14px);
+  left: calc(var(--gutter) - 14px);
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.nudge[hidden] { display: none; }
+
+/* 1rem instead of the CV's 0.73rem; the thinner stroke keeps its line
+   weight at the larger size. */
+.nudge .glyph {
+  width: 1rem;
+  height: 1rem;
+  stroke-width: 1.1;
+}
+
+@keyframes blink {
+  50% { opacity: 0.12; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .nudge .glyph { animation: blink 1.6s ease-in-out infinite; }
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
