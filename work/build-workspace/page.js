@@ -8,10 +8,12 @@
  *   Tue  site    John pins a photo where wall meets duct; the crossing shows
  *                as a clash, and a task goes to Elena.
  *   Wed  site    John circles the clash in marker on a printout; it is
- *                scanned and vectorized and lands round his pin.
+ *                scanned and vectorized, and becomes keynote 1 on the
+ *                drawing, with its note in the sheet's Notes.
  *   Thu  both    Elena issues v.017: the wall comes back 250 mm with an
- *                opening the duct runs through, the clash clears and the task
- *                closes; on site an old print's QR code is caught as outdated.
+ *                opening the duct runs through, the clash clears, the task
+ *                closes and keynote 1 turns resolved; on site an old print's
+ *                QR code is caught as outdated.
  *   Fri  office  The week, clash resolved, becomes a report for the
  *                contractors; the phase completes, next week begins.
  * The clock chip names each day's feature (office · Store, ...).
@@ -45,8 +47,8 @@
   var DESCRIPTION = 'One wall, followed through a week on drawing T1 C3.1, Level 1, and the duct it runs into. ' +
     'Monday, in the office, Store: Elena Marsh moves the west wall 600 mm and uploads version 016, which becomes the latest, and shares the drawing with John Williams on site. The new wall now crosses a duct. ' +
     'Tuesday, on site, Collaborate: John pins a photo where the wall meets the duct, the crossing is marked as a clash, and he creates a task, check the duct clearance, assigned to Elena, who is notified and picks it up. ' +
-    'Wednesday, on site, Paper markup: John circles the clash in marker on a printout; it is scanned and vectorized, and lands on the drawing round his pin as an editable markup. ' +
-    'Thursday, Review: Elena issues version 017, which brings the wall back 250 mm with an opening for the duct; the comparison shows the change, the clash clears and the task closes. On site, an old printout is scanned by its QR code, flagged as outdated, and opened at version 017. ' +
+    'Wednesday, on site, Paper markup: John circles the clash in marker on a printout; it is scanned and vectorized, and becomes keynote 1 on the drawing, Duct clash, with a note from his paper markup. ' +
+    'Thursday, Review: Elena issues version 017, which brings the wall back 250 mm with an opening for the duct; the comparison shows the change, the clash clears, the task closes and keynote 1 is marked resolved in v.017. On site, an old printout is scanned by its QR code, flagged as outdated, and opened at version 017. ' +
     'Friday, in the office, Report: the week, with the clash resolved, folds into a report sent to three contractors; the Level 1 walls and services phase is marked complete, the next phase, Level 2 ceilings, is lined up, and the calendar rolls on to next week.';
 
   /* chapter starts, final frames, the closing frame */
@@ -87,8 +89,10 @@
   var DUCT = { x0: 1000, x1: 1300, y: 745 };
   var CROSS = [WALL.x1, DUCT.y];
   var PIN = CROSS;                                   /* John's photo pin, on the crossing */
-  var MK = CROSS;                                    /* the vectorized loop lands round the pin */
-  var MK_OFF = [15, -15];                            /* design px: centred on the pin's body, so pin and badge sit inside the loop */
+  var MK = CROSS;                                    /* the vectorized loop flies here and becomes keynote 1 */
+  var KN_OFF = [-24, -18];                           /* design px: the keynote sits up and left of the crossing, across the wall
+                                                        from the pin and its badge, at every zoom */
+  var KN_D = 22;                                     /* the keynote's diameter, design px */
   var BADGE = [28, -28];                             /* the task badge on the pin's shoulder, design px from the spot */
   var CMP = [250, 1600];                             /* the comparison sweeps across these plan x */
 
@@ -101,12 +105,12 @@
          cams: { full: { x: -66.4, y: 0, s: 1 }, west: { x: -157.4, y: -87.1, s: 1.6 }, fri: { x: -120, y: 0, s: 1 } },   /* fri: the pins clear of the report */
          ver: [30, 94], hist: [30, 142, 214], share: { right: 30, top: 512 },
          bub: [388, 118, 172], task: [90, 360, 214], pick: [100, 462, 204], cmpc: [30, 518], ph: [30, 512],
-         paper: [306, 104, 256, 446], stack: [272, 206, 236, 336], phone: [390, 168, 172], rep: [312, 100, 248], mkW: 96 },
+         paper: [306, 104, 256, 446], stack: [272, 206, 236, 336], phone: [390, 168, 172], rep: [312, 100, 248], notes: [30, 142, 236], mkW: 64 },
     m: { W: 340, H: 740, card: [12, 76, 316, 380], pw: 550.2,
          cams: { full: { x: -117.1, y: 0, s: 1 }, west: { x: -212.6, y: -74.7, s: 1.6 }, fri: { x: -117.1, y: 0, s: 1 } },
          ver: [24, 88], hist: [12, 470, 316], share: { left: 24, top: 402 },
          bub: [12, 470, 316], task: [12, 588, 316], pick: [36, 560, 260], cmpc: [24, 406], ph: [24, 134],
-         paper: [24, 236, 292, 466], stack: [20, 326, 220, 336], phone: [142, 296, 176], rep: [12, 404, 316], mkW: 96, m: true }   /* the report overlaps the sheet so its button stays in frame */
+         paper: [24, 236, 292, 466], stack: [20, 326, 220, 336], phone: [142, 296, 176], rep: [12, 404, 316], notes: [12, 470, 316], mkW: 50, m: true }   /* the report overlaps the sheet so its button stays in frame */
   };
   /* camera moves: [start, from, to, duration] */
   var GLIDE = E.bez(.45, 0, .15, 1, 'cubic-bezier(.45,0,.15,1)');   /* long, unhurried */
@@ -246,10 +250,6 @@
   }
   /* a fingertip: John is on his phone, so taps, not a cursor */
   function tap() { return '<span class="bw-tap" data-a="tap"><i></i></span>'; }
-  /* Friday is at a desk: a pointer, its tip on (0,0) */
-  function cursor() {
-    return '<span class="bw-cur" data-a="cur"><svg viewBox="0 0 16 20" aria-hidden="true"><path d="M1 1v15.5l4.2-3.9 2.7 6.1 2.6-1.1-2.7-6h5.7Z"/></svg></span>';
-  }
 
   /* a QR-like tile that cannot be scanned: finder squares, no timing or
      format information, modules from a fixed seed */
@@ -286,6 +286,21 @@
 
   /* the loop that lands on the plan, centred on the element's (0,0): the
      smoothed loop moved to the origin (80 x 60), plus 4 units for the stroke */
+  /* keynote 1: the drawing's own note symbol, centred on its (0,0); green
+     once v.017 resolves it */
+  function knSym(cls, ok) {
+    return '<span class="bw-kn' + (cls ? ' ' + cls : '') + '"><b>1</b><i class="bw-kn__ok" data-a="' + ok + '"><b>1</b></i></span>';
+  }
+  function keynote() { return '<span class="bw-knw" data-a="kn">' + knSym('', 'knok') + '</span>'; }
+  /* the sheet's Notes: part of the drawing, not a chip */
+  function notes(g) {
+    var n = g.notes;
+    return '<div class="bw-notes" data-a="notes" style="' + at(n[0], n[1], n[2]) + '"><div class="bw-notes__h">Notes</div>' +
+      '<div class="bw-nrow" data-a="nrow">' + knSym('bw-kn--s', 'nkok') +
+      '<div><div class="bw-nrow__t">Duct clash</div><div class="bw-nrow__s">Paper markup · JW · <span class="num">16/04</span></div></div>' +
+      '<span class="bw-nrow__ok" data-a="nok">' + ic('check') + '<span class="num">v.017</span></span></div></div>';
+  }
+
   function mark() {
     return '<span class="bw-ripple" data-a="mkr"><i></i></span>' +
       '<span class="bw-mk" data-a="mk"><svg viewBox="-4 -4 88 68" aria-hidden="true">' +
@@ -351,7 +366,7 @@
        the paper); Thursday's prints and phone over everything on the plan;
        the report last */
     return sheet(g) + dimTag() + pin() + verChip(g) + history(g) + share(g) +
-      bubble(g) + task(g) + picker(g) + cmpChip(g) + paper(g) + mark() + stack(g) + phone(g) + phase(g) + report(g) + tap() + cursor();
+      bubble(g) + task(g) + picker(g) + cmpChip(g) + notes(g) + keynote() + paper(g) + mark() + stack(g) + phone(g) + phase(g) + report(g) + tap();
   }
 
   /* --- choreography ---------------------------------------------------- */
@@ -400,11 +415,11 @@
       });
       tr(name, keys);
     }
-    function ripple(name, p, times) {
+    function ripple(name, p, times, off) {
       var k = [[0, { o: 0, s: .3 }]];
       /* held at nothing until each ring fires, or it would fade up all along */
       times.forEach(function (t0) { k.push([t0 - .01, { o: 0, s: .3 }], [t0, { o: .55 }, LIN], [t0 + .55, { o: 0, s: 1.7 }, TRAVEL]); });
-      attach(name, p, k);
+      attach(name, p, k, off);
     }
 
     /* the calendar: the selection slides to each day as it begins */
@@ -490,9 +505,12 @@
       [S[2] + .45, { o: 0, s: .15, x: bAt[0] - tko[0], y: bAt[1] - tko[1] }, TRAVEL]]));
     attach('tb', PIN, [[0, { o: 0, s: .4 }], [S[2] + .3, { o: 0, s: .4 }], [S[2] + .4, { o: 1 }, LIN], [S[2] + .65, { s: 1 }, SETTLE]], BADGE);
     tr('tbok', fadeIn(S[3] + 2.0, .2));   /* with the clash clearing: v.017 closes it */
+    tr('knok', fadeIn(S[3] + 2.0, .25));  /* and keynote 1 turns resolved, on the drawing and in the Notes */
+    tr('nkok', fadeIn(S[3] + 2.0, .25));
+    tr('nok', [[0, { o: 0, x: -4 }], [S[3] + 2.0, { o: 0, x: -4 }], [S[3] + 2.0 + D_IN, { o: 1, x: 0 }]]);
     /* the fingertip: two taps here, one on Friday's send */
     function center(el) { var r = rect(el); return [r.x + r.w / 2, r.y + r.h / 2]; }
-    var taps = [[s1 + 2.6, center(q('asgph'))], [s1 + 3.1, center(q('pickem'))]];
+    var taps = [[s1 + 2.6, center(q('asgph'))], [s1 + 3.1, center(q('pickem'))], [S[4] + 3.2, center(q('rbtn'))]];
     var tp = [[0, { o: 0, s: .6, x: taps[0][1][0], y: taps[0][1][1] }]];
     taps.forEach(function (k) {
       /* it stays where it pressed until it has faded, then moves on unseen */
@@ -527,12 +545,17 @@
        (the plan's loop is 80 of its 88 viewBox units wide) */
     var lift = s2 + 3.9, land = lift + .6, va = rect(q('pvloop'));
     var c0 = [va.x + va.w / 2, va.y + va.h / 2];
-    tr('pvloop', [[0, { o: 1 }], [lift, { o: 1 }], [lift + .01, { o: 0 }, LIN]]);
-    var mkAt = onCard(g, C.west, MK);
-    mkAt = [mkAt[0] + MK_OFF[0], mkAt[1] + MK_OFF[1]];
-    attach('mk', MK, [[0, { o: 0 }], [lift, { o: 0, x: c0[0] - mkAt[0], y: c0[1] - mkAt[1], s: va.w / (g.mkW * 80 / 88) }],
-                      [lift + .01, { o: 1 }, LIN], [land, { x: 0, y: 0, s: 1 }, TRAVEL]], MK_OFF);
-    ripple('mkr', MK, [land, S[4] + 1.85]);
+    tr('vkg', [[0, { o: 1 }], [lift, { o: 1 }], [lift + .01, { o: 0 }, LIN]]);   /* the loop and its handles leave together */
+    /* ...and shrinks into keynote 1 as it arrives: the drawn shape becomes
+       the drawing's symbol, and its note is written into the sheet's Notes */
+    var mkAt = onCard(g, C.west, MK), loopW = g.mkW * 80 / 88;
+    mkAt = [mkAt[0] + KN_OFF[0], mkAt[1] + KN_OFF[1]];
+    attach('mk', MK, [[0, { o: 0 }], [lift, { o: 0, x: c0[0] - mkAt[0], y: c0[1] - mkAt[1], s: va.w / loopW }],
+                      [lift + .01, { o: 1 }, LIN], [land - .15, { o: 1 }], [land, { x: 0, y: 0, s: KN_D / loopW, o: 0 }, TRAVEL]], KN_OFF);
+    attach('kn', MK, [[0, { o: 0, s: .6 }], [land - .15, { o: 0, s: .6 }], [land - .05, { o: 1 }, LIN], [land + .25, { s: 1 }, SETTLE]], KN_OFF);
+    ripple('mkr', MK, [land, S[4] + 1.85], KN_OFF);
+    tr('notes', bloom(land + .2));
+    tr('nrow', [[0, { o: 0, y: 6 }], [land + .35, { o: 0, y: 6 }], [land + .35 + D_IN, { o: 1, y: 0 }]]);
 
     /* Thursday -- what moved, and an old print ---------------------- */
     var s3 = S[3];
@@ -564,11 +587,6 @@
     tr('rtick', [[0, { dp: 0 }], [s4 + 2.85, { dp: 0 }], [s4 + 3.15, { dp: 1 }, TRAVEL]]);
     /* tap send: the three contractors pop in, and it's sent */
     tr('rbtn', [[0, { s: 1 }], [s4 + 3.22, { s: 1 }], [s4 + 3.3, { s: .96 }, TRAVEL], [s4 + 3.42, { s: 1 }, TRAVEL]]);
-    /* Elena's pointer comes to Send, clicks, and leaves */
-    var sb = rect(q('rbtn')), sp = [sb.x + sb.w * .62, sb.y + sb.h * .55];
-    tr('cur', [[0, { o: 0, x: sp[0] + 46, y: sp[1] + 40, s: 1 }], [s4 + 2.7, { o: 0, x: sp[0] + 46, y: sp[1] + 40 }], [s4 + 2.85, { o: 1 }, LIN],
-               [s4 + 3.2, { x: sp[0], y: sp[1] }, TRAVEL], [s4 + 3.22, { s: 1 }], [s4 + 3.3, { s: .88 }, TRAVEL], [s4 + 3.42, { s: 1 }, TRAVEL],
-               [s4 + 3.9, { o: 1 }], [s4 + 4.15, { o: 0 }]]);
     for (i = 0; i < 3; i++) tr('ra' + i, [[0, { o: 0, s: .5 }], [s4 + 3.35 + i * .08, { o: 0, s: .5 }], [s4 + 3.45 + i * .08, { o: 1 }, LIN], [s4 + 3.75 + i * .08, { s: 1 }, SETTLE]]);
     tr('rs1', [[0, { o: 1, y: 0 }], [s4 + 3.8, { o: 1, y: 0 }], [s4 + 4.0, { o: 0, y: -8 }, TRAVEL]]);
     tr('rs2', [[0, { o: 0, y: 8 }], [s4 + 3.8, { o: 0, y: 8 }], [s4 + 4.0, { o: 1, y: 0 }, TRAVEL]]);
