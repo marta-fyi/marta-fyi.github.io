@@ -61,14 +61,12 @@
   var TRANS_IN = [null, S[1], S[2], S[3], S[4]];
   /* the clock: from each time on, hh:mm and where; it
      ticks a minute every 1.5 s */
-  var CLOCK = [[0, 9, 12, 'office'], [S[1] + .3, 8, 40, 'site'], [S[2] + .3, 11, 5, 'site'],
-               [S[3] + .3, 10, 5, 'office'], [S[3] + 3.0, 14, 30, 'site'], [S[4] + .3, 16, 56, 'office'], [NEXT, 8, 0, 'office']];   /* next week starts again in the office */
+  var CLOCK = [[0, 9, 12, 'Office'], [S[1] + .3, 8, 40, 'Site'], [S[2] + .3, 11, 5, 'Site'],
+               [S[3] + .3, 10, 5, 'Office'], [S[3] + 3.0, 14, 30, 'Site'], [S[4] + .3, 16, 56, 'Office'], [NEXT, 8, 0, 'Office']];   /* next week starts again in the office */
 
   /* --- icons ----------------------------------------------------------- */
   var ic = E.icons({
     check:  '<path d="M5 12.5 9.8 17 19 7.5"/>',
-    office: '<path d="M4.5 20.5h15M6.5 20.5V5.5h8v15M14.5 9.5h3v11M9 8.5h1.5M9 11.5h1.5M9 14.5h1.5"/>',
-    site:   '<path d="M4 16.5h16M5.5 16.5a6.5 6.5 0 0 1 13 0M10 10.2V7.5h4v2.7"/>',
     send:   '<path d="M20 4 9.5 14.5M20 4l-6.5 16-4-5.5L4 10.5 20 4Z"/>',
     task:   '<rect x="5" y="5" width="14" height="14" rx="3"/><path d="m8.5 12 2.4 2.4 4.6-4.8"/>',
     plus:   '<path d="M12 5.5v13M5.5 12h13"/>',
@@ -133,9 +131,8 @@
         '<span>' + DAYS[i][0] + '</span><span class="stack bw-cal__n"><b class="num" data-a="cda' + i + '">' + DAYS[i][1] + '</b>' +
         '<b class="num" data-a="cdb' + i + '">' + DAYS[i][3] + '</b></span></button>';
     });
-    return s + '</span><span class="bw-cal__t"><span class="stack bw-cal__i"><span data-a="ioffice">' + ic('office') + '</span>' +
-      '<span data-a="isite">' + ic('site') + '</span></span><span><b class="num" data-a="clock">09:12</b>' +
-      '<span class="bw-cal__w" data-a="where">office</span></span></span></div>';
+    return s + '</span><span class="bw-cal__t"><span><b class="num" data-a="clock">09:12</b>' +
+      '<span class="bw-cal__w" data-a="where">Office</span></span></span></div>';
   }
 
   /* John's mark, in sketch units: one quick marker loop round the duct that
@@ -458,17 +455,6 @@
       tr('cda' + i, [[0, { o: 1, y: 0 }], [tn, { o: 1, y: 0 }], [tn + .3, { o: 0, y: -14 }, TRAVEL]]);
       tr('cdb' + i, [[0, { o: 0, y: 14 }], [tn, { o: 0, y: 14 }], [tn + .3, { o: 1, y: 0 }, TRAVEL]]);
     }
-    /* the clock's office / site glyph follows the clock */
-    var ko = [[0, { o: 1 }]], ks = [[0, { o: 0 }]];
-    CLOCK.forEach(function (c, n) {
-      if (!n) return;
-      var site = c[3] === 'site', was = CLOCK[n - 1][3] === 'site';
-      if (site === was) return;
-      ko.push([c[0], { o: site ? 1 : 0 }], [c[0] + .2, { o: site ? 0 : 1 }]);
-      ks.push([c[0], { o: site ? 0 : 1 }], [c[0] + .2, { o: site ? 1 : 0 }]);
-    });
-    tr('ioffice', ko); tr('isite', ks);
-
     /* Monday -- Store ------------------------------------------------- */
     /* the camera glides to the west wall (0.5-1.7); the old wall lifts out
        as a dashed ghost and the new one draws in 600 mm east */
