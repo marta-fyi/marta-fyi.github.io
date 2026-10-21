@@ -67,8 +67,6 @@
 .pm--bw .bw-cal[data-next] .bw-cal__d:nth-child(2) b { color: #fff; }
 .pm--bw .bw-cal__t { display: flex; align-items: center; gap: calc(8 * var(--u)); height: calc(32 * var(--u)); padding-left: calc(12 * var(--u));
                      border-left: calc(1 * var(--u)) solid var(--hair); }
-.pm--bw .bw-cal__i { color: var(--hp); }
-.pm--bw .bw-cal__i .ic { width: calc(18 * var(--u)); height: calc(18 * var(--u)); }
 .pm--bw .bw-cal__t b { display: block; font-size: calc(15 * var(--u)); font-weight: 500; line-height: 1.1; }
 .pm--bw .bw-cal__w { display: block; font-size: calc(12 * var(--u)); color: var(--grey); white-space: nowrap; }
 .pm--bw .pm__node:focus-visible, .pm--bw .pm__pp:focus-visible { outline: 2px solid var(--hp); outline-offset: 4px; border-radius: 6px; }   /* real px */
