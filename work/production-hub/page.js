@@ -1,7 +1,9 @@
-/* Production Hub -- the promo: one order, #39208, through four teams.
+/* Production Hub -- the promo: one order, #39208, through four teams and
+ * back to the client.
  *
  * One master timeline in real seconds, played once: Accounts, Production,
- * Operations, Shipping, ending on Shipping's final frame with Replay. The
+ * Operations, Shipping -- which ends on the client's side, with the automatic
+ * "on its way" email and its tracker -- then holds with Replay. The
  * timeline is a pure function of time: seek(t) writes every element's
  * transform and opacity for that instant and nothing else, so playing,
  * jumping, replaying and reduced motion are all just seek().
@@ -12,7 +14,8 @@
  *     never morph; they exit and enter around the token.
  *   - Every stage change is the same 1.1 s: satellites out (0-180 ms),
  *     primary card out to the left (150-400), token travels with the rail in
- *     sync (300-850), next card in from the right (650-1100).
+ *     sync (300-850), next card in from the right (500-950), while the
+ *     token is still travelling, so the stage is never empty.
  *   - Tokens: enter 450 ms cubic-bezier(.22,1,.36,1) + 16 px; exit 250 ms
  *     (satellites 180) cubic-bezier(.55,0,1,.45); travel
  *     cubic-bezier(.65,0,.35,1) at 300/450/550 ms by distance.
@@ -31,18 +34,19 @@
   'use strict';
 
   var A = '/assets/promo/';
-  var END = 21.55;
-  var FRAME_T = [6.45, 11.55, 16.4, 21.5];        /* each stage's final frame */
-  var TRANS_IN = [null, 6.5, 11.6, 16.45];        /* start of the transition into each stage */
+  var END = 25.45;
+  var FRAME_T = [6.45, 12.55, 17.4, 25.4];        /* each stage's final frame */
+  var TRANS_IN = [null, 6.5, 12.6, 17.45];        /* start of the transition into each stage */
   var STAGE_W = { d: 568, m: 316 };               /* design width of the white stage */
   var STAGES = ['Accounts', 'Production', 'Operations', 'Shipping'];
   var CAPTIONS = ['Files, quote and payment', 'Fits into the gaps',
                   'Plans change, the order adapts', 'Shipped and tracked'];
-  var DESCRIPTION = 'One order, #39208, moving through four teams. ' +
+  var DESCRIPTION = 'One order, #39208, moving through four teams and back to the client. ' +
     'Accounts: the client uploads AW_Campaign_2024.AI, the €580,00 quote is sent, accepted by John Walters and paid by credit card, and the order is queued. ' +
-    'Production: in a schedule already full of other orders, it finds a free slot on Printer 2 and the next free slot on Cutter 1 right after it, and splits into a print job and a cutting job that fill them. ' +
+    'Production: in a schedule already full of other orders, the two free slots it needs light up, a print slot on Printer 2 and the cutting slot on Cutter 1 right after it, and its print job and cutting job fill them automatically. The print finishes at 10:45 and the order is ready for cutting on Cutter 1; the cut finishes at 11:30 and it is ready to pack and ship. ' +
     'Operations: the due date moves from 23/04/2024 to 22/04/2024 to make the carrier pickup, and the task is marked done. ' +
-    'Shipping: the order is printed, shipped on 22/04/2024 at 17:56 from Sant Cugat with Seur, and tracked to delivery on 23/04/2024.';
+    'Shipping: the order is printed, shipped on 22/04/2024 at 17:56 from Sant Cugat with Seur, and tracked to delivery on 23/04/2024. ' +
+    'Back at the client, John Walters at Brownie gets an automatic email that the order is on its way, with his own tracker and a link to follow it.';
 
   /* --- icons ----------------------------------------------------------- */
   var ICONS = {
@@ -52,6 +56,7 @@
     upload: '<path d="M12 15V4.5M8 8.5l4-4 4 4"/><path d="M4.5 14v3.5A2 2 0 0 0 6.5 19.5h11a2 2 0 0 0 2-2V14"/>',
     fileup: '<path d="M13.5 3.5H7A1.5 1.5 0 0 0 5.5 5v14A1.5 1.5 0 0 0 7 20.5h10a1.5 1.5 0 0 0 1.5-1.5V8.5l-5-5Z"/><path d="M13.5 3.5v5h5M12 17.5v-6M9.5 14l2.5-2.5 2.5 2.5"/>',
     quote:  '<path d="M6.5 3.5h11v17l-2.2-1.5-2.1 1.5-2.2-1.5-2.2 1.5-2.3-1.5V3.5Z"/><path d="M9.5 8h5M9.5 11.5h5M9.5 15h3"/>',
+    mail:   '<rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/><path d="m4.5 7.5 7.5 5.5 7.5-5.5"/>',
     pin:    '<path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z"/><circle cx="12" cy="10" r="2.6"/>',
     bell:   '<path d="M6.5 10a5.5 5.5 0 0 1 11 0c0 4 1.5 5.5 1.5 5.5H5S6.5 14 6.5 10Z"/><path d="M10 18.5a2.2 2.2 0 0 0 4 0"/>',
     assign: '<circle cx="9.5" cy="7.5" r="3.5"/><path d="M3 20c0-3.3 2.9-6 6.5-6 1 0 2 .2 2.8.6"/><circle cx="17.5" cy="16.5" r="4.5"/><path d="M17.5 14.5v4M15.5 16.5h4"/>',
@@ -80,9 +85,9 @@
     return '<div class="c" data-a="up" style="' + at(x, y, w) + '">' + LIFT +
       '<div class="ch"><span class="ch__tile">' + ic('upload') + '</span><p class="ch__t">Upload files</p>' +
       '<span style="font-size:' + U(13) + ';color:var(--grey)">#39208</span>' + ic('close', 'ch__x') + '</div>' +
-      '<div class="drop"' + (M ? ' style="height:' + U(124) + ';padding:0 ' + U(16) + ';text-align:center"' : '') + '><span class="drop__i" data-a="dropi">' + ic('fileup') + '</span>' +
+      '<div class="drop"' + (M ? ' style="height:' + U(124) + ';padding:0 ' + U(16) + ';text-align:center"' : '') + '><span class="drop__hl" data-a="drophl"></span><span class="drop__i" data-a="dropi">' + ic('fileup') + '</span>' +
       '<p>Drag &amp; drop your files here or <a>choose file</a></p><p style="font-size:' + U(12) + ';color:var(--grey)">500 MB max file size.</p></div>' +
-      '<div style="margin-top:' + U(16) + '">' + row + '<div class="prog"><i data-a="pfill"></i></div></div>' +
+      '<div data-a="frowup" style="margin-top:' + U(16) + '">' + row + '<div class="prog"><i data-a="pfill"></i></div></div>' +
       '</div>';
   }
   function dropPill() {
@@ -129,7 +134,8 @@
       ' style="' + at(o.x, o.y, o.w, o.h) + '">' + LIFT +
       '<span class="job__bar" style="background:var(--o-' + o.order + ')"></span>' +
       (o.noArt ? '' : '<img class="job__art" src="' + A + 'art-' + o.order + '.webp" alt="">') +
-      '<div class="job__b"><p class="job__id">' + o.id + '</p>' + (o.nm ? '<p class="job__nm">' + o.nm + '</p>' : '') + '</div></div>';
+      '<div class="job__b"><p class="job__id">' + o.id + '</p>' + (o.nm ? '<p class="job__nm">' + o.nm + '</p>' : '') + '</div>' +
+      (o.ok ? '<span class="job__ok" data-a="' + o.ok + '">' + ic('check') + '</span>' : '') + '</div>';
   }
 
   /* --- the schedule: Printer 1, Printer 2, Cutter 1, 09:00-12:00 ------- */
@@ -160,18 +166,18 @@
      [2, '09:45', '10:45', '618716', 'Cutting'], [2, '11:30', '12:00', '98410', 'Cutting']].forEach(function (j) {
       s += job(ext(ext(lane(g, j[0], j[1], j[2]), { order: j[3], id: '#' + j[3], nm: j[4] }), narrow));
     });
-    s += gap(g, 1, '09:45', '10:45', 'gap1') + gap(g, 2, '10:45', '11:30', 'gap2');
-    s += job(ext(ext(lane(g, 1, '09:45', '10:45'), { order: '39208', id: '#39208-01', nm: 'Print', a: 'p1' }), narrow));
-    s += job(ext(ext(lane(g, 2, '10:45', '11:30'), { order: '39208', id: '#39208-02', nm: 'Cutting', a: 'p2' }), narrow));
-    /* headers after the parts: a part passes under its station on the way into the lane */
+    /* headers before the parts: a part drops over its station into the lane, like a dragged card */
     STATIONS.forEach(function (st, i) {
       s += '<div class="st' + (g.m ? ' st--m' : '') + '" style="' + at(g.laneX[i], g.headY, g.laneW) + '"><img src="' + A + 'station-' + st[2] + '.webp" alt="">' +
         '<div><p class="st__n">' + st[0] + '</p>' + (g.m ? '' : '<p class="st__m">' + st[1] + '</p>') + '</div>' +
-        (i === 2 ? '<span class="st__ring" data-a="ring"></span>' : '') + '</div>';
+        '</div>';
     });
-    var y = ty(g, '11:24');
+    s += gap(g, 1, '09:45', '10:45', 'gap1') + gap(g, 2, '10:45', '11:30', 'gap2');
+    s += job(ext(ext(lane(g, 1, '09:45', '10:45'), { order: '39208', id: '#39208-01', nm: 'Print', a: 'p1', ok: 'p1ok' }), narrow));
+    s += job(ext(ext(lane(g, 2, '10:45', '11:30'), { order: '39208', id: '#39208-02', nm: 'Cutting', a: 'p2', ok: 'p2ok' }), narrow));
+    var y = ty(g, '11:30');
     s += '<div data-a="now" style="position:absolute;inset:0"><span class="now" style="' + at(g.gridX, y, g.gridW) + '"></span>' +
-         '<span class="tpill num" style="' + at(g.pillX, y) + '">11:24</span></div>';
+         '<span class="tpill num" data-a="clock" style="' + at(g.pillX, y) + '">11:30</span></div>';
     s += slot('slot-sched', 'slot--ghost" style="' + at(g.chip[0], g.chip[1]));
     return '<div data-a="sched" style="position:absolute;inset:0">' + s + '</div>';
   }
@@ -182,7 +188,8 @@
       '<p class="done__nm" style="margin-top:' + U(14) + '">Akatsuki Asuma Mogato</p><p class="done__sp">NEPTUNE_Vinyl_345x543</p>' +
       '<span class="due">' + ic('cal') + '<span class="stack num" style="overflow:hidden"><span data-a="due23">Due 23/04/2024</span><span data-a="due22">Due 22/04/2024</span></span></span>' +
       '<div class="slide" data-a="slide"><span class="knob" data-a="knob">' + ic('check') + '<span class="knob--ok" data-a="knobok">' + ic('check') + '</span></span>' +
-      'Drag to mark done<span class="slide__chev">' + ic('chev') + ic('chev') + ic('chev') + '</span></div></div>';
+      '<span class="slide__l" data-a="slabel">Drag to mark done<span class="slide__chev">' + ic('chev') + ic('chev') + ic('chev') + '</span></span>' +
+      '<span class="slide__done" data-a="sdone">Marked as done</span></div></div>';
   }
 
   function taskMenu(x, y, w) {
@@ -200,7 +207,7 @@
       '<p class="cmt__b">Due date moved to 22/04 to make the carrier pickup.</p></div></div>';
   }
 
-  var TRACK = [['Ordered', '19/04/2024', '12:23'], ['Printed', '21/04/2024', '16:31'], ['Shipped', '22/04/2024', '17:56'], ['Estimated delivery', '23/04/2024']];
+  var TRACK = [['Ordered', '19/04/2024', '12:23'], ['Printed', '21/04/2024', '11:30'], ['Shipped', '22/04/2024', '17:56'], ['Estimated delivery', '23/04/2024']];
   function trackingCard(x, y, w) {
     var pos = [0, 100 / 3, 200 / 3, 100];
     var nodes = pos.map(function (p, i) {
@@ -241,6 +248,29 @@
       '</div>';
   }
 
+  /* the client's end: the automatic "on its way" email, with their own tracker */
+  var MAIL_TRK = [['Ordered', '19/04'], ['Printed', '21/04'], ['Shipped', '22/04'], ['Delivery', '23/04']];
+  function mailCard(x, y, w, M) {
+    var pos = [0, 100 / 3, 200 / 3, 100];
+    var nodes = pos.map(function (p, i) {
+      return '<span class="trk__n" style="left:' + p + '%"></span>' +
+        (i < 3 ? '<span class="trk__n trk__n--on" data-a="mn' + i + '" style="left:' + p + '%">' + ic('check') + '</span>' : '');
+    }).join('');
+    var labels = MAIL_TRK.map(function (l, i) {
+      var align = i === 0 ? 'left:0' : i === 3 ? 'right:0;text-align:right' : 'left:' + pos[i] + '%;transform:translateX(-50%);text-align:center';
+      return '<div class="trk__l" style="' + align + '"><p>' + l[0] + '</p><p class="num">' + l[1] + '</p></div>';
+    }).join('');
+    return '<div class="c mail" data-a="mail" style="' + at(x, y, w) + '">' + LIFT +
+      '<div class="ch">' + (M ? '' : '<span class="ch__tile">' + ic('mail') + '</span>') +
+      '<div class="mail__h"><p class="ch__t">Your order is on its way</p><p class="mail__to">To John Walters · Brownie</p>' +
+      (M ? '<span class="pill pill--mint mail__auto" data-a="auto">Automatic</span></div>'                /* narrow: under the recipient */
+         : '</div><span class="pill pill--mint" data-a="auto">Automatic</span>') + '</div>' +
+      '<div class="mail__o">' + slot('slot-mail') + '<div><p class="mail__n">Banner × 10</p><p class="mail__s">Shipped with Seur, arriving 23/04</p></div></div>' +
+      '<div class="trk"><i class="trk__fill" data-a="mfill"></i>' + nodes + '</div>' +
+      '<div class="trk__labels mail__labels">' + labels + '</div>' +
+      '<span class="mail__btn" data-a="mbtn">Track your order</span></div>';
+  }
+
   function token() {
     return '<div class="tokn" data-a="token"><i class="pm-lift" data-a="tokl"></i><span class="job__bar"></span>' +
       '<img src="' + A + 'art-39208.webp" alt=""><p class="num">#39208</p></div>';
@@ -252,28 +282,45 @@
       orderCard(20, 24, 296) + quoteCard(240, 232, 308) +
       schedule(GEO.d) +
       doneCard(24, 40, 276) + taskMenu(312, 56, 240) + commentRow(24, 352, 524) +
-      trackingCard(20, 128, 528) + token();
+      trackingCard(20, 128, 528) + mailCard(60, 84, 448) + token();
   }
   /* notifications float over the stage's bottom-left corner, unclipped */
   function desktopFloat() {
     return toast('t1', -12, 582, 360, 'req', 'New request for approval', 'Sent by Account Manager') +
-      toast('t2', -12, 582, 360, 'ok', 'Order #39208 Shipped', 'Sent by Production Manager');
+      toast('t2', -12, 582, 360, 'ok', 'Order #39208 Shipped', 'Sent by Production Manager') +
+      toast('t3', 188, 14, 360, 'ok', '#39208-01 printed', 'Ready for cutting on Cutter 1') +   /* in the strip the parts used, beside the order */
+      toast('t4', 188, 14, 360, 'ok', '#39208-02 cut', 'Ready to pack and ship');
   }
   function mobileStage() {
     return uploadCard(12, 24, 292, true) + dropPill() +
       orderCard(12, 12, 292, true) + quoteCard(24, 300, 280, true) +
       schedule(GEO.m) +
       doneCard(12, 12, 292) + taskMenu(12, 320, 292) + commentRow(12, 320, 292) +
-      trackingCardNarrow(12, 58, 292) + token();
+      trackingCardNarrow(12, 58, 292) + mailCard(12, 40, 292, true) + token();
   }
   function mobileFloat() {
     return toast('t1', -6, 600, 300, 'req', 'New request for approval', 'Sent by Account Manager') +
-      toast('t2', -6, 600, 300, 'ok', 'Order #39208 Shipped', 'Sent by Production Manager');
+      toast('t2', -6, 600, 300, 'ok', 'Order #39208 Shipped', 'Sent by Production Manager') +
+      toast('t3', -6, 600, 300, 'ok', '#39208-01 printed', 'Ready for cutting on Cutter 1') +
+      toast('t4', -6, 600, 300, 'ok', '#39208-02 cut', 'Ready to pack and ship');
   }
 
   /* --- motion, from the engine --------------------------------------- */
   var ENTER = E.ENTER, EXIT = E.EXIT, TRAVEL = E.TRAVEL, LIN = E.LIN, Track = E.Track;
   var D_IN = E.D_IN, D_OUT = E.D_OUT, D_SAT = E.D_SAT, travelDur = E.travelDur;
+  var SETTLE = E.bez(.34, 1.45, .64, 1, 'cubic-bezier(.34,1.45,.64,1)');   /* a small overshoot, then rest */
+
+  /* The time line, [seconds, minutes after 09:00]: it sweeps to 10:45, the end
+     of the print, holds for the print-done notice, then moves on to 11:30, the
+     end of the cut. The line's track and the pill's clock both read it. */
+  var NOW = [[9.25, 0], [9.85, 105], [10.75, 105], [11.15, 150]];
+  function clockAt(t) {
+    if (t <= NOW[0][0]) return NOW[0][1];
+    for (var i = 1; i < NOW.length; i++) if (t < NOW[i][0]) {
+      var a = NOW[i - 1], b = NOW[i]; return a[1] + (b[1] - a[1]) * TRAVEL((t - a[0]) / (b[0] - a[0]));
+    }
+    return NOW[NOW.length - 1][1];
+  }
 
   /* --- choreography ---------------------------------------------------- */
   function choreography(q, rect, M) {
@@ -290,14 +337,15 @@
     var dropi = rect(q('dropi')), pill = q('pill'), pillW = rect(pill).w;
     var pillAt = M ? [dropi.x + dropi.w / 2 - pillW / 2, dropi.y + dropi.h / 2 - 15] : [dropi.x + dropi.w + 12, dropi.y + dropi.h / 2 - 15];
     pill.style.left = U(pillAt[0]); pill.style.top = U(pillAt[1]);
-    var pillFrom = M ? { x: 0, y: 250 } : { x: 30, y: 200 };
+    /* the file is dragged in from below the stage's edge, never sitting on the card */
+    var pillFrom = { x: M ? 0 : 30, y: rect(pill.parentNode).h + 8 - pillAt[1] };
     var S = {};
-    ['slot-up', 'slot-order', 'slot-sched', 'slot-done', 'slot-track'].forEach(function (k) { S[k] = rect(q(k)); });
+    ['slot-up', 'slot-order', 'slot-sched', 'slot-done', 'slot-track', 'slot-mail'].forEach(function (k) { S[k] = rect(q(k)); });
     var travel = rect(q('slide')).w - 12 - 44;
 
     /* the token: translation only, between slots. Each trip also moves the
        rail when it is a stage change, with the same start, duration, ease. */
-    var tk = [[0, { o: 0, x: S['slot-up'].x, y: S['slot-up'].y }], [.9, { o: 0 }], [1.1, { o: 1 }]];
+    var tk = [[0, { o: 0, x: S['slot-up'].x, y: S['slot-up'].y }], [1.0, { o: 0 }], [1.2, { o: 1 }]];
     var rl = [[0, { sx: 0 }]], switches = [0], tl = [[0, { o: 0 }]];
     function trip(t0, from, to, railTo) {
       var d = travelDur(Math.hypot(S[to].x - S[from].x, S[to].y - S[from].y));
@@ -309,8 +357,11 @@
 
     /* Stage 1 -- Accounts. The first frame is drawn before play: no entrance. */
     tr('up', cardOut(2.1));
-    tr('pill', [[0, { x: pillFrom.x, y: pillFrom.y, l: 0 }], [.45, { x: pillFrom.x, y: pillFrom.y, l: 0 }], [.65, { l: 1 }],
-                [1.0, { x: 0, y: 0, l: 0 }, TRAVEL], [1.0, { o: 1 }], [1.0 + D_SAT, { o: 0 }, EXIT]]);
+    tr('pill', [[0, { x: pillFrom.x, y: pillFrom.y, l: 1 }], [.3, { x: pillFrom.x, y: pillFrom.y }],
+                [.85, { l: 1 }], [1.0, { x: 0, y: 0, l: 0 }, TRAVEL],
+                [1.0, { o: 1, s: 1 }], [1.0 + D_SAT, { o: 0, s: .92 }, EXIT]]);
+    tr('drophl', [[.7, { o: 0 }], [.85, { o: 1 }], [1.0, { o: 1 }], [1.0 + D_IN, { o: 0 }]]);   /* drag-over */
+    tr('frowup', [[1.0, { o: 0 }], [1.0 + D_IN, { o: 1 }]]);
     tr('pfill', [[1.0, { sx: 0 }], [1.8, { sx: 1 }, TRAVEL]]);
     tr('pcheck', [[1.8, { o: 0, x: 8 }], [1.8 + D_IN, { o: 1, x: 0 }]]);
     trip(2.25, 'slot-up', 'slot-order');
@@ -330,26 +381,42 @@
     trip(6.8, 'slot-order', 'slot-sched', 1 / 3);
 
     /* Stage 2 -- Production */
-    tr('sched', cardIn(7.15).concat(cardOut(11.75)));
-    var chip = S['slot-sched'], cx = chip.x + chip.w / 2, cy = chip.y + chip.h / 2;
-    /* the search: the two free slots light up in order, print then cut ... */
-    var gapKeys = { gap1: [[7.6, { o: 0 }], [7.85, { o: 1 }]], gap2: [[7.72, { o: 0 }], [7.97, { o: 1 }]] };
-    /* ... then the order splits into them, the print first, the cut 120 ms later */
+    tr('sched', cardIn(7.0).concat(cardOut(12.75)));
+    /* Scheduling is automatic: the two free slots light up in order, print
+       then cut, each gives one soft pulse, and its part fills it in place,
+       revealed top to bottom like a sheet coming off the printer, while the
+       slot's outline fades under it. Nothing is dragged; the chip lifts for
+       as long as it is being scheduled. */
+    var FILL = [[8.1, 8.6], [8.45, 8.95]];
     ['p1', 'p2'].forEach(function (n, k) {
-      var r = rect(q(n)), t0 = 8.05 + k * .12, dx = cx - (r.x + r.w / 2), dy = cy - (r.y + r.h / 2);
-      var d = travelDur(Math.hypot(dx, dy));
-      tr(n, [[t0, { o: 0, x: dx, y: dy, l: 1 }], [t0 + .1, { o: 1 }], [t0 + d, { x: 0, y: 0, l: 0 }, TRAVEL]]);
-      gapKeys['gap' + (k + 1)].push([t0 + d, { o: 1 }], [t0 + d + D_SAT, { o: 0 }, EXIT]);   /* filled */
+      var f = FILL[k], lit = 7.6 + k * .12;
+      tr('gap' + (k + 1), [[lit, { o: 0, s: 1 }], [lit + .25, { o: 1 }], [f[0] - .3, { s: 1 }],
+                           [f[0] - .12, { s: 1.03 }, ENTER], [f[0] + .06, { s: 1 }, EXIT],   /* pulse */
+                           [f[0], { o: 1 }], [f[1], { o: 0 }, EXIT]]);
+      tr(n, [[f[0], { o: 0, cp: 0 }], [f[0] + .15, { o: 1 }, LIN], [f[1], { cp: 1 }, TRAVEL]]);
     });
-    tr('gap1', gapKeys.gap1); tr('gap2', gapKeys.gap2);
-    tr('now', [[8.85, { o: 0, y: ty(g, '09:00') - ty(g, '11:24') }], [8.9, { o: 1 }, LIN], [8.9, { y: ty(g, '09:00') - ty(g, '11:24') }], [9.8, { y: 0 }, TRAVEL]]);
-    tr('ring', [[9.8, { o: 0 }], [10.1, { o: 1 }]]);
+    tl.push([7.9, { o: 0 }], [8.0, { o: 1 }], [8.85, { o: 1 }], [9.0, { o: 0 }]);   /* the chip lifts while it is scheduled */
 
-    /* Transition 2 (11.6): no satellites */
-    trip(11.9, 'slot-sched', 'slot-done', 2 / 3);
+    /* the time line, two beats: the print finishes at 10:45, the cut at 11:30 */
+    function nowY(m) { return (m - 150) / 60 * g.pxH; }   /* offset from its 11:30 home */
+    var nk = [[NOW[0][0] - .05, { o: 0, y: nowY(0) }], [NOW[0][0], { o: 1 }, LIN]];
+    NOW.forEach(function (p) { nk.push([p[0], { y: nowY(p[1]) }, TRAVEL]); });
+    tr('now', nk);
+    var printed = NOW[1][0], cut = NOW[3][0];
+    tr('p1ok', [[printed, { o: 0, s: .6 }], [printed + D_IN, { o: 1, s: 1 }, SETTLE]]);
+    tr('p2ok', [[cut, { o: 0, s: .6 }], [cut + D_IN, { o: 1, s: 1 }, SETTLE]]);
+    /* notices: printed, then replaced by ready to pack and ship. Desktop drops
+       them into the strip above the headers; mobile uses the usual corner. */
+    function noteIn(t0) { return M ? toastIn(t0) : [[t0, { o: 0, y: -12 }], [t0 + D_IN, { o: 1, y: 0 }]]; }
+    function noteOut(t0) { return M ? toastOut(t0) : [[t0, { o: 1, y: 0 }], [t0 + D_SAT, { o: 0, y: -8 }, EXIT]]; }
+    tr('t3', noteIn(printed + .1).concat(noteOut(cut - .05)));
+    tr('t4', noteIn(cut + .1).concat(noteOut(12.6)));
+
+    /* Transition 2 (12.6): the ready-to-ship notice leaves first */
+    trip(12.9, 'slot-sched', 'slot-done', 2 / 3);
 
     /* Stage 3 -- Operations */
-    tr('done', cardIn(12.25).concat(cardOut(16.6)));
+    tr('done', cardIn(13.1).concat(cardOut(17.6)));
     /* Task actions grows from the card's dots; on mobile it sits below the
        card and leaves once the date has changed, making room for the comment */
     var doneR = rect(q('done')), below = doneR.y + doneR.h + 16;
@@ -357,35 +424,48 @@
     if (M) q('menu').style.top = U(below);
     var mr = rect(q('menu')), dots = rect(q('dots'));
     q('menu').style.transformOrigin = U(dots.x + dots.w / 2 - mr.x) + ' ' + U(dots.y + dots.h / 2 - mr.y);
-    tr('menu', [[12.7, { o: 0, s: .96 }], [12.95, { o: 1, s: 1 }]].concat(M ? satOut(13.5) : satOut(16.45)));
-    tr('duehl', [[13.0, { o: 0 }], [13.2, { o: 1 }]]);
-    tr('due23', [[13.2, { o: 1, y: 0 }], [13.45, { o: 0, y: -12 }, TRAVEL]]);
-    tr('due22', [[13.2, { o: 0, y: 12 }], [13.45, { o: 1, y: 0 }, TRAVEL]]);
-    tr('knob', [[13.6, { x: 0 }], [14.3, { x: travel }, TRAVEL]]);
-    tr('knobok', [[14.3, { o: 0 }], [14.5, { o: 1 }]]);
-    tr('cmt', [[14.5, { o: 0, y: -12 }], [14.5 + D_IN, { o: 1, y: 0 }]].concat(satOut(16.45)));
+    tr('menu', [[13.7, { o: 0, s: .96 }], [13.95, { o: 1, s: 1 }]].concat(M ? satOut(14.5) : satOut(17.45)));
+    tr('duehl', [[14, { o: 0 }], [14.2, { o: 1 }]]);
+    tr('due23', [[14.2, { o: 1, y: 0 }], [14.45, { o: 0, y: -12 }, TRAVEL]]);
+    tr('due22', [[14.2, { o: 0, y: 12 }], [14.45, { o: 1, y: 0 }, TRAVEL]]);
+    tr('knob', [[14.6, { x: 0 }], [15.3, { x: travel }, TRAVEL]]);
+    tr('slabel', [[14.7, { o: 1 }], [15, { o: 0 }, LIN]]);            /* the knob drags the label away */
+    tr('knobok', [[15.3, { o: 0 }], [15.5, { o: 1 }]]);
+    tr('sdone', [[15.3, { o: 0, x: -8 }], [15.3 + D_IN, { o: 1, x: 0 }]]);
+    tr('cmt', [[15.5, { o: 0, y: -12 }], [15.5 + D_IN, { o: 1, y: 0 }]].concat(satOut(17.45)));
 
-    /* Transition 3 (16.45) */
-    trip(16.75, 'slot-done', 'slot-track', 1);
+    /* Transition 3 (17.45) */
+    trip(17.75, 'slot-done', 'slot-track', 1);
 
     /* Stage 4 -- Shipping */
-    tr('track', cardIn(17.1));
-    var seg = [[17.55, 17.9], [18.02, 18.37]];
+    tr('track', cardIn(17.95).concat(cardOut(21.25)));
+    var seg = [[18.55, 18.9], [19.02, 19.37]];
     tr(M ? 'vfill' : 'tfill', M ? [[seg[0][0], { sy: 0 }], [seg[0][1], { sy: 1 / 3 }, TRAVEL], [seg[1][0], { sy: 1 / 3 }], [seg[1][1], { sy: 2 / 3 }, TRAVEL]]
                                 : [[seg[0][0], { sx: 0 }], [seg[0][1], { sx: 1 / 3 }, TRAVEL], [seg[1][0], { sx: 1 / 3 }], [seg[1][1], { sx: 2 / 3 }, TRAVEL]]);
-    [17.4, seg[0][1], seg[1][1]].forEach(function (t0, k) {
+    [18.4, seg[0][1], seg[1][1]].forEach(function (t0, k) {
       tr('tn' + k, [[t0, { o: 0 }], [t0 + .15, { o: 1 }]]);
       tr('td' + k, [[t0, { o: 0 }], [t0 + .25, { o: 1 }]]);
     });
-    for (i = 0; i < 3; i++) tr('ur' + i, [[18.6, { o: 0, x: 8 }], [18.6 + D_IN, { o: 1, x: 0 }]]);
-    tr('t2', toastIn(19.1));
+    for (i = 0; i < 3; i++) tr('ur' + i, [[19.6, { o: 0, x: 8 }], [19.6 + D_IN, { o: 1, x: 0 }]]);
+    tr('t2', toastIn(20.1).concat(toastOut(21.1)));
+
+    /* ... and at the same moment, on the client's end: the automatic email.
+       The tracking view steps aside, the order travels into the email, the
+       client's own tracker catches up, and the link to follow it arrives.
+       Same stage, so the rail does not move. */
+    trip(21.35, 'slot-track', 'slot-mail');
+    tr('mail', cardIn(21.55));
+    tr('auto', [[21.95, { o: 0, s: .8 }], [21.95 + D_IN, { o: 1, s: 1 }, SETTLE]]);
+    tr('mfill', [[22.2, { sx: 0 }], [22.45, { sx: 1 / 3 }, TRAVEL], [22.5, { sx: 1 / 3 }], [22.75, { sx: 2 / 3 }, TRAVEL]]);
+    [22.1, 22.45, 22.75].forEach(function (t0, k) { tr('mn' + k, [[t0, { o: 0 }], [t0 + .15, { o: 1 }]]); });
+    tr('mbtn', [[22.95, { o: 0, y: 6 }], [22.95 + D_IN, { o: 1, y: 0 }]]);
 
     /* captions: out with the card, in with the next one; never together */
-    var capOut = [6.65, 11.75, 16.6], capIn = [null, 7.15, 12.25, 17.1];
-    for (i = 0; i < 4; i++) {
+    var capOut = [6.65, 12.75, 17.6], capIn = [null, 7.0, 13.1, 17.95];
+    for (i = 0; i < STAGES.length; i++) {
       var k2 = [];
       if (i > 0) k2.push([0, { o: 0 }], [capIn[i], { o: 0, x: 16 }], [capIn[i] + D_IN, { o: 1, x: 0 }]);
-      if (i < 3) k2.push([capOut[i], { o: 1, x: 0 }], [capOut[i] + D_SAT, { o: 0, x: -8 }, EXIT]);
+      if (i < STAGES.length - 1) k2.push([capOut[i], { o: 1, x: 0 }], [capOut[i] + D_SAT, { o: 0, x: -8 }, EXIT]);
       tr('cap' + i, k2);
     }
 
@@ -401,8 +481,14 @@
       return mobile ? { stage: mobileStage(), float: mobileFloat() } : { stage: desktopStage(), float: desktopFloat() };
     },
     choreography: choreography,
-    /* the quote total counts up as its lines arrive */
+    /* the quote total counts up as its lines arrive; the schedule's clock follows its time line */
     onSeek: function (t, q) {
+      var clock = q('clock');
+      if (clock) {
+        var m = Math.round(clockAt(t)), hm = (9 + Math.floor(m / 60)) + ':' + ('0' + m % 60).slice(-2);
+        hm = ('0' + hm).slice(-5);
+        if (clock.textContent !== hm) clock.textContent = hm;
+      }
       var total = q('total');
       if (total) {
         var txt = '€' + Math.round(580 * ENTER(Math.max(0, Math.min(1, (t - 3.3) / .6)))) + ',00';
