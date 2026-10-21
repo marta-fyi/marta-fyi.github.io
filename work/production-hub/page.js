@@ -260,8 +260,8 @@
     return '<div class="c mail" data-a="mail" style="' + at(x, y, w) + '">' + LIFT +
       '<div class="ch">' + (M ? '' : '<span class="ch__tile">' + ic('mail') + '</span>') +
       '<div class="mail__h"><p class="ch__t">Your order is on its way</p><p class="mail__to">To John Walters · Brownie</p>' +
-      (M ? '<span class="pill pill--mint mail__auto" data-a="auto">Automatic</span></div>'                /* narrow: under the recipient */
-         : '</div><span class="pill pill--mint" data-a="auto">Automatic</span>') + '</div>' +
+      (M ? '<span class="pill pill--mint mail__auto" data-a="auto">Notified</span></div>'                /* narrow: under the recipient */
+         : '</div><span class="pill pill--mint" data-a="auto">Notified</span>') + '</div>' +
       '<div class="mail__o' + (M ? ' mail__o--m' : '') + '">' + slot('slot-mail') + '<div><p class="mail__n">Banner × 10</p><p class="mail__s">Shipped with Seur, arriving 23/04</p></div></div>' +
       '<div class="trk"><i class="trk__fill" data-a="mfill"></i>' + nodes + '</div>' +
       '<div class="trk__labels mail__labels">' + labels + '</div>' +
