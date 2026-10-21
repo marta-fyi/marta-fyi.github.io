@@ -24,8 +24,8 @@
 /* ======================================================================
    Page layout: the overview (.pmr__lead), then the promo, then the prose.
    Narrow, they stack in that order, so the promo follows the overview.
-   Wide, the promo takes the top of the right column, level with the
-   overview, and stays pinned there while the prose scrolls past. It pins
+   Wide, the promo takes the top of the right column, pinned from the
+   first frame, and stays there while the prose scrolls past. It pins
    just below the corner mascot (6vh + 88px), or higher if the viewport is
    too short to show the whole promo there. --pmr-half is half the promo's
    rendered height in the 560px column.
@@ -47,7 +47,11 @@
   .pmr__lead > h2, .pmr__lead > p, .pmr__lead > dl,
   .pmr__prose > h2, .pmr__prose > p { max-width: none; }
   .pmr__vis {
-    grid-column: 2; grid-row: 1 / span 2; margin: 0; width: 560px;
+    grid-column: 2; grid-row: 1 / span 2; width: 560px;
+    /* Pulled far above its row so it starts pinned: sticky pushes it back
+       down to `top` at once, so the page opens with the whole promo in view
+       instead of its foot below the fold until you scroll. */
+    margin: -100vh 0 0;
     position: sticky;
     top: max(24px, min(calc(6vh + 112px), calc(100vh - 2 * var(--pmr-half, 355px) - 24px)));
   }
