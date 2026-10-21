@@ -54,14 +54,14 @@
 
   /* chapter starts, final frames, the closing frame */
   var S = [0, 6.2, 12.6, 18.6, 25.6];
-  var END = 33.6;
+  var END = S[4] + 8.7;                             /* after next week's sheet has slid in and settled */
   var FRAME_T = [6.15, 12.55, 18.55, 25.55, END];
   var NEXT = S[4] + 6.3;                             /* Friday's close: the calendar rolls to next week */
   var TRANS_IN = [null, S[1], S[2], S[3], S[4]];
   /* the clock: from each time on, hh:mm, where, and the day's feature; it
      ticks a minute every 1.5 s */
   var CLOCK = [[0, 9, 12, 'office', 0], [S[1] + .3, 8, 40, 'site', 1], [S[2] + .3, 11, 5, 'site', 2],
-               [S[3] + .3, 10, 5, 'office', 3], [S[3] + 3.0, 14, 30, 'site', 3], [S[4] + .3, 16, 56, 'office', 4], [NEXT, 8, 0, 'office', 4]];
+               [S[3] + .3, 10, 5, 'office', 3], [S[3] + 3.0, 14, 30, 'site', 3], [S[4] + .3, 16, 56, 'office', 4], [NEXT, 8, 0, 'office', 0]];   /* next week starts again at Store */
   var FEAT_M = ['Store', 'Collab', 'Markup', 'Review', 'Report'];   /* narrow: the chip has room for one short word */
 
   /* --- icons ----------------------------------------------------------- */
@@ -361,13 +361,39 @@
       '<span class="num" data-a="phs2">Mon 21</span></span></div>';
   }
 
+  /* Next week: Level 2's reflected ceiling plan, a fresh sheet. The same
+     building, the plan mirrored so it reads as another floor, with a 600 mm
+     ceiling grid and its lights in the main rooms, and a new version chip.
+     Nothing pinned, nothing noted: a fresh start. Plan px, like the walls. */
+  var RCP = [[0, 320, 960, 1077], [1640, 553, 2163, 1086], [1756, 310, 2163, 533]];   /* x0, y0, x1, y1 */
+  function ceiling() {
+    var grid = '', lights = '', T = 70;
+    RCP.forEach(function (r) {
+      for (var x = r[0]; x <= r[2]; x += T) grid += 'M' + x + ' ' + r[1] + 'V' + r[3];
+      for (var y = r[1]; y <= r[3]; y += T) grid += 'M' + r[0] + ' ' + y + 'H' + r[2];
+      for (var lx = r[0] + T * 1.5; lx < r[2]; lx += T * 3) for (var ly = r[1] + T * 1.5; ly < r[3]; ly += T * 3)
+        lights += '<circle cx="' + lx + '" cy="' + ly + '" r="16"/>';
+    });
+    return '<svg class="bw-rcp" viewBox="0 0 ' + PLAN.w + ' ' + PLAN.h + '" aria-hidden="true"><path d="' + grid + '"/><g>' + lights + '</g></svg>';
+  }
+  function sheet2(g) {
+    var c = g.card, cam = g.cams.full;
+    return '<div class="bw-sheet bw-sheet2" data-a="sheet2" style="' + at(c[0], c[1], c[2], c[3]) + '">' +
+      '<div class="bw-plan" style="left:' + U(cam.x) + ';top:' + U(cam.y) + ';width:' + U(g.pw) + ';height:' + U(g.pw * PLAN.h / PLAN.w) + '">' +
+      '<div class="bw-flip"><img class="bw-plan__img" src="' + A + 'plan.webp" alt=""><i class="bw-tint bw-tint--line"></i><i class="bw-tint bw-tint--sheet"></i>' +
+      '<i class="bw-tint bw-veil"></i>' + ceiling() + '</div></div>' +
+      '<div class="bw-glass bw-ver" style="' + at(g.ver[0] - c[0], g.ver[1] - c[1]) + '">' +
+      '<svg class="bw-ok" viewBox="0 0 24 24" aria-hidden="true"><circle class="bw-ok__ring" cx="12" cy="12" r="9"/></svg>' +
+      '<span>Level 2 · Ceilings</span><span class="bw-ver2__v num">v.001</span></div></div>';
+  }
+
   function stage(g) {
     /* paint order: the drawing and what lives in its space; the chips over
        it; the printout, then the vector that leaves it (so it travels over
        the paper); Thursday's prints and phone over everything on the plan;
        the report last */
     return sheet(g) + dimTag() + pin() + verChip(g) + history(g) + share(g) +
-      bubble(g) + task(g) + picker(g) + cmpChip(g) + notes(g) + keynote() + paper(g) + mark() + stack(g) + phone(g) + phase(g) + report(g) + tap();
+      bubble(g) + task(g) + picker(g) + cmpChip(g) + notes(g) + keynote() + paper(g) + mark() + stack(g) + phone(g) + phase(g) + report(g) + sheet2(g) + tap();
   }
 
   /* --- choreography ---------------------------------------------------- */
@@ -555,7 +581,7 @@
                       [lift + .01, { o: 1 }, LIN], [land - .15, { o: 1 }], [land, { x: 0, y: 0, s: KN_D / loopW, o: 0 }, TRAVEL]], KN_OFF);
     attach('kn', MK, [[0, { o: 0, s: .6 }], [land - .15, { o: 0, s: .6 }], [land - .05, { o: 1 }, LIN], [land + .25, { s: 1 }, SETTLE]], KN_OFF);
     ripple('mkr', MK, [land], KN_OFF);
-    tr('notes', bloom(land + .2));
+    tr('notes', bloom(land + .2).concat(M ? [[NEXT, { x: 0 }], [NEXT + .5, { x: -g.W }, EXIT]] : []));   /* narrow: it sits below the sheet, so it leaves */
     tr('nrow', [[0, { o: 0, y: 6 }], [land + .35, { o: 0, y: 6 }], [land + .35 + D_IN, { o: 1, y: 0 }]]);
 
     /* Thursday -- what moved, and an old print ---------------------- */
@@ -587,7 +613,11 @@
     var s4 = S[4];
     /* the camera pulls back (above), and the week folds into the report */
     origin(q('rep'), [g.rep[0] + g.rep[2] / 2, g.rep[1] + 40]);
-    tr('rep', bloom(s4 + 2.0));
+    /* next week: on mobile the report sits below the sheet, so it leaves to
+       the left as Level 2's sheet comes in from the right; on desktop the
+       new sheet simply covers Level 1 and everything on it */
+    tr('rep', bloom(s4 + 2.0).concat(M ? [[NEXT, { x: 0 }], [NEXT + .5, { x: -g.W }, EXIT]] : []));
+    tr('sheet2', [[0, { o: 1, x: g.W - g.card[0] + 40 }], [NEXT + .1, { x: g.W - g.card[0] + 40 }], [NEXT + .85, { x: 0 }, TRAVEL]]);
     for (i = 0; i < REP.length; i++) tr('rr' + i, [[0, { o: 0, y: 6 }], [s4 + 2.2 + i * .1, { o: 0, y: 6 }], [s4 + 2.2 + i * .1 + D_IN, { o: 1, y: 0 }]]);
     tr('rtick', [[0, { dp: 0 }], [s4 + 2.85, { dp: 0 }], [s4 + 3.15, { dp: 1 }, TRAVEL]]);
     /* tap send: the three contractors pop in, and it's sent */
