@@ -240,10 +240,10 @@
 .pm--bw .bw-kn__ok { position: absolute; inset: 0; display: grid; place-items: center; border-radius: 50%; font-style: normal; opacity: 0;
                      background: #fff; box-shadow: inset 0 0 0 calc(1.6 * var(--u)) var(--ok); color: var(--ok); }
 .pm--bw .bw-kn--s { width: calc(20 * var(--u)); height: calc(20 * var(--u)); }
-.pm--bw .bw-notes { position: absolute; padding: calc(10 * var(--u)) calc(12 * var(--u)) calc(12 * var(--u)); opacity: 0;
-                    background: var(--sheet); border: calc(1 * var(--u)) solid var(--hp-line); border-radius: calc(4 * var(--u)); }
-.pm--bw .bw-notes__h { font-size: calc(12 * var(--u)); font-weight: 500; color: var(--hp);
-                       padding-bottom: calc(8 * var(--u)); margin-bottom: calc(8 * var(--u)); border-bottom: calc(1 * var(--u)) solid rgba(46, 102, 222, .3); }
+.pm--bw .bw-notes { position: absolute; padding: calc(10 * var(--u)) calc(12 * var(--u)) calc(12 * var(--u)); opacity: 0;   /* frosted: the drawing shows through, softened */
+                    background: rgba(255, 255, 255, .55); border: calc(1 * var(--u)) solid rgba(255, 255, 255, .8); border-radius: calc(14 * var(--u));
+                    -webkit-backdrop-filter: blur(6px) saturate(1.2); backdrop-filter: blur(6px) saturate(1.2); box-shadow: var(--sh-sm); }
+.pm--bw .bw-notes__h { font-size: calc(12 * var(--u)); color: var(--grey); padding-bottom: calc(8 * var(--u)); margin-bottom: calc(8 * var(--u)); border-bottom: calc(1 * var(--u)) solid var(--hair); }
 .pm--bw .bw-nrow { position: relative; display: flex; align-items: flex-start; gap: calc(8 * var(--u)); }
 .pm--bw .bw-nrow__t { font-size: calc(13 * var(--u)); font-weight: 500; line-height: calc(20 * var(--u)); }
 .pm--bw .bw-nrow__s { font-size: calc(12 * var(--u)); color: var(--grey); }
@@ -336,10 +336,19 @@
 .pm--bw .bw-ph__ok { display: inline-flex; align-items: center; gap: calc(3 * var(--u)); color: var(--ok); }
 .pm--bw .bw-ph__ok .ic { width: calc(12 * var(--u)); height: calc(12 * var(--u)); stroke-width: 2.2; }
 .pm--bw.pm--m .bw-ph__bar { width: calc(40 * var(--u)); }
-.pm--bw .bw-rep__send { margin-top: calc(10 * var(--u)); height: calc(38 * var(--u)); border-radius: calc(19 * var(--u)); background: var(--hp); color: #fff;
-                        display: flex; align-items: center; justify-content: center; font-size: calc(13 * var(--u)); font-weight: 500; }
-.pm--bw .bw-rep__send .stack { justify-items: center; }
-.pm--bw .bw-rep__send .stack > span { display: inline-flex; align-items: center; gap: calc(6 * var(--u)); white-space: nowrap; }
+/* slide to send, as Production Hub's slide to mark done: an HP-blue knob on a pale track */
+.pm--bw .bw-slide { position: relative; height: calc(52 * var(--u)); margin-top: calc(10 * var(--u)); border-radius: calc(26 * var(--u)); background: var(--hp-pale);
+                    color: var(--hp); display: flex; align-items: center; padding-left: calc(58 * var(--u)); font-size: calc(13 * var(--u)); font-weight: 500; white-space: nowrap; }
+.pm--bw .bw-slide__l { flex: 1; display: flex; align-items: center; }
+.pm--bw .bw-slide__chev { margin-left: auto; margin-right: calc(14 * var(--u)); display: flex; }
+.pm--bw .bw-slide__chev .ic { width: calc(13 * var(--u)); height: calc(13 * var(--u)); margin-left: calc(-4 * var(--u)); stroke-width: 1.8; }
+.pm--bw .bw-slide__done { position: absolute; left: calc(20 * var(--u)); top: 0; bottom: 0; display: flex; align-items: center; gap: calc(4 * var(--u)); color: var(--ink); opacity: 0; }
+.pm--bw .bw-knob { position: absolute; left: calc(6 * var(--u)); top: calc(6 * var(--u)); width: calc(40 * var(--u)); height: calc(40 * var(--u)); border-radius: 50%;
+                   display: grid; place-items: center; background: var(--hp); color: #fff; }
+.pm--bw .bw-knob .ic { width: calc(18 * var(--u)); height: calc(18 * var(--u)); stroke-width: 1.8; }
+.pm--bw .bw-knob__ok { position: absolute; inset: calc(-1 * var(--u)); border-radius: 50%; display: grid; place-items: center;   /* covers the blue knob's edge */
+                       background: var(--ok); color: #fff; opacity: 0; }
+.pm--bw .bw-knob__ok .ic { stroke-width: 2.2; }
 
 /* --- mobile: the same week, narrow ------------------------------------- */
 .pm--bw.pm--m .bw-cal { left: calc(12 * var(--u)); top: calc(12 * var(--u)); height: calc(48 * var(--u)); gap: calc(8 * var(--u)); padding: 0 calc(10 * var(--u)) 0 calc(6 * var(--u)); }

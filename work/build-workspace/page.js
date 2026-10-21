@@ -74,7 +74,8 @@
     plus:   '<path d="M12 5.5v13M5.5 12h13"/>',
     spark:  '<path d="M12 3.5 13.8 9.2 19.5 11 13.8 12.8 12 18.5 10.2 12.8 4.5 11 10.2 9.2Z"/>',
     scan:   '<path d="M4 8V5.5A1.5 1.5 0 0 1 5.5 4H8M16 4h2.5A1.5 1.5 0 0 1 20 5.5V8M20 16v2.5a1.5 1.5 0 0 1-1.5 1.5H16M8 20H5.5A1.5 1.5 0 0 1 4 18.5V16M4 12h16"/>',
-    alert:  '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.6v5.2M12 16.3v.1"/>'
+    alert:  '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.6v5.2M12 16.3v.1"/>',
+    chev:   '<path d="M9 5.5 15.5 12 9 18.5"/>'
   });
   var U = E.U, at = E.at;
 
@@ -348,8 +349,10 @@
       }).join('') +
       '<div class="bw-rto"><span>To</span><span class="bw-rto__av"><b data-a="ra0">DP</b><b data-a="ra1">KE</b><b data-a="ra2">ND</b></span>' +
       '<span>Level 1 contractors</span></div>' +
-      '<div class="bw-rep__send" data-a="rbtn"><span class="stack"><span data-a="rs1">' + ic('send') + 'Send to contractors</span>' +
-      '<span data-a="rs2">' + ic('check') + 'Sent to 3 contractors · <span class="num">Fri 17:00</span></span></span></div></div>';
+      /* the same slide-to-confirm as Production Hub's "Drag to mark done" */
+      '<div class="bw-slide" data-a="rslide"><span class="bw-knob" data-a="rknob">' + ic('send') + '<span class="bw-knob__ok" data-a="rknobok">' + ic('check') + '</span></span>' +
+      '<span class="bw-slide__l" data-a="rsl">Slide to send<span class="bw-slide__chev">' + ic('chev') + ic('chev') + ic('chev') + '</span></span>' +
+      '<span class="bw-slide__done" data-a="rsd">Sent · <span class="num">Fri 17:00</span></span></div></div>';
   }
   /* the phase: done, and what's next */
   function phase(g) {
@@ -537,7 +540,7 @@
     tr('nok', [[0, { o: 0, x: -4 }], [S[3] + 2.0, { o: 0, x: -4 }], [S[3] + 2.0 + D_IN, { o: 1, x: 0 }]]);
     /* the fingertip: two taps here, one on Friday's send */
     function center(el) { var r = rect(el); return [r.x + r.w / 2, r.y + r.h / 2]; }
-    var taps = [[s1 + 2.6, center(q('asgph'))], [s1 + 3.1, center(q('pickem'))], [S[4] + 3.2, center(q('rbtn'))]];
+    var taps = [[s1 + 2.6, center(q('asgph'))], [s1 + 3.1, center(q('pickem'))]];
     var tp = [[0, { o: 0, s: .6, x: taps[0][1][0], y: taps[0][1][1] }]];
     taps.forEach(function (k) {
       /* it stays where it pressed until it has faded, then moves on unseen */
@@ -621,10 +624,14 @@
     for (i = 0; i < REP.length; i++) tr('rr' + i, [[0, { o: 0, y: 6 }], [s4 + 2.2 + i * .1, { o: 0, y: 6 }], [s4 + 2.2 + i * .1 + D_IN, { o: 1, y: 0 }]]);
     tr('rtick', [[0, { dp: 0 }], [s4 + 2.85, { dp: 0 }], [s4 + 3.15, { dp: 1 }, TRAVEL]]);
     /* tap send: the three contractors pop in, and it's sent */
-    tr('rbtn', [[0, { s: 1 }], [s4 + 3.22, { s: 1 }], [s4 + 3.3, { s: .96 }, TRAVEL], [s4 + 3.42, { s: 1 }, TRAVEL]]);
-    for (i = 0; i < 3; i++) tr('ra' + i, [[0, { o: 0, s: .5 }], [s4 + 3.35 + i * .08, { o: 0, s: .5 }], [s4 + 3.45 + i * .08, { o: 1 }, LIN], [s4 + 3.75 + i * .08, { s: 1 }, SETTLE]]);
-    tr('rs1', [[0, { o: 1, y: 0 }], [s4 + 3.8, { o: 1, y: 0 }], [s4 + 4.0, { o: 0, y: -8 }, TRAVEL]]);
-    tr('rs2', [[0, { o: 0, y: 8 }], [s4 + 3.8, { o: 0, y: 8 }], [s4 + 4.0, { o: 1, y: 0 }, TRAVEL]]);
+    /* slide to send: the knob crosses, dragging the label away; it lands as
+       a green check, it's sent, and the three contractors pop in */
+    var kn0 = s4 + 3.0, knTravel = rect(q('rslide')).w - 12 - 40;
+    tr('rknob', [[kn0, { x: 0 }], [kn0 + .7, { x: knTravel }, TRAVEL]]);
+    tr('rsl', [[kn0 + .1, { o: 1 }], [kn0 + .4, { o: 0 }, LIN]]);
+    tr('rknobok', [[kn0 + .7, { o: 0 }], [kn0 + .9, { o: 1 }]]);
+    tr('rsd', [[kn0 + .7, { o: 0, x: -8 }], [kn0 + .7 + D_IN, { o: 1, x: 0 }]]);
+    for (i = 0; i < 3; i++) tr('ra' + i, [[0, { o: 0, s: .5 }], [kn0 + .75 + i * .08, { o: 0, s: .5 }], [kn0 + .85 + i * .08, { o: 1 }, LIN], [kn0 + 1.15 + i * .08, { s: 1 }, SETTLE]]);
     /* the phase completes, then names what's next */
     tr('ph', bloom(s4 + 4.4));
     tr('phfill', [[0, { sx: .8 }], [s4 + 4.65, { sx: .8 }], [s4 + 5.15, { sx: 1 }, TRAVEL], [s4 + 5.8, { sx: 1 }], [s4 + 6.1, { sx: 0 }, TRAVEL]]);
