@@ -262,7 +262,7 @@
 .pm__node--end { transform: translateX(-100%); align-items: flex-end; }
 .pm__node--end::before { margin: calc(5 * var(--u)) calc(-7 * var(--u)) 0 0; }
 .pm__node--end span { margin: 0 calc(-7 * var(--u)) 0 0; }
-.pm__node[aria-current="step"]::before { background: var(--indigo); box-shadow: 0 0 0 calc(3 * var(--u)) #fff, 0 0 0 calc(5 * var(--u)) var(--mint); }
+.pm__node[aria-current="step"]::before { background: var(--indigo); box-shadow: 0 0 0 calc(3 * var(--u)) #fff; }
 
 /* --- the order token: the only thing that travels between stages -------- */
 .pm .tokn { position: absolute; left: 0; top: 0; width: calc(176 * var(--u)); height: calc(118 * var(--u)); z-index: 20;
