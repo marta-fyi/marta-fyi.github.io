@@ -29,6 +29,19 @@ section {
   padding: 6vh var(--gutter);
 }
 
+/* Homepage moves a section at a time: a small scroll glides to the next one
+   and rests it centred. Scoped by :has() because case studies share this
+   sheet and have no top-level section -- their long prose scrolls freely.
+   stop: always keeps a hard flick from skipping a section. */
+html:has(body > section) {
+  scroll-snap-type: y mandatory;
+}
+
+body > section {
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+}
+
 .col {
   width: 50%;
 }
@@ -112,6 +125,12 @@ a:hover {
   /* Size to content: the space above the footer stops being leftover slack. */
   min-height: 0;
   align-items: flex-start;
+  /* Snaps by its top, not its centre. On desktop that point lies past the
+     bottom of the page, so it merges with the footer's stop into one last
+     view of vita and footer -- centring left a 65px nudge between the two.
+     On a phone, where the vita is taller than the screen, it is where reading
+     starts, and the browser scrolls freely through it. */
+  scroll-snap-align: start;
 }
 
 .vita .col {
@@ -212,6 +231,11 @@ footer {
   gap: 2.5rem;
   padding: 0 var(--gutter) 8vh;
   font-size: 0.8125rem;
+}
+
+/* The last snap stop is the page bottom, not the vita's centre. */
+body > footer {
+  scroll-snap-align: end;
 }
 
 /* Reset the button back to text so it reads like the site's links. */
