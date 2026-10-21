@@ -253,6 +253,15 @@
 .pm--bw .bw-mk svg { position: absolute; width: var(--w); height: calc(var(--w) * 68 / 88); left: calc(var(--w) / -2); top: calc(var(--w) * 68 / 88 / -2);
                      overflow: visible; fill: none; stroke: var(--marker); stroke-width: 4.4; stroke-linecap: round; }
 
+/* --- next week: Level 2's ceiling plan, sliding over Level 1 ----------- */
+.pm--bw .bw-sheet2 { box-shadow: calc(-18 * var(--u)) 0 calc(40 * var(--u)) calc(-12 * var(--u)) rgba(2, 30, 90, .28), 0 0 0 calc(1 * var(--u)) rgba(2, 74, 216, .06); }
+.pm--bw .bw-flip { position: absolute; inset: 0; transform: scaleX(-1); }   /* another floor, not this one again */
+.pm--bw .bw-veil { background: var(--sheet); opacity: .5; }                  /* walls as context; the ceiling leads */
+.pm--bw .bw-rcp { position: absolute; inset: 0; width: 100%; height: 100%; fill: none; }
+.pm--bw .bw-rcp path { stroke: var(--hp-line); stroke-width: 2.2; opacity: .55; }
+.pm--bw .bw-rcp circle { stroke: var(--hp); stroke-width: 4; fill: var(--sheet); }
+.pm--bw .bw-ver2__v { color: var(--grey); }
+
 /* --- Thursday: the comparison, the old print, the phone ---------------- */
 .pm--bw .bw-cmp { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; fill: none; opacity: 0; clip-path: inset(0 100% 0 0); }
 .pm--bw .bw-cmp__rem { stroke: var(--magenta); stroke-width: 7; stroke-dasharray: 18 12; }
