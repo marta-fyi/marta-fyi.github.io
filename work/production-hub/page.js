@@ -15,8 +15,8 @@
  *     alone. The token is the shared record made visible: at each team's
  *     beat a new state rolls in on top, the old one steps down into the
  *     history, and every team sees the same record.
- *   - In Production the order splits: two part chips leave the token for the
- *     two free slots, and each part fills its slot as its chip lands.
+ *   - In Production the order splits: each part leaves the token at the size
+ *     of its slot and travels straight into it.
  *   - Every stage change is the same 1.1 s: satellites out (0-180 ms),
  *     primary card out to the left (200-450), token travels with the rail in
  *     sync (from 300), next card in from the right (500-950), while the
@@ -48,9 +48,9 @@
      manager is asked to approve it, and the order queues. */
   var ACC = 4.9, APPR = ACC + .8, QUE = APPR + .9;
   var T1 = QUE + 1.9;                        /* to Production */
-  /* Production: the slots light, the order splits, the parts fill. */
+  /* Production: the slots light, the order splits, the parts take them. */
   var LIT = T1 + 1.4;                        /* the two free slots light up */
-  var SPLIT = LIT + .8;                      /* the part chips leave the token */
+  var SPLIT = LIT + .8;                      /* the parts leave the token */
   var SPLIT_TRAVEL = .55;                    /* fixed, so desktop and mobile share one clock */
   var FILL = [0, 1].map(function (k) { var f0 = SPLIT + .1 + k * .15 + SPLIT_TRAVEL; return [f0, f0 + .35]; });
   /* The time line, [seconds, minutes after 09:00]: it sweeps to 10:45, the end
@@ -184,7 +184,7 @@
     var y = ty(g, from) + 2, pad = g.m ? 2 : 4;
     return { x: g.laneX[l] + pad, y: y, w: g.laneW - pad * 2, h: ty(g, to) - 2 - y };
   }
-  /* an empty slot the order can take: dashed mint outline in the lane */
+  /* an empty slot the order can take: a quiet dashed outline in the lane */
   function gap(g, l, from, to, key) { var r = lane(g, l, from, to); return '<span class="gap" data-a="' + key + '" style="' + at(r.x, r.y, r.w, r.h) + '"></span>'; }
   var STATIONS = [['Printer 1', 'HP Latex 800W', 'printer'], ['Printer 2', 'HP Latex 800W', 'printer'], ['Cutter 1', 'CutterX 231M', 'cutter']];
 
@@ -212,11 +212,6 @@
     s += gap(g, 1, '09:45', '10:45', 'gap1') + gap(g, 2, '10:45', '11:30', 'gap2');
     s += job(ext(ext(lane(g, 1, '09:45', '10:45'), { order: '39208', id: '#39208-01', nm: 'Print', a: 'p1', ok: 'p1ok' }), narrow));
     s += job(ext(ext(lane(g, 2, '10:45', '11:30'), { order: '39208', id: '#39208-02', nm: 'Cutting', a: 'p2', ok: 'p2ok' }), narrow));
-    /* the two part chips the order splits into, on their way to the slots */
-    ['01', '02'].forEach(function (n, k) {
-      s += '<div class="tokn tokn--part" data-a="spl' + (k + 1) + '"><span class="job__bar"></span>' +
-        (g.m ? '' : '<img src="' + A + 'art-39208.webp" alt="">') + '<p class="num">#39208-' + n + '</p></div>';
-    });
     var y = ty(g, '11:30');
     s += '<div data-a="now" style="position:absolute;inset:0"><span class="now" style="' + at(g.gridX, y, g.gridW) + '"></span>' +
          '<span class="tpill num" data-a="clock" style="' + at(g.pillX, y) + '">11:30</span></div>';
@@ -429,21 +424,19 @@
 
     /* Stage 2 -- Production. A full day first; then the other orders step
        back, the two free slots light up in order, print then cut, and the
-       order splits: a chip per part leaves the token for its slot, and the
-       part pops into the slot as its chip lands. Nothing is dragged. */
+       order splits: each part leaves the token already the size of its
+       slot and travels straight into it. Nothing is dragged. */
     tr('sched', cardIn(T1 + .5).concat(cardOut(T2 + .2)));
     for (i = 0; i < 6; i++) tr('oj' + i, [[LIT, { o: 1 }], [LIT + .3, { o: .35 }]]);
     var from = S['slot-sched'];
     ['p1', 'p2'].forEach(function (n, k) {
-      var f = FILL[k], lit = LIT + k * .12, g1 = rect(q('gap' + (k + 1))), chip = q('spl' + (k + 1)), cw = rect(chip).w;
-      var to = { x: g1.x + (g1.w - cw) / 2, y: g1.y + 8 }, go = SPLIT + .05 + k * .15;
+      var f = FILL[k], lit = LIT + k * .12, g1 = rect(q('gap' + (k + 1))), go = SPLIT + .05 + k * .15;
+      var dx = from.x - g1.x, dy = from.y - g1.y;   /* the part sits in its slot; it starts over the token */
       tr('gap' + (k + 1), [[lit, { o: 0, s: 1 }], [lit + .25, { o: 1 }], [f[0] - .3, { s: 1 }],
-                           [f[0] - .12, { s: 1.03 }, ENTER], [f[0] + .06, { s: 1 }, EXIT],   /* pulse as the chip lands */
+                           [f[0] - .12, { s: 1.03 }, ENTER], [f[0] + .06, { s: 1 }, EXIT],   /* pulse as the part lands */
                            [f[0], { o: 1 }], [f[1], { o: 0 }, EXIT]]);
-      tr('spl' + (k + 1), [[0, { o: 0, x: from.x, y: from.y }], [SPLIT + k * .15, { o: 0 }], [SPLIT + k * .15 + .15, { o: 1 }],
-                           [go, { x: from.x, y: from.y }], [go + SPLIT_TRAVEL, { x: to.x, y: to.y }, TRAVEL],
-                           [f[0] + .1, { o: 1 }], [f[0] + .3, { o: 0 }]]);
-      tr(n, [[0, { cp: 1 }], [f[0], { o: 0, s: .92 }], [f[0] + D_IN, { o: 1, s: 1 }, SETTLE]]);
+      tr(n, [[0, { cp: 1, o: 0, x: dx, y: dy }], [SPLIT + k * .15, { o: 0 }], [SPLIT + k * .15 + .15, { o: 1 }],
+             [go, { x: dx, y: dy }], [go + SPLIT_TRAVEL, { x: 0, y: 0 }, TRAVEL]]);
     });
     tl.push([SPLIT - .05, { o: 0 }], [SPLIT + .05, { o: 1 }], [FILL[1][0], { o: 1 }], [FILL[1][0] + .15, { o: 0 }]);   /* the token lifts while it splits */
 
