@@ -104,9 +104,9 @@
   var GEO = {
     d: { W: 600, H: 580, card: [16, 80, 568, 484], pw: 700.7,
          cams: { full: { x: -66.4, y: 0, s: 1 }, west: { x: -157.4, y: -87.1, s: 1.6 }, fri: { x: -120, y: 0, s: 1 } },   /* fri: the pins clear of the report */
-         ver: [30, 94], hist: [30, 142, 214], share: { right: 30, top: 512 },
-         bub: [388, 118, 172], task: [90, 360, 214], pick: [100, 462, 204], cmpc: [30, 518], ph: [30, 512],
-         paper: [306, 104, 256, 446], stack: [272, 206, 236, 336], phone: [390, 168, 172], rep: [312, 100, 248], notes: [30, 142, 236], mkW: 64 },
+         ver: [30, 94], hist: [30, 142, 244], share: { right: 30, top: 512 },
+         bub: [376, 118, 188], task: [90, 360, 214], pick: [100, 462, 204], cmpc: [30, 518], ph: [30, 512],
+         paper: [306, 104, 256, 446], stack: [272, 206, 236, 336], phone: [390, 168, 172], rep: [304, 100, 264], notes: [30, 142, 236], mkW: 64 },
     m: { W: 340, H: 740, card: [12, 76, 316, 380], pw: 550.2,
          cams: { full: { x: -117.1, y: 0, s: 1 }, west: { x: -212.6, y: -74.7, s: 1.6 }, fri: { x: -117.1, y: 0, s: 1 } },
          ver: [24, 88], hist: [12, 470, 316], share: { left: 24, top: 402 },
@@ -481,7 +481,7 @@
        the spot, and the crossing shows as a clash until v.017 clears it */
     attach('pin', PIN, [[0, { o: 0, s: .6 }], [s1 + .7, { o: 0, s: .6 }], [s1 + .8, { o: 1 }, LIN], [s1 + 1.15, { s: 1 }, SETTLE]]);
     tr('clash', fadeIn(s1 + 1.0, .3).concat(fadeOut(S[3] + 2.0, .3)));
-    ripple('pinr', PIN, [s1 + 1.1, S[4] + 1.7]);
+    ripple('pinr', PIN, [s1 + 1.1]);
     /* his photo blooms out of the pin */
     origin(q('bub'), [pinAt[0] + 15, pinAt[1] - 15]);
     tr('bub', bloom(s1 + 1.45).concat(dissolve(S[2])));
@@ -554,7 +554,7 @@
     attach('mk', MK, [[0, { o: 0 }], [lift, { o: 0, x: c0[0] - mkAt[0], y: c0[1] - mkAt[1], s: va.w / loopW }],
                       [lift + .01, { o: 1 }, LIN], [land - .15, { o: 1 }], [land, { x: 0, y: 0, s: KN_D / loopW, o: 0 }, TRAVEL]], KN_OFF);
     attach('kn', MK, [[0, { o: 0, s: .6 }], [land - .15, { o: 0, s: .6 }], [land - .05, { o: 1 }, LIN], [land + .25, { s: 1 }, SETTLE]], KN_OFF);
-    ripple('mkr', MK, [land, S[4] + 1.85], KN_OFF);
+    ripple('mkr', MK, [land], KN_OFF);
     tr('notes', bloom(land + .2));
     tr('nrow', [[0, { o: 0, y: 6 }], [land + .35, { o: 0, y: 6 }], [land + .35 + D_IN, { o: 1, y: 0 }]]);
 
@@ -585,8 +585,7 @@
 
     /* Friday -- the report ------------------------------------------ */
     var s4 = S[4];
-    /* the camera pulls back (above); the pins answer once each (the ripples
-       above); the week folds into the report */
+    /* the camera pulls back (above), and the week folds into the report */
     origin(q('rep'), [g.rep[0] + g.rep[2] / 2, g.rep[1] + 40]);
     tr('rep', bloom(s4 + 2.0));
     for (i = 0; i < REP.length; i++) tr('rr' + i, [[0, { o: 0, y: 6 }], [s4 + 2.2 + i * .1, { o: 0, y: 6 }], [s4 + 2.2 + i * .1 + D_IN, { o: 1, y: 0 }]]);
