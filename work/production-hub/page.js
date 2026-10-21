@@ -52,7 +52,7 @@
   var LIT = T1 + 1.4;                        /* the two free slots light up */
   var SPLIT = LIT + .8;                      /* the part chips leave the token */
   var SPLIT_TRAVEL = .55;                    /* fixed, so desktop and mobile share one clock */
-  var FILL = [0, 1].map(function (k) { var f0 = SPLIT + .1 + k * .15 + SPLIT_TRAVEL; return [f0, f0 + .8]; });
+  var FILL = [0, 1].map(function (k) { var f0 = SPLIT + .1 + k * .15 + SPLIT_TRAVEL; return [f0, f0 + .35]; });
   /* The time line, [seconds, minutes after 09:00]: it sweeps to 10:45, the end
      of the print, holds for the print-done notice, then moves on to 11:30, the
      end of the cut. The line's track and the pill's clock both read it. */
@@ -430,8 +430,7 @@
     /* Stage 2 -- Production. A full day first; then the other orders step
        back, the two free slots light up in order, print then cut, and the
        order splits: a chip per part leaves the token for its slot, and the
-       part fills the slot top to bottom, like a sheet coming off the
-       printer, as its chip lands. Nothing is dragged. */
+       part pops into the slot as its chip lands. Nothing is dragged. */
     tr('sched', cardIn(T1 + .5).concat(cardOut(T2 + .2)));
     for (i = 0; i < 6; i++) tr('oj' + i, [[LIT, { o: 1 }], [LIT + .3, { o: .35 }]]);
     var from = S['slot-sched'];
@@ -444,7 +443,7 @@
       tr('spl' + (k + 1), [[0, { o: 0, x: from.x, y: from.y }], [SPLIT + k * .15, { o: 0 }], [SPLIT + k * .15 + .15, { o: 1 }],
                            [go, { x: from.x, y: from.y }], [go + SPLIT_TRAVEL, { x: to.x, y: to.y }, TRAVEL],
                            [f[0] + .1, { o: 1 }], [f[0] + .3, { o: 0 }]]);
-      tr(n, [[f[0], { o: 0, cp: 0 }], [f[0] + .15, { o: 1 }, LIN], [f[1], { cp: 1 }, TRAVEL]]);
+      tr(n, [[0, { cp: 1 }], [f[0], { o: 0, s: .92 }], [f[0] + D_IN, { o: 1, s: 1 }, SETTLE]]);
     });
     tl.push([SPLIT - .05, { o: 0 }], [SPLIT + .05, { o: 1 }], [FILL[1][0], { o: 1 }], [FILL[1][0] + .15, { o: 0 }]);   /* the token lifts while it splits */
 
