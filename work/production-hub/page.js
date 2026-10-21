@@ -54,8 +54,10 @@
                   'Ready for pickup', 'Shipped and tracked', 'The client is told, automatically'];
   /* the order's state, carried on the token, and when each one is reached */
   var STATES = ['New order', 'Accepted', 'Queued', 'Scheduled', 'Printed', 'Ready to ship', 'Courier notified', 'Shipped'];
-  /* the same states as they read in the history, with the times the story shows */
-  var HISTORY = ['New order', 'Accepted', 'Queued', 'Scheduled', 'Printed · 10:45', 'Ready to ship · 11:30', 'Courier notified'];
+  /* the same states as they read in the history: done steps, time first. A
+     rush order, all on 22/04: in at 08:12, on the 09:45 print, out at 17:56. */
+  var HISTORY = [['08:12', 'New order'], ['08:31', 'Accepted'], ['08:40', 'Queued'], ['09:02', 'Scheduled'],
+                 ['10:45', 'Printed'], ['11:30', 'Ready to ship'], ['14:05', 'Courier notified']];
   var HIST_N = 3, HIST_L = 15;                    /* lines of history kept, and their pitch in design px */
   var DESCRIPTION = 'One order, #39208, moving through four teams and back to the client. Its card shows the current state and the states it has passed through, updating as each team acts. ' +
     'Accounts: the client uploads AW_Campaign_2024.AI, the €580,00 quote is accepted by John Walters and paid by credit card, the account manager is asked to approve it for production, and the order is queued. ' +
@@ -246,7 +248,7 @@
   }
 
   /* the client's end: the automatic "on its way" email, with their own tracker */
-  var MAIL_TRK = [['Ordered', '19/04'], ['Printed', '21/04'], ['Shipped', '22/04'], ['Delivery', '23/04']];
+  var MAIL_TRK = [['Ordered', '08:12'], ['Printed', '10:45'], ['Shipped', '17:56'], ['Delivery', '23/04']];
   function mailCard(x, y, w, M) {
     var pos = [0, 100 / 3, 200 / 3, 100];
     var nodes = pos.map(function (p, i) {
@@ -274,7 +276,9 @@
       '<div class="tokn__main"><div class="tokn__top"><img src="' + A + 'art-39208.webp" alt=""><div class="tokn__b"><p class="num">#39208</p>' +
       '<span class="stack tokn__st">' + STATES.map(function (s, i) { return '<span class="tokn__pill" data-a="st' + i + '">' + s + '</span>'; }).join('') +
       '</span></div></div>' +
-      '<div class="tokn__hist">' + HISTORY.map(function (s, i) { return '<p class="num" data-a="sh' + i + '">' + s + '</p>'; }).join('') +
+      '<div class="tokn__hist">' + HISTORY.map(function (h, i) {
+        return '<p data-a="sh' + i + '">' + ic('check') + '<span class="num">' + h[0] + '</span>' + h[1] + '</p>';
+      }).join('') +
       '</div></div></div>';
   }
 
