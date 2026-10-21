@@ -10,9 +10,11 @@
  *
  * Grammar:
  *   - Only the order token travels between stages: artwork (3:4), mint bar,
- *     #39208 and the order's state under it, always the same size, moved by
- *     translation alone. The state is the shared record made visible: it
- *     changes at each team's beat, and every team sees the same one.
+ *     #39208, the order's state as a pill and, under it, the last three
+ *     states it passed through; always the same size, moved by translation
+ *     alone. The token is the shared record made visible: at each team's
+ *     beat a new state rolls in on top, the old one steps down into the
+ *     history, and every team sees the same record.
  *   - In Production the order splits: two part chips leave the token for the
  *     two free slots, and each part fills its slot as its chip lands.
  *   - Every stage change is the same 1.1 s: satellites out (0-180 ms),
@@ -52,7 +54,10 @@
                   'Ready for pickup', 'Shipped and tracked', 'The client is told, automatically'];
   /* the order's state, carried on the token, and when each one is reached */
   var STATES = ['New order', 'Accepted', 'Queued', 'Scheduled', 'Printed', 'Ready to ship', 'Courier notified', 'Shipped'];
-  var DESCRIPTION = 'One order, #39208, moving through four teams and back to the client, its state updating as it goes. ' +
+  /* the same states as they read in the history, with the times the story shows */
+  var HISTORY = ['New order', 'Accepted', 'Queued', 'Scheduled', 'Printed · 10:45', 'Ready to ship · 11:30', 'Courier notified'];
+  var HIST_N = 3, HIST_L = 15;                    /* lines of history kept, and their pitch in design px */
+  var DESCRIPTION = 'One order, #39208, moving through four teams and back to the client. Its card shows the current state and the states it has passed through, updating as each team acts. ' +
     'Accounts: the client uploads AW_Campaign_2024.AI, the €580,00 quote is accepted by John Walters and paid by credit card, the account manager is asked to approve it for production, and the order is queued. ' +
     'Production: in a schedule already full of other orders, the two free slots it needs light up, a print slot on Printer 2 and the cutting slot on Cutter 1 right after it, and the order splits into its print job and its cutting job, which fill them. The print finishes at 10:45 and the order is ready for cutting on Cutter 1; the cut finishes at 11:30 and it is ready to pack and ship. ' +
     'Operations: on the job Akatsuki Asuma Mogato, the courier is notified that the order is packed and ready for pickup at Sant Cugat, and the task is marked done. ' +
@@ -86,8 +91,8 @@
 
   function uploadCard(x, y, w, M) {
     var row = M
-      ? '<p class="frow__n" style="margin-bottom:' + U(8) + '">AW_Campaign_2024.AI</p><div class="frow">' + slot('slot-up') +
-        '<p class="frow__s num">21,3 MB</p><span class="pc" data-a="pcheck">' + ic('check') + '</span></div>'
+      ? '<p class="frow__n" style="margin-bottom:' + U(8) + '">AW_Campaign_2024.AI · <span class="num">21,3 MB</span></p><div class="frow">' + slot('slot-up') +
+        '<span class="pc" data-a="pcheck">' + ic('check') + '</span></div>'
       : '<div class="frow">' + slot('slot-up') + '<div><p class="frow__n">AW_Campaign_2024.AI</p><p class="frow__s num">21,3 MB</p></div>' +
         '<span class="pc" data-a="pcheck">' + ic('check') + '</span></div>';
     return '<div class="c" data-a="up" style="' + at(x, y, w) + '">' + LIFT +
@@ -108,8 +113,9 @@
       '<div class="ch"><p class="ch__t">Order details</p><span class="pill pill--mint" data-a="queued">Queued</span></div>' +
       '<div class="fr"><span>Client</span><span>Brownie</span></div>' +
       '<div class="fr"><span>Order ID</span><span>#39208</span></div>' +
+      (M ? '' :                             /* narrow: fine print goes, so the taller token clears the quote */
       '<div class="fr"><span>Job type</span><span>Banner</span></div>' +
-      '<div class="fr"><span>Priority</span><span><span class="pill pill--coral">High</span></span></div>' +
+      '<div class="fr"><span>Priority</span><span><span class="pill pill--coral">High</span></span></div>') +
       '<div class="hr"></div>' + slot('slot-order') +
       '</div>';
   }
@@ -147,8 +153,8 @@
 
   /* --- the schedule: Printer 1, Printer 2, Cutter 1, 09:00-12:00 ------- */
   var GEO = {
-    d: { laneX: [70, 230, 390], laneW: 154, t0: 192, pxH: 132, headY: 96, gridX: 64, gridW: 484, tickX: 20, pillX: 12, bottom: 604, chip: [20, 16] },
-    m: { laneX: [52, 140, 228], laneW: 84, t0: 182, pxH: 136, headY: 86, gridX: 46, gridW: 266, tickX: 2, pillX: 0, bottom: 606, chip: [12, 12], m: true }
+    d: { laneX: [70, 230, 390], laneW: 154, t0: 230, pxH: 122, headY: 148, gridX: 64, gridW: 484, tickX: 20, pillX: 12, bottom: 604, chip: [20, 16] },
+    m: { laneX: [52, 140, 228], laneW: 84, t0: 228, pxH: 122, headY: 142, gridX: 46, gridW: 266, tickX: 2, pillX: 0, bottom: 606, chip: [12, 12], m: true }
   };
   function ty(g, hhmm) { var p = hhmm.split(':'); return g.t0 + ((+p[0] - 9) + (+p[1]) / 60) * g.pxH; }
   function lane(g, l, from, to) {
@@ -262,11 +268,14 @@
       '<span class="mail__btn" data-a="mbtn">Track your order</span></div>';
   }
 
+  /* the order's record: artwork, id and state on top, its history under them */
   function token() {
     return '<div class="tokn" data-a="token"><i class="pm-lift" data-a="tokl"></i><span class="job__bar"></span>' +
-      '<img src="' + A + 'art-39208.webp" alt=""><div class="tokn__b"><p class="num">#39208</p>' +
-      '<span class="stack tokn__st">' + STATES.map(function (s, i) { return '<span data-a="st' + i + '">' + s + '</span>'; }).join('') +
-      '</span></div></div>';
+      '<div class="tokn__main"><div class="tokn__top"><img src="' + A + 'art-39208.webp" alt=""><div class="tokn__b"><p class="num">#39208</p>' +
+      '<span class="stack tokn__st">' + STATES.map(function (s, i) { return '<span class="tokn__pill" data-a="st' + i + '">' + s + '</span>'; }).join('') +
+      '</span></div></div>' +
+      '<div class="tokn__hist">' + HISTORY.map(function (s, i) { return '<p class="num" data-a="sh' + i + '">' + s + '</p>'; }).join('') +
+      '</div></div></div>';
   }
 
   /* --- the two stages -------------------------------------------------- */
@@ -280,8 +289,8 @@
   /* notifications float over the stage, unclipped */
   function desktopFloat() {
     return toast('t1', -12, 582, 360, 'req', 'Approve #39208 for production', 'Sent by Account Manager') +
-      toast('t3', 196, 14, 360, 'ok', '#39208-01 printed', 'Ready for cutting on Cutter 1') +   /* in the strip beside the order */
-      toast('t4', 196, 14, 360, 'ok', '#39208-02 cut', 'Ready to pack and ship');
+      toast('t3', 208, 14, 352, 'ok', '#39208-01 printed', 'Ready for cutting on Cutter 1') +   /* in the strip beside the order */
+      toast('t4', 208, 14, 352, 'ok', '#39208-02 cut', 'Ready to pack and ship');
   }
   function mobileStage() {
     return uploadCard(12, 24, 292, true) + dropPill() +
@@ -362,11 +371,23 @@
       return d;
     }
 
-    /* the order's state rolls up on the token at each beat */
+    /* The record, at each beat: the new state rolls in on top, the old one
+       steps down out of the pill into the history, the history moves down a
+       line, and the oldest line past three leaves. The token lifts as it
+       changes, so the change is noticed wherever the token is. */
     STATES.forEach(function (s, k) {
-      var keys = k === 0 ? [[0, { o: 1, y: 0 }]] : [[0, { o: 0, y: 8 }], [ST_T[k], { o: 0, y: 8 }], [ST_T[k] + .3, { o: 1, y: 0 }]];
-      if (k < STATES.length - 1) keys.push([ST_T[k + 1], { o: 1, y: 0 }], [ST_T[k + 1] + .25, { o: 0, y: -8 }, EXIT]);
+      var keys = k === 0 ? [[0, { o: 1, y: 0 }]] : [[0, { o: 0, y: -8 }], [ST_T[k], { o: 0, y: -8 }], [ST_T[k] + .3, { o: 1, y: 0 }]];
+      if (k < STATES.length - 1) keys.push([ST_T[k + 1], { o: 1, y: 0 }], [ST_T[k + 1] + .25, { o: 0, y: 8 }, EXIT]);
       tr('st' + k, keys);
+      if (k === STATES.length - 1) return;
+      var a = ST_T[k + 1], h = [[0, { o: 0, y: -6 }], [a + .1, { o: 0, y: -6 }], [a + .4, { o: 1, y: 0 }]];
+      for (var j = 2; j <= HIST_N + 1; j++) {
+        var tj = ST_T[k + j]; if (tj == null) break;
+        if (j <= HIST_N) h.push([tj, { y: (j - 2) * HIST_L }], [tj + .35, { y: (j - 1) * HIST_L }, TRAVEL]);
+        else h.push([tj, { o: 1, y: (HIST_N - 1) * HIST_L }], [tj + .3, { o: 0, y: (HIST_N - 1) * HIST_L + 8 }, EXIT]);
+      }
+      tr('sh' + k, h);
+      tl.push([a - .05, { o: 0 }], [a + .05, { o: 1 }], [a + .55, { o: 1 }], [a + .7, { o: 0 }]);
     });
 
     /* Stage 1 -- Accounts. The first frame is drawn before play: no entrance. */
