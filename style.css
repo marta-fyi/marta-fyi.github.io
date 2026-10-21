@@ -53,6 +53,15 @@ body > section {
   text-wrap: pretty;
 }
 
+/* The HP work starts its own line only once the Miro sentence fits on one:
+   627px of Archivo in a column 45% of the window. Narrower, the break would
+   leave a ragged short line, so the text runs on. */
+.lede br.wide { display: none; }
+
+@media (min-width: 1400px) {
+  .lede br.wide { display: inline; }
+}
+
 
 a {
   color: inherit;
