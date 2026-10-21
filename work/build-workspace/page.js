@@ -222,8 +222,7 @@
   /* John's pin: a comment bubble with his initials, its one sharp corner on
      the spot; the task badge sits on its shoulder once the task is handed on */
   function pin() {
-    return '<span class="bw-ripple" data-a="pinr"><i></i></span>' +
-      '<span class="bw-pin" data-a="pin"><b>JW</b></span>' +
+    return '<span class="bw-pin" data-a="pin"><b>JW</b></span>' +
       '<span class="bw-tb" data-a="tb"><span>' + ic('task') + '<i class="bw-tb__ok" data-a="tbok">' + ic('check') + '</i></span></span>';
   }
 
@@ -305,8 +304,7 @@
   }
 
   function mark() {
-    return '<span class="bw-ripple" data-a="mkr"><i></i></span>' +
-      '<span class="bw-mk" data-a="mk"><svg viewBox="-4 -4 88 68" aria-hidden="true">' +
+    return '<span class="bw-mk" data-a="mk"><svg viewBox="-4 -4 88 68" aria-hidden="true">' +
       '<path d="M40 0C66 0 80 14 80 30C80 47 64 60 40 60C16 60 0 47 0 30C0 14 14 0 40 0Z"/></svg></span>';
   }
 
@@ -446,12 +444,6 @@
       });
       tr(name, keys);
     }
-    function ripple(name, p, times, off) {
-      var k = [[0, { o: 0, s: .3 }]];
-      /* held at nothing until each ring fires, or it would fade up all along */
-      times.forEach(function (t0) { k.push([t0 - .01, { o: 0, s: .3 }], [t0, { o: .55 }, LIN], [t0 + .55, { o: 0, s: 1.7 }, TRAVEL]); });
-      attach(name, p, k, off);
-    }
 
     /* the calendar: the selection slides to each day as it begins */
     var cells = Array.prototype.slice.call(q('calsel').parentNode.querySelectorAll('.bw-cal__d'));
@@ -507,11 +499,10 @@
 
     /* Tuesday -- the pin -------------------------------------------- */
     var s1 = S[1], pinAt = onCard(g, C.west, PIN);
-    /* John's pin grows out of its corner where wall meets duct; a ripple marks
-       the spot, and the crossing shows as a clash until v.017 clears it */
+    /* John's pin grows out of its corner where wall meets duct, and the
+       crossing shows as a clash until v.017 clears it */
     attach('pin', PIN, [[0, { o: 0, s: .6 }], [s1 + .7, { o: 0, s: .6 }], [s1 + .8, { o: 1 }, LIN], [s1 + 1.15, { s: 1 }, SETTLE]]);
     tr('clash', fadeIn(s1 + 1.0, .3).concat(fadeOut(S[3] + 2.0, .3)));
-    ripple('pinr', PIN, [s1 + 1.1]);
     /* his photo blooms out of the pin */
     origin(q('bub'), [pinAt[0] + 15, pinAt[1] - 15]);
     tr('bub', bloom(s1 + 1.45).concat(dissolve(S[2])));
@@ -584,7 +575,6 @@
     attach('mk', MK, [[0, { o: 0 }], [lift, { o: 0, x: c0[0] - mkAt[0], y: c0[1] - mkAt[1], s: va.w / loopW }],
                       [lift + .01, { o: 1 }, LIN], [land - .15, { o: 1 }], [land, { x: 0, y: 0, s: KN_D / loopW, o: 0 }, TRAVEL]], KN_OFF);
     attach('kn', MK, [[0, { o: 0, s: .6 }], [land - .15, { o: 0, s: .6 }], [land - .05, { o: 1 }, LIN], [land + .25, { s: 1 }, SETTLE]], KN_OFF);
-    ripple('mkr', MK, [land], KN_OFF);
     tr('notes', bloom(land + .2).concat(M ? [[NEXT, { x: 0 }], [NEXT + .5, { x: -g.W }, EXIT]] : []));   /* narrow: it sits below the sheet, so it leaves */
     tr('nrow', [[0, { o: 0, y: 6 }], [land + .35, { o: 0, y: 6 }], [land + .35 + D_IN, { o: 1, y: 0 }]]);
 

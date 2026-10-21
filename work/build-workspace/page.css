@@ -146,13 +146,11 @@
 .pm--bw .bw-share .ic { color: var(--hp); margin-left: calc(4 * var(--u)); }
 
 /* --- Tuesday: John's pin, his photo, the task --------------------------- */
-.pm--bw .bw-pin, .pm--bw .bw-ripple, .pm--bw .bw-mk { position: absolute; left: 0; top: 0; transform-origin: 0 0; opacity: 0; }
+.pm--bw .bw-pin, .pm--bw .bw-mk { position: absolute; left: 0; top: 0; transform-origin: 0 0; opacity: 0; }
 .pm--bw .bw-pin b { position: absolute; left: 0; top: calc(-30 * var(--u)); width: calc(30 * var(--u)); height: calc(30 * var(--u));
                     display: grid; place-items: center; border-radius: 50% 50% 50% 0; background: var(--hp); color: #fff;
                     border: calc(2 * var(--u)) solid #fff; font-size: calc(12 * var(--u)); font-weight: 500; letter-spacing: 0;
                     box-shadow: 0 calc(6 * var(--u)) calc(14 * var(--u)) calc(-4 * var(--u)) rgba(2, 74, 216, .45); }   /* the sharp corner sits on the spot */
-.pm--bw .bw-ripple i { position: absolute; left: calc(-22 * var(--u)); top: calc(-22 * var(--u)); width: calc(44 * var(--u)); height: calc(44 * var(--u));
-                       border-radius: 50%; border: calc(2 * var(--u)) solid var(--hp); }
 .pm--bw .bw-bub { padding: calc(8 * var(--u)); opacity: 0; }
 .pm--bw .bw-bub__img { display: block; width: 100%; height: calc(100 * var(--u)); object-fit: cover; border-radius: calc(9 * var(--u)); }
 .pm--bw .bw-bub__b { padding: calc(8 * var(--u)) calc(4 * var(--u)) calc(4 * var(--u)); }
