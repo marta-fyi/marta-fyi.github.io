@@ -61,7 +61,10 @@
 
 /* --- stage -------------------------------------------------------------- */
 .pm__stage { position: absolute; left: calc(16 * var(--u)); top: calc(112 * var(--u)); width: calc(568 * var(--u)); height: calc(632 * var(--u));
-             background: #fff; border-radius: calc(24 * var(--u)); overflow: hidden; }
+             border-radius: calc(24 * var(--u)); overflow: hidden;
+             /* frosted, as in Build Workspace: the frame's lavender comes through, softened */
+             background: rgba(255, 255, 255, .6); border: calc(1 * var(--u)) solid rgba(255, 255, 255, .9);
+             -webkit-backdrop-filter: blur(10px) saturate(1.3); backdrop-filter: blur(10px) saturate(1.3); }
 /* the notification layer: the stage's twin without the clip, so a toast can
    overhang the stage edge and float over the frame */
 .pm__float { position: absolute; left: calc(16 * var(--u)); top: calc(112 * var(--u)); width: calc(568 * var(--u));
