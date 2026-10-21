@@ -326,7 +326,7 @@
 .pm .cmt__t { font-size: calc(12 * var(--u)); color: var(--grey); margin-left: calc(6 * var(--u)); }
 .pm .cmt__b { font-size: calc(13 * var(--u)); margin-top: calc(4 * var(--u)); line-height: 1.4; }
 
-/* sticky centring: 760 x 560/600 = 709 tall in the 560px column */
+/* pinned height: 760 x 560/600 = 709 tall in the 560px column */
 .pmr__vis { --pmr-half: 355px; }
 
 /* --- the client's end: the automatic "on its way" email ---------------- */
