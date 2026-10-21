@@ -676,10 +676,7 @@
       var cmp = q('cmp'), cd = q('cdiv');
       if (cmp) cmp.style.clipPath = 'inset(0 ' + ((1 - x / PLAN.w) * 100).toFixed(2) + '% 0 0)';
       if (cd) cd.style.left = (x / PLAN.w * 100).toFixed(2) + '%';
-    },
-    /* five days, four steps in the prose: Wednesday rides the paragraph under
-       step 02, which is about markups */
-    scrollSync: '.bw-step'
+    }
   };
 
   window.Promo = {
