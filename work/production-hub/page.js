@@ -41,10 +41,31 @@
   'use strict';
 
   var A = '/assets/promo/';
-  /* stage transitions: Production, Operations, Shipping; CL is the switch
-     to the client's email, inside Shipping */
-  var T1 = 7.0, T2 = 14.35, T3 = 19.85, CL = T3 + 2.45;
-  var END = CL + 4.15;
+  /* The clock. Each stage starts a calm hold after the last beat of the one
+     before, so stretching a beat moves everything after it. Motions keep
+     their engine durations; the pace lives in the gaps between beats.
+     Accounts: the quote reads, then it is accepted and paid, the account
+     manager is asked to approve it, and the order queues. */
+  var ACC = 4.9, APPR = ACC + .8, QUE = APPR + .9;
+  var T1 = QUE + 1.9;                        /* to Production */
+  /* Production: the slots light, the order splits, the parts fill. */
+  var LIT = T1 + 1.4;                        /* the two free slots light up */
+  var SPLIT = LIT + .8;                      /* the part chips leave the token */
+  var SPLIT_TRAVEL = .55;                    /* fixed, so desktop and mobile share one clock */
+  var FILL = [0, 1].map(function (k) { var f0 = SPLIT + .1 + k * .15 + SPLIT_TRAVEL; return [f0, f0 + .8]; });
+  /* The time line, [seconds, minutes after 09:00]: it sweeps to 10:45, the end
+     of the print, holds for the print-done notice, then moves on to 11:30, the
+     end of the cut. The line's track and the pill's clock both read it. */
+  var N0 = FILL[1][1] + .6;
+  var NOW = [[N0, 0], [N0 + .9, 105], [N0 + 2.5, 105], [N0 + 3.2, 150]];
+  var PRINTED = NOW[1][0], CUT = NOW[3][0];
+  var T2 = CUT + 1.8;                        /* to Operations */
+  /* Operations: the menu, Notify courier, the request sent, the task done. */
+  var MENU = T2 + 1.1, COUR = MENU + 1.3, SENT = COUR + 1.0, KNOB = SENT + 1.0;
+  var T3 = KNOB + .9 + 1.7;                  /* to Shipping */
+  /* Shipping: picked up and shipped; then, at CL, the client's email. */
+  var SHIPPED = T3 + 1.0, CL = T3 + 3.2;
+  var END = CL + 4.6;
   var FRAME_T = [T1 - .05, T2 - .05, T3 - .05, END - .05];   /* each stage's final frame */
   var TRANS_IN = [null, T1, T2, T3];                         /* start of the transition into each stage */
   var STAGE_W = { d: 568, m: 316 };               /* design width of the white stage */
@@ -314,22 +335,7 @@
   var D_IN = E.D_IN, D_OUT = E.D_OUT, D_SAT = E.D_SAT, travelDur = E.travelDur;
   var SETTLE = E.bez(.34, 1.45, .64, 1, 'cubic-bezier(.34,1.45,.64,1)');   /* a small overshoot, then rest */
 
-  /* Production, from T1: the slots light, the order splits, the parts fill. */
-  var LIT = T1 + 1.4;                        /* the two free slots light up */
-  var SPLIT = LIT + .4;                      /* the part chips leave the token */
-  var SPLIT_TRAVEL = .55;                    /* fixed, so desktop and mobile share one clock */
-  var FILL = [0, 1].map(function (k) { var f0 = SPLIT + .1 + k * .15 + SPLIT_TRAVEL; return [f0, f0 + .5]; });
-  /* The time line, [seconds, minutes after 09:00]: it sweeps to 10:45, the end
-     of the print, holds for the print-done notice, then moves on to 11:30, the
-     end of the cut. The line's track and the pill's clock both read it. */
-  var N0 = FILL[1][1] + .3;
-  var NOW = [[N0, 0], [N0 + .6, 105], [N0 + 1.5, 105], [N0 + 1.9, 150]];
-  var PRINTED = NOW[1][0], CUT = NOW[3][0];
-  /* Operations, from T2: the menu, Notify courier, the notice, the task done. */
-  var MENU = T2 + 1.1, COUR = T2 + 1.9, SENT = COUR + .45, KNOB = T2 + 2.85;
-  /* Shipping, from T3: picked up and shipped; then the client, from CL. */
-  var SHIPPED = T3 + 1.0;
-  var ST_T = [null, 4.2, 5.0, FILL[1][1], PRINTED, CUT, SENT, SHIPPED];   /* when each state is reached */
+  var ST_T = [null, ACC + .1, QUE, FILL[1][1], PRINTED, CUT, SENT, SHIPPED];   /* when each state is reached */
 
   function clockAt(t) {
     if (t <= NOW[0][0]) return NOW[0][1];
@@ -410,13 +416,13 @@
     for (i = 0; i < 4; i++) tr('ql' + i, rise(3.1 + i * .08));
     tr('qt', rise(3.3));
     /* the client accepts and pays: Sent rolls up to Accepted as Credit card selects */
-    tr('sent', [[4.1, { o: 1, y: 0 }], [4.3, { o: 0, y: -10 }, EXIT]]);
-    tr('accepted', [[4.1, { o: 0, y: 10 }], [4.3, { o: 1, y: 0 }]]);
-    tr('cardon', [[4.1, { o: 0 }], [4.3, { o: 1 }]]);
-    tr('qby', rise(4.1));
+    tr('sent', [[ACC, { o: 1, y: 0 }], [ACC + .2, { o: 0, y: -10 }, EXIT]]);
+    tr('accepted', [[ACC, { o: 0, y: 10 }], [ACC + .2, { o: 1, y: 0 }]]);
+    tr('cardon', [[ACC, { o: 0 }], [ACC + .2, { o: 1 }]]);
+    tr('qby', rise(ACC));
     /* then the account manager is asked to approve it for production, and it queues */
-    tr('t1', toastIn(4.5).concat(toastOut(T1)));
-    tr('queued', [[5.0, { o: 0, y: -6 }], [5.0 + D_IN, { o: 1, y: 0 }]]);
+    tr('t1', toastIn(APPR).concat(toastOut(T1)));
+    tr('queued', [[QUE, { o: 0, y: -6 }], [QUE + D_IN, { o: 1, y: 0 }]]);
 
     /* Transition 1 */
     trip(T1 + .3, 'slot-order', 'slot-sched', 1 / 3);
@@ -470,7 +476,7 @@
     var mr = rect(q('menu')), dots = rect(q('dots'));
     q('menu').style.transformOrigin = U(dots.x + dots.w / 2 - mr.x) + ' ' + U(dots.y + dots.h / 2 - mr.y);
     tr('menu', [[MENU, { o: 0, s: .96 }], [MENU + .25, { o: 1, s: 1 }]].concat(satOut(M ? COUR - .25 : T3)));
-    tr('courhl', [[MENU + .35, { o: 0 }], [MENU + .55, { o: 1 }]]);
+    tr('courhl', [[MENU + .6, { o: 0 }], [MENU + .8, { o: 1 }]]);
     tr('cour', [[COUR, { o: 0, y: -12 }], [COUR + D_IN, { o: 1, y: 0 }]].concat(satOut(T3)));
     tr('csent', pop(SENT));
     tr('knob', [[KNOB, { x: 0 }], [KNOB + .7, { x: travel }, TRAVEL]]);
@@ -494,9 +500,9 @@
     tr('mail', cardIn(CL + .3));
     tr('auto', pop(CL + .7));
     var m0 = CL + .95;
-    tr('mfill', [[m0, { sx: 0 }], [m0 + .25, { sx: 1 / 3 }, TRAVEL], [m0 + .3, { sx: 1 / 3 }], [m0 + .55, { sx: 2 / 3 }, TRAVEL]]);
-    [m0 - .1, m0 + .25, m0 + .55].forEach(function (t0, k) { tr('mn' + k, [[t0, { o: 0 }], [t0 + .15, { o: 1 }]]); });
-    tr('mbtn', [[m0 + .75, { o: 0, y: 6 }], [m0 + .75 + D_IN, { o: 1, y: 0 }]]);
+    tr('mfill', [[m0, { sx: 0 }], [m0 + .4, { sx: 1 / 3 }, TRAVEL], [m0 + .6, { sx: 1 / 3 }], [m0 + 1.0, { sx: 2 / 3 }, TRAVEL]]);
+    [m0 - .1, m0 + .4, m0 + 1.0].forEach(function (t0, k) { tr('mn' + k, [[t0, { o: 0 }], [t0 + .15, { o: 1 }]]); });
+    tr('mbtn', [[m0 + 1.4, { o: 0, y: 6 }], [m0 + 1.4 + D_IN, { o: 1, y: 0 }]]);
 
     /* captions: out with the card, in with the next one; never together */
     var capOut = [T1 + .15, T2 + .15, T3 + .15, CL], capIn = [null, T1 + .5, T2 + .5, T3 + .5, CL + .3];
