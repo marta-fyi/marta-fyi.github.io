@@ -1,4 +1,4 @@
-/* The promo engine's shared rules -- see tools/shared/promo.js.
+/* The promo engine's shared rules -- see work/_shared/promo.js.
  *
  * Only what every promo needs regardless of its theme: box model, the lift
  * and stack helpers, tabular numerals, the screen-reader description, and

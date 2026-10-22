@@ -1,8 +1,8 @@
 /* Miro — content visual style
    ===========================================================================
-   The visual style for the *content* of Miro case studies. Shared by every
-   entry in work.json whose company is Miro, so the two of them look like each
-   other and neither leaks into HP's.
+   The visual style for the *content* of Miro case studies. Shared by the
+   Miro pages (miro-design, agentic-design), so the two of them look like
+   each other and neither leaks into HP's.
 
    It sits inside marta.fyi's own system, it does not replace it: the prose,
    the layout, the focus ring and the page furniture stay the site's. This
