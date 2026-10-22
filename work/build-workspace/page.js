@@ -18,7 +18,7 @@
  *                contractors; the phase completes, next week begins.
  * The clock chip says the time and where the day happens (office or site).
  *
- * Grammar (deliberately unlike Production Hub's cards and travelling token):
+ * Grammar (deliberately unlike HP PrintOS Production Hub's cards and travelling token):
  *   - One drawing fills the frame and one continuous camera moves over it.
  *     Chapters are camera moves, never card swaps.
  *   - UI blooms from the spot it belongs to (scale .94 -> 1 and fade, with
@@ -34,7 +34,7 @@
  *
  * Two authored frames share one choreography, sized with container query
  * units:  desktop 600x760 design px (>= 768px), mobile 340x780 (< 768px),
- * the same ratios as Production Hub's.
+ * the same ratios as HP PrintOS Production Hub's.
  * Time, tracks, the rail hook, playback and the QA hook live in the shared
  * engine, work/_shared/promo.js; this file is content only.
  */
@@ -343,7 +343,7 @@
       }).join('') +
       '<div class="bw-rto"><span>To</span><span class="bw-rto__av"><b data-a="ra0">DP</b><b data-a="ra1">KE</b><b data-a="ra2">ND</b></span>' +
       '<span>Level 1 contractors</span></div>' +
-      /* the same slide-to-confirm as Production Hub's "Drag to mark done" */
+      /* the same slide-to-confirm as HP PrintOS Production Hub's "Drag to mark done" */
       '<div class="bw-slide" data-a="rslide"><span class="bw-knob" data-a="rknob">' + ic('send') + '<span class="bw-knob__ok" data-a="rknobok">' + ic('check') + '</span></span>' +
       '<span class="bw-slide__l" data-a="rsl">Slide to send<span class="bw-slide__chev">' + ic('chev') + ic('chev') + ic('chev') + '</span></span>' +
       '<span class="bw-slide__done" data-a="rsd">Sent · <span class="num">Fri 17:00</span></span></div></div>';
