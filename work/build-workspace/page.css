@@ -337,7 +337,7 @@
 .pm--bw .bw-ph__ok { display: inline-flex; align-items: center; gap: calc(3 * var(--u)); color: var(--ok); }
 .pm--bw .bw-ph__ok .ic { width: calc(12 * var(--u)); height: calc(12 * var(--u)); stroke-width: 2.2; }
 .pm--bw.pm--m .bw-ph__bar { width: calc(40 * var(--u)); }
-/* slide to send, as Production Hub's slide to mark done: an HP-blue knob on a pale track */
+/* slide to send, as HP PrintOS Production Hub's slide to mark done: an HP-blue knob on a pale track */
 .pm--bw .bw-slide { position: relative; height: calc(52 * var(--u)); margin-top: calc(10 * var(--u)); border-radius: calc(26 * var(--u)); background: var(--hp-pale);
                     color: var(--hp); display: flex; align-items: center; padding-left: calc(58 * var(--u)); font-size: calc(13 * var(--u)); font-weight: 500; white-space: nowrap; }
 .pm--bw .bw-slide__l { flex: 1; display: flex; align-items: center; }

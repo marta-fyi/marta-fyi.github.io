@@ -1,4 +1,4 @@
-/* Production Hub -- the promo: one order, #39208, through four teams and
+/* HP PrintOS Production Hub -- the promo: one order, #39208, through four teams and
  * back to the client.
  *
  * One master timeline in real seconds, played once: Accounts, Production,
