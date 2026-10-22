@@ -1,4 +1,4 @@
-/* Build Workspace -- the promo: "One wall, Monday to Friday".
+/* HP Build Workspace -- the promo: "One wall, Monday to Friday".
  *
  * One architect's change followed through a week on one drawing, T1 C3.1 -
  * Level 1, and one problem on it: the duct the moved wall runs into. Every
