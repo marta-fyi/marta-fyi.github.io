@@ -3,6 +3,11 @@
  * site's own type: one field on a hairline, the arrow the footer's glyphs use.
  */
 
+/* The lock is short, so the pager and footer sit at the bottom of the window
+   instead of floating mid-page. Unlocking strips this sheet with the rest. */
+body { display: flex; flex-direction: column; min-height: 100vh; min-height: 100svh; }
+body > main { flex: 1 0 auto; width: 100%; }
+
 .lock { max-width: min(var(--col), 22rem); margin: 0; }
 .study .body .lock p { margin: 0 0 1.5rem; }
 
