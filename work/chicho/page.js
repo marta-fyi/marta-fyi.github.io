@@ -8,13 +8,14 @@
  * the title and pins there (promo.css's -100vh pull needs a long page). Unlike frame.js it never focuses the app, so the page
  * doesn't jump, and the iframe loads lazily (at once in the wide layout).
  *
- * Nothing a visitor does here is kept: the frame shares marta.fyi/chicho's
- * storage, so Chicho's keys are cleared before the app loads and again when
- * the page goes, and every reload starts at the welcome.
+ * Nothing a visitor does here is kept: the frame loads Chicho with ?fresh,
+ * which makes the app forget what this browser kept before it reads it, so
+ * every reload starts at the welcome. The frame shares marta.fyi/chicho's
+ * storage, so the keys are cleared again when the page goes.
  *
  * Phones and upright tablets get "Open Chicho" under the title instead, no
- * phone inside a phone. It clears the same keys before it goes, so the app
- * opens fresh, the same first run the frame shows.
+ * phone inside a phone. It links to /chicho/?fresh: the same first run the
+ * frame shows, however the link is opened.
  */
 (function () {
   var PHONE_W = 402 + 2 * (12 + 3), PHONE_H = 874 + 2 * (12 + 3), PHONE_MAX = 760, ROOM_Y = 48;
@@ -59,9 +60,8 @@
         watching.observe(root, { attributes: true, attributeFilter: ['data-theme'] });
       } catch (e) {}
     });
-    forget();
     addEventListener('pagehide', forget);
-    frame.src = '/chicho/index.html?app&inframe';
+    frame.src = '/chicho/index.html?app&inframe&fresh';
     tick();
   }
 
@@ -100,8 +100,6 @@
 
   function boot() {
     host = document.querySelector('.chf'); if (!host) return;
-    var open = document.querySelector('.chf-open a');
-    if (open) open.addEventListener('click', forget);
     update();
     addEventListener('resize', update);
   }
