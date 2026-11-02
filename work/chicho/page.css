@@ -9,8 +9,8 @@
  * pull, which needs a page as long as the HP ones; centred in the column, it
  * stays clear of the corner mascot.
  *
- * Phones and upright tablets, and no JS, get the still and a link instead:
- * page.js only swaps in the phone where there's room for one.
+ * Phones and upright tablets get "Open Chicho" under the title instead:
+ * page.js only builds the phone where there's room for one.
  */
 
 .chf { --fr-status: #000; display: flex; flex-direction: column; align-items: center; }
@@ -21,9 +21,12 @@
 .study h1.chf-name { line-height: 0; }
 .study h1.chf-name img { display: block; width: auto; height: 5rem; }
 
-/* the still: phones, upright tablets, no JS */
-.chf-still { display: flex; flex-direction: column; align-items: center; gap: 1rem; font-size: 0.8125rem; color: inherit; }
-.chf-still img { display: block; width: min(280px, 72vw); height: auto; border-radius: 28px; box-shadow: 0 12px 32px -12px rgba(0, 0, 0, .25); }
+/* phones and upright tablets: no phone inside a phone, just "Open Chicho" under the title (the same query as page.js) */
+.study .chf-open { display: none; }
+@media (max-width: 767px), (orientation: portrait) and (max-width: 1023px) {
+  .study .chf-open { display: block; }
+  .chf { display: none; }
+}
 
 /* the scaled box keeps the layout honest: its size is the phone's size times the scale */
 .chf-box { position: relative; flex: none; }
@@ -66,5 +69,5 @@
 @media (min-width: 900px) { .chf-list { max-width: var(--col); } }
 @media (min-width: 1200px) { .chf-list { max-width: none; } }
 
-/* stacked, the still or the phone follows the byline: the room the details block gives on the HP pages */
+/* stacked, the phone follows the byline: the room the details block gives on the HP pages */
 @media (max-width: 1199px) { .chf-by { padding-bottom: 3rem; } }
