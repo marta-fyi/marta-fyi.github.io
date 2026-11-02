@@ -12,8 +12,9 @@
  * storage, so Chicho's keys are cleared before the app loads and again when
  * the page goes, and every reload starts at the welcome.
  *
- * Phones and upright tablets keep the page's still and link: no phone inside
- * a phone.
+ * Phones and upright tablets get "Open Chicho" under the title instead, no
+ * phone inside a phone. It clears the same keys before it goes, so the app
+ * opens fresh, the same first run the frame shows.
  */
 (function () {
   var PHONE_W = 402 + 2 * (12 + 3), PHONE_H = 874 + 2 * (12 + 3), PHONE_MAX = 760, ROOM_Y = 48;
@@ -30,10 +31,9 @@
     try { KEYS.session.forEach(function (k) { sessionStorage.removeItem(k); }); } catch (e) {}
   }
 
-  var host, still, box, phone, frame, clock, watching = null;
+  var host, box, phone, frame, clock, watching = null;
 
   function build() {
-    still.hidden = true;
     host.insertAdjacentHTML('beforeend',
       '<div class="chf-box"><div class="chf-phone">' +
         '<i class="chf-btn l action"></i><i class="chf-btn l volup"></i><i class="chf-btn l voldown"></i>' +
@@ -93,15 +93,15 @@
   }
 
   function update() {
-    if (SMALL.matches) { if (box) { box.hidden = true; still.hidden = false; } return; }
+    if (SMALL.matches) return;
     if (!box) build();
-    box.hidden = false; still.hidden = true;
     fit();
   }
 
   function boot() {
     host = document.querySelector('.chf'); if (!host) return;
-    still = host.querySelector('.chf-still');
+    var open = document.querySelector('.chf-open a');
+    if (open) open.addEventListener('click', forget);
     update();
     addEventListener('resize', update);
   }
