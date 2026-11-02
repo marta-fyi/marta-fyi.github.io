@@ -1,0 +1,70 @@
+/* Chicho -- the live app in its phone, beside the case study.
+ *
+ * The phone is Chicho's own desktop frame (chicho-meals/frame.css), drawn in
+ * CSS at its real size (a 402x874 iPhone 16 Pro screen) and scaled as a whole
+ * by page.js to fit the column and the window. Everything is scoped under
+ * .chf so none of it reaches the site's style.css. The layout around it is
+ * promo.css's .pmr: stacked, then a sticky right column from 1200px. There
+ * page.js pins the phone level with the title instead of promo.css's -100vh
+ * pull, which needs a page as long as the HP ones; centred in the column, it
+ * stays clear of the corner mascot.
+ *
+ * Phones and upright tablets, and no JS, get the still and a link instead:
+ * page.js only swaps in the phone where there's room for one.
+ */
+
+.chf { --fr-status: #000; display: flex; flex-direction: column; align-items: center; }
+.chf[data-theme="dark"] { --fr-status: #FFF; }
+.chf [hidden] { display: none; }
+
+/* the title is Chicho's lettering, drawn by hand: three times the site's title, about 80px tall */
+.study h1.chf-name { line-height: 0; }
+.study h1.chf-name img { display: block; width: auto; height: 5rem; }
+
+/* the still: phones, upright tablets, no JS */
+.chf-still { display: flex; flex-direction: column; align-items: center; gap: 1rem; font-size: 0.8125rem; color: inherit; }
+.chf-still img { display: block; width: min(280px, 72vw); height: auto; border-radius: 28px; box-shadow: 0 12px 32px -12px rgba(0, 0, 0, .25); }
+
+/* the scaled box keeps the layout honest: its size is the phone's size times the scale */
+.chf-box { position: relative; flex: none; }
+.chf-phone { --sw: 402px; --sh: 874px; --bz: 12px; --edge: 3px;
+             position: absolute; left: 0; top: 0; transform-origin: 0 0;
+             width: calc(var(--sw) + 2 * (var(--bz) + var(--edge))); height: calc(var(--sh) + 2 * (var(--bz) + var(--edge)));
+             border-radius: 72px; box-sizing: border-box; padding: var(--edge);
+             background: linear-gradient(145deg, #8E8A84, #5E5B57 30%, #A7A39C 55%, #4E4C49 80%, #8A867F);
+             box-shadow: 0 30px 60px -20px rgba(0, 0, 0, .35), 0 12px 24px -12px rgba(0, 0, 0, .25); }
+.chf-bezel { position: relative; width: 100%; height: 100%; box-sizing: border-box; padding: var(--bz); border-radius: 69px; background: #050505; }
+.chf-screen { position: relative; width: var(--sw); height: var(--sh); border-radius: 57px; overflow: hidden; background: #000;
+              -webkit-mask-image: -webkit-radial-gradient(white, black); }   /* clips the iframe's corners in WebKit too */
+.chf-screen iframe { display: block; width: 100%; height: 100%; border: 0; }
+
+/* the buttons: Action, volume up and down on the left; side button and Camera Control on the right */
+.chf-btn { position: absolute; width: 4px; border-radius: 2px; background: linear-gradient(90deg, #6A6762, #9C9891); }
+.chf-btn.l { left: -4px; }
+.chf-btn.r { right: -4px; }
+.chf-btn.action { top: 178px; height: 34px; }
+.chf-btn.volup { top: 242px; height: 62px; }
+.chf-btn.voldown { top: 318px; height: 62px; }
+.chf-btn.side { top: 262px; height: 98px; }
+.chf-btn.camera { top: 560px; height: 72px; }
+
+/* over the screen, never in the way of a tap */
+.chf-island { position: absolute; z-index: 3; top: 11px; left: 50%; width: 126px; height: 37px; margin-left: -63px; border-radius: 19px; background: #000; pointer-events: none; }
+.chf-status { position: absolute; z-index: 2; top: 0; left: 0; right: 0; height: 59px; display: grid; grid-template-columns: 1fr 126px 1fr; align-items: center;
+              color: var(--fr-status); pointer-events: none; font: 600 17px/1 -apple-system, "SF Pro Text", system-ui, sans-serif; letter-spacing: -.02em; }
+.chf-time { justify-self: center; padding-left: 8px; font-variant-numeric: tabular-nums; }
+.chf-icons { justify-self: center; display: flex; align-items: center; gap: 6px; padding-right: 8px; }
+.chf-icons svg { display: block; fill: currentColor; }
+.chf-home { position: absolute; z-index: 2; bottom: 8px; left: 50%; width: 139px; height: 5px; margin-left: -70px; border-radius: 3px; background: var(--fr-status); pointer-events: none; }
+
+/* the overview's list: what Chicho does, the thing in ink, what it means muted (as on Chicho's own desktop page) */
+.chf-list { margin: 1.5rem 0; padding: 0; list-style: none; }
+.chf-list li { padding: 0.75rem 0; border-top: 1px solid rgba(28, 28, 30, 0.12); color: var(--ink-60); text-wrap: pretty; }
+.chf-list li:last-child { border-bottom: 1px solid rgba(28, 28, 30, 0.12); }
+.chf-list b { font-weight: 500; color: var(--ink); }
+.study .body p.chf-by { font-size: 0.8125rem; color: var(--ink-60); }
+@media (min-width: 900px) { .chf-list { max-width: var(--col); } }
+@media (min-width: 1200px) { .chf-list { max-width: none; } }
+
+/* stacked, the still or the phone follows the byline: the room the details block gives on the HP pages */
+@media (max-width: 1199px) { .chf-by { padding-bottom: 3rem; } }
