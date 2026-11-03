@@ -49,6 +49,7 @@ copyBtn?.addEventListener('click', async () => {
 const toTop = document.querySelector('.home[href="#top"]');
 toTop?.addEventListener('click', event => {
   event.preventDefault();
+  if (window.glideTo) { window.glideTo('first'); return; }
   const smooth = !matchMedia('(prefers-reduced-motion: reduce)').matches;
   window.scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'auto' });
 });
@@ -69,9 +70,100 @@ if (nudge) {
   window.addEventListener('scroll', wait, { passive: true });
   wait();
   nudge.addEventListener('click', () => {
+    if (window.glideTo) { window.glideTo(1); return; }
     const smooth = !matchMedia('(prefers-reduced-motion: reduce)').matches;
     window.scrollBy({ top: window.innerHeight, behavior: smooth ? 'smooth' : 'auto' });
   });
+}
+
+// Homepage glide: with a mouse or trackpad, one wheel or trackpad swipe (or an
+// arrow key, Page Up/Down, Space) moves one section, eased over GLIDE_MS --
+// slower than the browser's own snap, which can't be timed. The stops are the
+// CSS snap's: each section's centre, the vita's top, the page's end. A
+// trackpad's momentum after a glide is swallowed until it dies down, so one
+// swipe is one section. Phones (touch) and reduced motion keep the native snap.
+if (document.querySelector('body > section') &&
+    matchMedia('(pointer: fine)').matches &&
+    !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const GLIDE_MS = 900, QUIET_MS = 120, LONG = 1.25;   // LONG: a stretch this many windows tall reads freely
+  document.documentElement.classList.add('glide');
+  const maxY = () => document.documentElement.scrollHeight - window.innerHeight;
+  const stops = () => {
+    const ys = [...document.querySelectorAll('body > section')].map(sec => {
+      const col = sec.querySelector('.col');
+      if (sec.classList.contains('vita') && col) return col.getBoundingClientRect().top + window.scrollY;
+      const r = sec.getBoundingClientRect();
+      return r.top + window.scrollY + r.height / 2 - window.innerHeight / 2;
+    });
+    ys.push(maxY());
+    return [...new Set(ys.map(y => Math.round(Math.min(Math.max(y, 0), maxY()))))].sort((a, b) => a - b)
+      .filter((y, i, a) => i === 0 || y - a[i - 1] > 4);
+  };
+  const ease = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  let anim = null, lastWheel = 0;
+  const glide = to => {
+    const from = window.scrollY, d = to - from;
+    if (Math.abs(d) < 2) return;
+    const t0 = performance.now();
+    const id = {};
+    anim = id;
+    const step = now => {
+      if (anim !== id) return;
+      const t = Math.min(1, (now - t0) / GLIDE_MS);
+      window.scrollTo(0, from + d * ease(t));
+      if (t < 1) requestAnimationFrame(step); else anim = null;
+    };
+    requestAnimationFrame(step);
+  };
+  // dir: 1 the next stop down, -1 the one up; 'first' / 'last'
+  window.glideTo = dir => {
+    const ys = stops(), y = window.scrollY;
+    if (dir === 'first') return glide(ys[0]);
+    if (dir === 'last') return glide(ys[ys.length - 1]);
+    const next = dir > 0 ? ys.find(s => s > y + 4) : [...ys].reverse().find(s => s < y - 4);
+    if (next !== undefined) glide(next);
+  };
+  // A stretch between two stops taller than the window (a short window's vita)
+  // scrolls freely, so all of it can be read.
+  const inLongStretch = dir => {
+    const ys = stops(), y = window.scrollY;
+    const below = ys.find(s => s > y + 4), above = [...ys].reverse().find(s => s < y - 4);
+    const a = dir > 0 ? (ys.includes(Math.round(y)) ? Math.round(y) : above) : above;
+    const b = dir > 0 ? below : (ys.includes(Math.round(y)) ? Math.round(y) : below);
+    return a !== undefined && b !== undefined && b - a > window.innerHeight * LONG &&
+      !(dir > 0 && Math.abs(y - b) < 4) && !(dir < 0 && Math.abs(y - a) < 4);
+  };
+  window.addEventListener('wheel', e => {
+    if (e.ctrlKey || Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;   // pinch-zoom, sideways
+    const dir = Math.sign(e.deltaY);
+    if (!dir || inLongStretch(dir)) return;
+    e.preventDefault();
+    const now = performance.now(), quiet = now - lastWheel > QUIET_MS;
+    lastWheel = now;
+    if (!anim && quiet) window.glideTo(dir);
+  }, { passive: false });
+  window.addEventListener('keydown', e => {
+    if (e.altKey || e.ctrlKey || e.metaKey || e.target.closest('button, input, textarea, select, [contenteditable]')) return;
+    const k = e.key;
+    const dir = k === 'ArrowDown' || k === 'PageDown' || (k === ' ' && !e.shiftKey) ? 1
+      : k === 'ArrowUp' || k === 'PageUp' || (k === ' ' && e.shiftKey) ? -1
+      : k === 'Home' ? 'first' : k === 'End' ? 'last' : 0;
+    if (!dir || (typeof dir === 'number' && inLongStretch(dir))) return;
+    e.preventDefault();
+    if (!e.repeat || !anim) window.glideTo(dir);
+  });
+  // A scroll the glide didn't make (the scrollbar, a touch screen) settles on
+  // the nearest stop once it ends, as the snap did.
+  let settle;
+  const nearest = () => {
+    if (anim || performance.now() - lastWheel < QUIET_MS * 2) return;
+    const ys = stops(), y = window.scrollY;
+    const i = ys.findIndex(s => s > y);
+    if (i > 0 && ys[i] - ys[i - 1] > window.innerHeight * LONG) return;   // a long stretch reads freely
+    const best = ys.reduce((a, s) => Math.abs(s - y) < Math.abs(a - y) ? s : a, ys[0]);
+    glide(best);
+  };
+  window.addEventListener('scroll', () => { clearTimeout(settle); settle = setTimeout(nearest, 160); }, { passive: true });
 }
 
 // Mascot on a case study: unwind to the start angle, then go home. The plain
