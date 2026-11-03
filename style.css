@@ -37,6 +37,12 @@ html:has(body > section) {
   scroll-snap-type: y mandatory;
 }
 
+/* With a mouse or trackpad, script.js glides between the same stops itself,
+   slower than the browser's snap; the native snap would fight it. */
+html.glide {
+  scroll-snap-type: none;
+}
+
 body > section {
   scroll-snap-align: center;
   scroll-snap-stop: always;
