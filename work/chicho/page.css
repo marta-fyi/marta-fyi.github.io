@@ -62,8 +62,10 @@
 
 /* the overview's list: what Chicho does, the thing in ink, what it means muted (as on Chicho's own desktop page) */
 .chf-list { margin: 1.5rem 0; padding: 0; list-style: none; }
-.chf-list li { padding: 0.75rem 0; border-top: 1px solid rgba(28, 28, 30, 0.12); color: var(--ink-60); text-wrap: pretty; }
-.chf-list li:last-child { border-bottom: 1px solid rgba(28, 28, 30, 0.12); }
+/* a dash list, as on the CV: the dash hangs, so a wrapped line lines up with the text */
+.chf-list li { position: relative; padding-left: 1.1em; color: var(--ink-60); text-wrap: pretty; }
+.chf-list li + li { margin-top: 0.75rem; }
+.chf-list li::before { content: "\2013"; position: absolute; left: 0; color: var(--ink-45); }
 .chf-list b { font-weight: 500; color: var(--ink); }
 .study .body p.chf-by { font-size: 0.8125rem; color: var(--ink-60); }
 @media (min-width: 900px) { .chf-list { max-width: var(--col); } }
