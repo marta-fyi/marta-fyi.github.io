@@ -3,7 +3,9 @@
  *
  * One master timeline in real seconds, played once: Accounts, Production,
  * Operations, Shipping -- which ends on the client's side, with the automatic
- * "on its way" email and its tracker -- then holds with Replay. The
+ * "on its way" email and its tracker -- and Insights, the owner's week: the
+ * order's parts land in capacity and time to ship, a free slot is offered as
+ * rush and the next order arrives -- then holds with Replay. The
  * timeline is a pure function of time: seek(t) writes every element's
  * transform and opacity for that instant and nothing else, so playing,
  * jumping, replaying and reduced motion are all just seek().
@@ -65,14 +67,21 @@
   var T3 = KNOB + .9 + 1.7;                  /* to Shipping */
   /* Shipping: picked up and shipped; then, at CL, the client's email. */
   var SHIPPED = T3 + 1.0, CL = T3 + 3.2;
-  var END = CL + 4.6;
-  var FRAME_T = [T1 - .05, T2 - .05, T3 - .05, END - .05];   /* each stage's final frame */
-  var TRANS_IN = [null, T1, T2, T3];                         /* start of the transition into each stage */
+  var T4 = CL + 4.3;                         /* to Insights */
+  /* Insights: the shop's week, as the owner sees it. The order's parts land in
+     Monday's capacity, the order lands in time to ship, a free slot lights up,
+     it is offered as rush, and the next order arrives. */
+  var CAPB = T4 + 1.9, LEADB = CAPB + 1.7, GAPB = LEADB + 1.7, TAP = GAPB + 1.6;
+  var FILL4 = TAP + .45, NEWB = TAP + 1.0;
+  var END = NEWB + 2.6;
+  var FRAME_T = [T1 - .05, T2 - .05, T3 - .05, T4 - .05, END - .05];   /* each stage's final frame */
+  var TRANS_IN = [null, T1, T2, T3, T4];                               /* start of the transition into each stage */
   var STAGE_W = { d: 568, m: 316 };               /* design width of the white stage */
-  var STAGES = ['Accounts', 'Production', 'Operations', 'Shipping'];
+  var STAGES = ['Accounts', 'Production', 'Operations', 'Shipping', 'Insights'];
   /* the fifth caption replaces the fourth when the story moves to the client */
   var CAPTIONS = ['Files, quote and payment', 'Fits into the gaps',
-                  'Ready for pickup', 'Shipped and tracked', 'The client is told, automatically'];
+                  'Ready for pickup', 'Shipped and tracked', 'The client is told, automatically',
+                  'Monitor and improve capacity'];
   /* the order's state, carried on the token, and when each one is reached */
   var STATES = ['New order', 'Accepted', 'Queued', 'Scheduled', 'Printed', 'Ready to ship', 'Courier notified', 'Shipped'];
   /* the same states as they read in the history: done steps, time first. A
@@ -85,7 +94,9 @@
     'Production: in a schedule already full of other orders, the two free slots it needs light up, a print slot on Printer 2 and the cutting slot on Cutter 1 right after it, and the order splits into its print job and its cutting job, which fill them. The print finishes at 10:45 and the order is ready for cutting on Cutter 1; the cut finishes at 11:30 and it is ready to pack and ship. ' +
     'Operations: on the job Akatsuki Asuma Mogato, the courier is notified that the order is packed and ready for pickup at Sant Cugat, and the task is marked done. ' +
     'Shipping: Seur picks the order up at Sant Cugat on 22/04/2024 at 17:56 and it is shipped. ' +
-    'Back at the client, John Walters at Brownie gets an automatic email that the order is on its way, with his own tracker, delivery on 23/04, and a link to follow it.';
+    'Back at the client, John Walters at Brownie gets an automatic email that the order is on its way, with his own tracker, delivery on 23/04, and a link to follow it. ' +
+    'Insights: the shop owner sees the week. The order\'s print and cut land in Monday\'s capacity, taking Printer 2 from 89% to 91% and Cutter 1 from 76% to 78%, and the order joins the 23 shipped the same day, against an average of 1,2 days. ' +
+    'Printer 2 is free on Thursday from 14:00 to 17:00, room for 4 banner orders; the owner offers it as rush slots, the slot fills, Printer 2 reaches 97%, and a new rush order, #39241, arrives.';
 
   /* --- icons ----------------------------------------------------------- */
   var ICONS = {
@@ -104,6 +115,7 @@
     calalert:'<rect x="3.5" y="5.5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3.5v4M16 3.5v4M12 13v3"/><circle cx="12" cy="18" r=".6" fill="currentColor" stroke="none"/>',
     cal:    '<rect x="3.5" y="5.5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3.5v4M16 3.5v4"/>',
     chev:   '<path d="M9 5.5 15.5 12 9 18.5"/>',
+    chart:  '<path d="M4.5 19.5h15"/><path d="M7.5 16v-4.5M12 16V7M16.5 16v-7"/>',
     dots:   '<circle cx="12" cy="5.5" r="1.35" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.35" fill="currentColor" stroke="none"/><circle cx="12" cy="18.5" r="1.35" fill="currentColor" stroke="none"/>'
   };
   var E = window.PromoEngine;
@@ -286,6 +298,63 @@
       '<span class="mail__btn" data-a="mbtn">Track your order</span></div>';
   }
 
+  /* --- Insights: the shop's week, as the owner sees it ------------------ */
+  /* Capacity: each machine's week, Mon-Fri, how full each day is (%). #39208's
+     print and cut land in Monday; Printer 2's Thursday has a free slot,
+     14:00-17:00 of a 08:00-18:00 day. A machine's figure is its days' mean. */
+  var CAP = [
+    { n: 'Printer 1', days: [100, 95, 100, 95, 90] },
+    { n: 'Printer 2', days: [85, 100, 100, 60, 100], add: 10, gap: [60, 30] },   /* the 1 h print */
+    { n: 'Cutter 1',  days: [70, 80, 90, 60, 80], add: 7.5 }                     /* the 45 min cut */
+  ];
+  /* Orders shipped this week, by time to ship. #39208, in at 08:12 and out at
+     17:56, joins the first. */
+  var SHIP = [['Same day', 23], ['1 day', 41], ['2 days', 12], ['3+ days', 4]];
+  var SHIP_H = { d: 52, m: 40 };                    /* the tallest column, design px */
+  function capPct(c, withAdd, withGap) {
+    var s = c.days.reduce(function (a, b) { return a + b; }, 0) + (withAdd ? c.add || 0 : 0) + (withGap && c.gap ? c.gap[1] : 0);
+    return Math.round(s / c.days.length);
+  }
+  /* the figures that change, [seconds, value] keys, eased; read by onSeek */
+  var COUNTS = {};
+  function ownerCard(x, y, w, M) {
+    var days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+    var rows = CAP.map(function (c, r) {
+      var segs = c.days.map(function (v, d) {
+        var s = '<i class="own__bk" style="width:' + v + '%"></i>';
+        if (d === 0 && c.add) s += '<i class="own__add" data-a="ob' + r + '" style="left:' + v + '%;width:' + c.add + '%"></i>';
+        if (d === 3 && c.gap) s += '<i class="own__gap" data-a="ogap" style="left:' + c.gap[0] + '%;width:' + c.gap[1] + '%"></i>' +
+                                   '<i class="own__new" data-a="onew" style="left:' + c.gap[0] + '%;width:' + c.gap[1] + '%"></i>';
+        return '<span class="own__day">' + s + '</span>';
+      }).join('');
+      return '<div class="own__row"><span class="own__n">' + c.n + '</span><span class="own__wk">' + segs + '</span>' +
+        '<span class="own__pc num" data-a="pc' + r + '">' + capPct(c) + '%</span></div>';
+    }).join('');
+    var max = Math.max.apply(null, SHIP.map(function (s) { return s[1]; }));
+    var cols = SHIP.map(function (s, i) {
+      return '<div class="own__col"><span class="own__cn num"' + (i === 0 ? ' data-a="tc0"' : '') + '>' + s[1] + '</span>' +
+        '<span class="own__bar" style="height:' + U(Math.round(s[1] / max * SHIP_H[M ? 'm' : 'd'])) + '">' +
+        (i === 0 ? '<i class="own__cap" data-a="ob3"></i>' : '') + '</span>' +
+        '<span class="own__cl">' + s[0] + '</span></div>';
+    }).join('');
+    var ship = '<div class="own__ship"><div class="own__h"><p>Time to ship</p><p class="own__hs">Average <span class="num">1,2</span> days</p></div>' +
+      '<div class="own__cols">' + cols + '</div></div>';
+    return '<div class="c own' + (M ? ' own--m' : '') + '" data-a="own" style="' + at(x, y, w) + '">' + LIFT +
+      '<div class="ch">' + (M ? '' : '<span class="ch__tile">' + ic('chart') + '</span>') +
+      '<div class="mail__h"><p class="ch__t">This week</p><p class="mail__to">Sant Cugat · <span class="num">22–26/04</span></p></div></div>' +
+      '<div class="own__top">' + slot('slot-own') + ship + '</div>' +
+      '<div class="own__capa"><div class="own__h"><p>Capacity</p></div>' +
+      '<div class="own__row own__row--d"><span class="own__n"></span><span class="own__wk">' +
+        days.map(function (d) { return '<span class="own__dl">' + d + '</span>'; }).join('') + '</span><span class="own__pc"></span></div>' +
+      rows + '</div>' +
+      '<div class="own__ins" data-a="oins">' + (M ? '' : '<span class="ch__tile">' + ic('cal') + '</span>') +
+      '<div class="own__it"><p>Printer 2 is free Thu, <span class="num">14:00–17:00</span></p><p class="mail__to">Fits 4 banner orders</p></div>' +
+      '<span class="stack own__btns"><span class="own__btn" data-a="boff">Offer rush slots</span>' +
+      '<span class="own__btn own__btn--ok" data-a="bon">' + ic('check') + 'Offered</span></span></div>' +
+      '</div>';
+  }
+  function tapRing() { return '<span class="ptap" data-a="otap"><i></i></span>'; }
+
   /* the order's record: artwork, id and state on top, its history under them */
   function token() {
     return '<div class="tokn" data-a="token"><i class="pm-lift" data-a="tokl"></i><span class="job__bar"></span>' +
@@ -304,25 +373,27 @@
       orderCard(20, 24, 296) + quoteCard(240, 232, 308) +
       schedule(GEO.d) +
       doneCard(24, 40, 276) + taskMenu(312, 56, 240) + courierCard(24, 352, 524) +
-      shipmentCard(60, 120, 448) + mailCard(60, 84, 448) + token();
+      shipmentCard(60, 120, 448) + mailCard(60, 84, 448) + ownerCard(20, 64, 528) + token() + tapRing();
   }
   /* notifications float over the stage, unclipped */
   function desktopFloat() {
     return toast('t1', -12, 582, 360, 'req', 'Approve #39208 for production', 'Sent by Account Manager') +
       toast('t3', 208, 14, 352, 'ok', '#39208-01 printed', 'Ready for cutting on Cutter 1') +   /* in the strip beside the order */
-      toast('t4', 208, 14, 352, 'ok', '#39208-02 cut', 'Ready to pack and ship');
+      toast('t4', 208, 14, 352, 'ok', '#39208-02 cut', 'Ready to pack and ship') +
+      toast('t5', -12, 582, 360, 'req', 'New rush order #39241', 'Thu 14:00 · Printer 2');
   }
   function mobileStage() {
     return uploadCard(12, 24, 292, true) + dropPill() +
       orderCard(12, 12, 292, true) + quoteCard(24, 300, 280, true) +
       schedule(GEO.m) +
       doneCard(12, 12, 292) + taskMenu(12, 320, 292) + courierCard(12, 320, 292) +
-      shipmentCard(12, 58, 292, true) + mailCard(12, 40, 292, true) + token();
+      shipmentCard(12, 58, 292, true) + mailCard(12, 40, 292, true) + ownerCard(12, 12, 292, true) + token() + tapRing();
   }
   function mobileFloat() {
     return toast('t1', -6, 600, 300, 'req', 'Approve for production', 'Sent by Account Manager') +   /* one line at 300 */
       toast('t3', -6, 600, 300, 'ok', '#39208-01 printed', 'Ready for cutting on Cutter 1') +
-      toast('t4', -6, 600, 300, 'ok', '#39208-02 cut', 'Ready to pack and ship');
+      toast('t4', -6, 600, 300, 'ok', '#39208-02 cut', 'Ready to pack and ship') +
+      toast('t5', -6, 8, 300, 'req', 'New rush order #39241', 'Thu 14:00 · Printer 2');   /* narrow: over the header, clear of Offered */
   }
 
   /* --- motion, from the engine --------------------------------------- */
@@ -361,7 +432,7 @@
     /* the file is dragged in from below the stage's edge, never sitting on the card */
     var pillFrom = { x: M ? 0 : 30, y: rect(pill.parentNode).h + 8 - pillAt[1] };
     var S = {};
-    ['slot-up', 'slot-order', 'slot-sched', 'slot-done', 'slot-track', 'slot-mail'].forEach(function (k) { S[k] = rect(q(k)); });
+    ['slot-up', 'slot-order', 'slot-sched', 'slot-done', 'slot-track', 'slot-mail', 'slot-own'].forEach(function (k) { S[k] = rect(q(k)); });
     var travel = rect(q('slide')).w - 12 - 44;
 
     /* the token: translation only, between slots. Each trip also moves the
@@ -372,7 +443,9 @@
       var d = travelDur(Math.hypot(S[to].x - S[from].x, S[to].y - S[from].y));
       tk.push([t0, { x: S[from].x, y: S[from].y }], [t0 + d, { x: S[to].x, y: S[to].y }, TRAVEL]);
       tl.push([t0, { o: 0 }], [t0 + .12, { o: 1 }], [t0 + d - .12, { o: 1 }], [t0 + d, { o: 0 }]);
-      if (railTo != null) { rl.push([t0, { sx: railTo - 1 / 3 }], [t0 + d, { sx: railTo }, TRAVEL]); switches.push(t0 + d / 2); }
+      if (railTo != null) { /* a full rail stays a hair under 1: at exactly 1 the engine writes no
+         transform, and the CSS default, scaleX(0), would empty the fill */
+      rl.push([t0, { sx: railTo - 1 / 4 }], [t0 + d, { sx: Math.min(railTo, .99999) }, TRAVEL]); switches.push(t0 + d / 2); }
       return d;
     }
 
@@ -420,7 +493,7 @@
     tr('queued', [[QUE, { o: 0, y: -6 }], [QUE + D_IN, { o: 1, y: 0 }]]);
 
     /* Transition 1 */
-    trip(T1 + .3, 'slot-order', 'slot-sched', 1 / 3);
+    trip(T1 + .3, 'slot-order', 'slot-sched', 1 / 4);
 
     /* Stage 2 -- Production. A full day first; then the other orders step
        back, the two free slots light up in order, print then cut, and the
@@ -455,7 +528,7 @@
     tr('t4', noteIn(CUT + .1).concat(noteOut(T2)));
 
     /* Transition 2: the ready-to-ship notice leaves first */
-    trip(T2 + .3, 'slot-sched', 'slot-done', 2 / 3);
+    trip(T2 + .3, 'slot-sched', 'slot-done', 2 / 4);
 
     /* Stage 3 -- Operations. Task actions grows from the job card's dots;
        Notify courier is picked, the courier's pickup request is sent, and
@@ -477,7 +550,7 @@
     tr('sdone', [[KNOB + .7, { o: 0, x: -8 }], [KNOB + .7 + D_IN, { o: 1, x: 0 }]]);
 
     /* Transition 3 */
-    trip(T3 + .3, 'slot-done', 'slot-track', 1);
+    trip(T3 + .3, 'slot-done', 'slot-track', 3 / 4);
 
     /* Stage 4 -- Shipping: Seur has it */
     tr('track', cardIn(T3 + .5).concat(cardOut(CL)));
@@ -489,15 +562,52 @@
        client's tracker catches up, and the link to follow it arrives. Same
        stage, so the rail does not move; the caption changes instead. */
     trip(CL + .1, 'slot-track', 'slot-mail');
-    tr('mail', cardIn(CL + .3));
+    tr('mail', cardIn(CL + .3).concat(cardOut(T4 + .2)));
     tr('auto', pop(CL + .7));
     var m0 = CL + .95;
     tr('mfill', [[m0, { sx: 0 }], [m0 + .4, { sx: 1 / 3 }, TRAVEL], [m0 + .6, { sx: 1 / 3 }], [m0 + 1.0, { sx: 2 / 3 }, TRAVEL]]);
     [m0 - .1, m0 + .4, m0 + 1.0].forEach(function (t0, k) { tr('mn' + k, [[t0, { o: 0 }], [t0 + .15, { o: 1 }]]); });
     tr('mbtn', [[m0 + 1.4, { o: 0, y: 6 }], [m0 + 1.4 + D_IN, { o: 1, y: 0 }]]);
 
+    /* Transition 4: the order travels into the owner's week */
+    trip(T4 + .3, 'slot-mail', 'slot-own', 1);
+    tr('own', cardIn(T4 + .5));
+
+    /* Stage 5 -- Insights. Parts of the record leave the token for the
+       owner's views, the way the parts left it for the schedule: already
+       their landing size, travelling straight in. The figures they change
+       count with them. */
+    var tok = S['slot-own'], tcx = tok.x + tok.w / 2, tcy = tok.y + tok.h / 2;
+    function fly(name, t0) {
+      var r = rect(q(name)), dx = tcx - (r.x + r.w / 2), dy = tcy - (r.y + r.h / 2);
+      tr(name, [[0, { o: 0, x: dx, y: dy }], [t0, { o: 0 }], [t0 + .12, { o: 1 }],
+                [t0 + .05, { x: dx, y: dy }], [t0 + .05 + SPLIT_TRAVEL, { x: 0, y: 0 }, TRAVEL]]);
+      return t0 + .05 + SPLIT_TRAVEL;
+    }
+    var land0 = fly('ob1', CAPB), land1 = fly('ob2', CAPB + .15);
+    tl.push([CAPB - .05, { o: 0 }], [CAPB + .05, { o: 1 }], [land1 - .2, { o: 1 }], [land1 - .05, { o: 0 }]);   /* the token lifts as they leave */
+    COUNTS.pc1 = [[land0 - .1, capPct(CAP[1])], [land0 + .4, capPct(CAP[1], true)], [FILL4, capPct(CAP[1], true)], [FILL4 + .6, capPct(CAP[1], true, true)]];
+    COUNTS.pc2 = [[land1 - .1, capPct(CAP[2])], [land1 + .4, capPct(CAP[2], true)]];
+    var land2 = fly('ob3', LEADB);
+    tl.push([LEADB - .05, { o: 0 }], [LEADB + .05, { o: 1 }], [land2 - .2, { o: 1 }], [land2 - .05, { o: 0 }]);
+    COUNTS.tc0 = [[land2 - .1, SHIP[0][1]], [land2 + .3, SHIP[0][1] + 1]];
+
+    /* the free slot lights up, then the insight that offers it */
+    tr('ogap', [[GAPB, { o: 0, s: 1 }], [GAPB + .25, { o: 1 }], [FILL4, { o: 1 }], [FILL4 + .3, { o: 0 }, EXIT]]);
+    tr('oins', [[GAPB + .3, { o: 0, y: 12 }], [GAPB + .3 + D_IN, { o: 1, y: 0 }]]);
+    /* a tap on Offer rush slots: the button rolls to Offered */
+    var br = rect(q('boff')), tap = q('otap');
+    tap.style.left = U(br.x + br.w / 2); tap.style.top = U(br.y + br.h / 2);
+    tr('otap', [[TAP - .35, { o: 0, s: 1.25 }], [TAP - .1, { o: 1, s: 1 }], [TAP, { s: 1 }], [TAP + .15, { s: .85 }],
+                [TAP + .25, { o: 1 }], [TAP + .5, { o: 0, s: .85 }, EXIT]]);
+    tr('boff', [[TAP, { s: 1 }], [TAP + .1, { s: .96 }], [TAP + .2, { o: 1, s: 1, y: 0 }], [TAP + .4, { o: 0, y: -10 }, EXIT]]);
+    tr('bon', [[TAP + .2, { o: 0, y: 10 }], [TAP + .4, { o: 1, y: 0 }]]);
+    /* the slot fills with the next order, and it arrives */
+    tr('onew', [[FILL4, { sx: 0, o: 1 }], [FILL4 + .5, { sx: 1 }, TRAVEL]]);
+    tr('t5', M ? [[NEWB, { o: 0, y: -12 }], [NEWB + D_IN, { o: 1, y: 0 }]] : toastIn(NEWB));
+
     /* captions: out with the card, in with the next one; never together */
-    var capOut = [T1 + .15, T2 + .15, T3 + .15, CL], capIn = [null, T1 + .5, T2 + .5, T3 + .5, CL + .3];
+    var capOut = [T1 + .15, T2 + .15, T3 + .15, CL, T4 + .15], capIn = [null, T1 + .5, T2 + .5, T3 + .5, CL + .3, T4 + .5];
     for (i = 0; i < CAPTIONS.length; i++) {
       var k2 = [];
       if (i > 0) k2.push([0, { o: 0 }], [capIn[i], { o: 0, x: 16 }], [capIn[i] + D_IN, { o: 1, x: 0 }]);
@@ -520,6 +630,13 @@
     /* the schedule's clock follows its time line, and an hour label steps
        back while the clock passes over it */
     onSeek: function (t, q) {
+      /* the owner's figures count as the parts land */
+      for (var c in COUNTS) {
+        var el = q(c), k = COUNTS[c], v = k[0][1];
+        for (var j = 1; j < k.length; j++) if (t >= k[j - 1][0]) v = t >= k[j][0] ? k[j][1] : k[j - 1][1] + (k[j][1] - k[j - 1][1]) * TRAVEL((t - k[j - 1][0]) / (k[j][0] - k[j - 1][0]));
+        var txt = Math.round(v) + (c.charAt(0) === 'p' ? '%' : '');
+        if (el && el.textContent !== txt) el.textContent = txt;
+      }
       var clock = q('clock');
       if (!clock) return;
       var m = clockAt(t), r = Math.round(m), hm = (9 + Math.floor(r / 60)) + ':' + ('0' + r % 60).slice(-2);
