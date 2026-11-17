@@ -4,8 +4,8 @@
  * One master timeline in real seconds, played once: Accounts, Production,
  * Operations, Shipping -- which ends on the client's side, with the automatic
  * "on its way" email and its tracker -- and Insights, the owner's week: the
- * order's parts land in capacity and time to ship, a free slot is offered as
- * rush and the next order arrives -- then holds with Replay. The
+ * bars the order adds to grow in indigo, a free slot is offered with the same
+ * slide-to-confirm as Operations, and the next order arrives -- then holds with Replay. The
  * timeline is a pure function of time: seek(t) writes every element's
  * transform and opacity for that instant and nothing else, so playing,
  * jumping, replaying and reduced motion are all just seek().
@@ -72,7 +72,7 @@
      Monday's capacity, the order lands in time to ship, a free slot lights up,
      it is offered as rush, and the next order arrives. */
   var CAPB = T4 + 1.9, LEADB = CAPB + 1.7, GAPB = LEADB + 1.7, TAP = GAPB + 1.6;
-  var FILL4 = TAP + .45, NEWB = TAP + 1.0;
+  var FILL4 = TAP + 1.0, NEWB = TAP + 1.6;          /* after the slide confirms */
   var END = NEWB + 2.6;
   var FRAME_T = [T1 - .05, T2 - .05, T3 - .05, T4 - .05, END - .05];   /* each stage's final frame */
   var TRANS_IN = [null, T1, T2, T3, T4];                               /* start of the transition into each stage */
@@ -300,7 +300,7 @@
 
   /* --- Insights: the shop's week, as the owner sees it ------------------ */
   /* Capacity: each machine's week, Mon-Fri, how full each day is (%). #39208's
-     print and cut land in Monday; Printer 2's Thursday has a free slot,
+     print and cut grow Monday's bars, in indigo, so the change is what you see; Printer 2's Thursday has a free slot,
      14:00-17:00 of a 08:00-18:00 day. A machine's figure is its days' mean. */
   var CAP = [
     { n: 'Printer 1', days: [100, 95, 100, 95, 90] },
@@ -322,19 +322,21 @@
     var rows = CAP.map(function (c, r) {
       var segs = c.days.map(function (v, d) {
         var s = '<i class="own__bk" style="width:' + v + '%"></i>';
-        if (d === 0 && c.add) s += '<i class="own__add" data-a="ob' + r + '" style="left:' + v + '%;width:' + c.add + '%"></i>';
+        /* the grown bar sits over the old one, at its new width, and scales out from it */
+        if (d === 0 && c.add) s += '<i class="own__hl" data-a="oh' + r + '" style="width:' + (v + c.add) + '%"></i>';
         if (d === 3 && c.gap) s += '<i class="own__gap" data-a="ogap" style="left:' + c.gap[0] + '%;width:' + c.gap[1] + '%"></i>' +
-                                   '<i class="own__new" data-a="onew" style="left:' + c.gap[0] + '%;width:' + c.gap[1] + '%"></i>';
+                                   '<i class="own__hl" data-a="ohg" style="width:' + (c.gap[0] + c.gap[1]) + '%"></i>';
         return '<span class="own__day">' + s + '</span>';
       }).join('');
       return '<div class="own__row"><span class="own__n">' + c.n + '</span><span class="own__wk">' + segs + '</span>' +
         '<span class="own__pc num" data-a="pc' + r + '">' + capPct(c) + '%</span></div>';
     }).join('');
     var max = Math.max.apply(null, SHIP.map(function (s) { return s[1]; }));
+    var H = SHIP_H[M ? 'm' : 'd'];
     var cols = SHIP.map(function (s, i) {
       return '<div class="own__col"><span class="own__cn num"' + (i === 0 ? ' data-a="tc0"' : '') + '>' + s[1] + '</span>' +
-        '<span class="own__bar" style="height:' + U(Math.round(s[1] / max * SHIP_H[M ? 'm' : 'd'])) + '">' +
-        (i === 0 ? '<i class="own__cap" data-a="ob3"></i>' : '') + '</span>' +
+        '<span class="own__bar" style="height:' + U(s[1] / max * H) + '">' +
+        (i === 0 ? '<i class="own__hlc" data-a="ohc" style="height:' + U((s[1] + 1) / max * H) + '"></i>' : '') + '</span>' +
         '<span class="own__cl">' + s[0] + '</span></div>';
     }).join('');
     var ship = '<div class="own__ship"><div class="own__h"><p>Time to ship</p><p class="own__hs">Average <span class="num">1,2</span> days</p></div>' +
@@ -347,13 +349,14 @@
       '<div class="own__row own__row--d"><span class="own__n"></span><span class="own__wk">' +
         days.map(function (d) { return '<span class="own__dl">' + d + '</span>'; }).join('') + '</span><span class="own__pc"></span></div>' +
       rows + '</div>' +
-      '<div class="own__ins" data-a="oins">' + (M ? '' : '<span class="ch__tile">' + ic('cal') + '</span>') +
-      '<div class="own__it"><p>Printer 2 is free Thu, <span class="num">14:00–17:00</span></p><p class="mail__to">Fits 4 banner orders</p></div>' +
-      '<span class="stack own__btns"><span class="own__btn" data-a="boff">Offer rush slots</span>' +
-      '<span class="own__btn own__btn--ok" data-a="bon">' + ic('check') + 'Offered</span></span></div>' +
+      '<div class="own__ins" data-a="oins">' +
+      '<div class="own__it"><p>Printer 2 is free Thursday</p><p class="mail__to"><span class="num">14:00–17:00</span> · Fits 4 banner orders</p></div>' +
+      /* the same slide-to-confirm as Operations' Drag to mark done, on a tint */
+      '<div class="slide slide--tint own__slide" data-a="oslide"><span class="knob" data-a="oknob">' + ic('check') + '<span class="knob--ok" data-a="oknobok">' + ic('check') + '</span></span>' +
+      '<span class="slide__l" data-a="oslabel">Offer rush slots<span class="slide__chev">' + ic('chev') + ic('chev') + ic('chev') + '</span></span>' +
+      '<span class="slide__done" data-a="osdone">Offered</span></div></div>' +
       '</div>';
   }
-  function tapRing() { return '<span class="ptap" data-a="otap"><i></i></span>'; }
 
   /* the order's record: artwork, id and state on top, its history under them */
   function token() {
@@ -373,7 +376,7 @@
       orderCard(20, 24, 296) + quoteCard(240, 232, 308) +
       schedule(GEO.d) +
       doneCard(24, 40, 276) + taskMenu(312, 56, 240) + courierCard(24, 352, 524) +
-      shipmentCard(60, 120, 448) + mailCard(60, 84, 448) + ownerCard(20, 64, 528) + token() + tapRing();
+      shipmentCard(60, 120, 448) + mailCard(60, 84, 448) + ownerCard(20, 64, 528) + token();
   }
   /* notifications float over the stage, unclipped */
   function desktopFloat() {
@@ -387,7 +390,7 @@
       orderCard(12, 12, 292, true) + quoteCard(24, 300, 280, true) +
       schedule(GEO.m) +
       doneCard(12, 12, 292) + taskMenu(12, 320, 292) + courierCard(12, 320, 292) +
-      shipmentCard(12, 58, 292, true) + mailCard(12, 40, 292, true) + ownerCard(12, 12, 292, true) + token() + tapRing();
+      shipmentCard(12, 58, 292, true) + mailCard(12, 40, 292, true) + ownerCard(12, 12, 292, true) + token();
   }
   function mobileFloat() {
     return toast('t1', -6, 600, 300, 'req', 'Approve for production', 'Sent by Account Manager') +   /* one line at 300 */
@@ -573,37 +576,32 @@
     trip(T4 + .3, 'slot-mail', 'slot-own', 1);
     tr('own', cardIn(T4 + .5));
 
-    /* Stage 5 -- Insights. Parts of the record leave the token for the
-       owner's views, the way the parts left it for the schedule: already
-       their landing size, travelling straight in. The figures they change
-       count with them. */
-    var tok = S['slot-own'], tcx = tok.x + tok.w / 2, tcy = tok.y + tok.h / 2;
-    function fly(name, t0) {
-      var r = rect(q(name)), dx = tcx - (r.x + r.w / 2), dy = tcy - (r.y + r.h / 2);
-      tr(name, [[0, { o: 0, x: dx, y: dy }], [t0, { o: 0 }], [t0 + .12, { o: 1 }],
-                [t0 + .05, { x: dx, y: dy }], [t0 + .05 + SPLIT_TRAVEL, { x: 0, y: 0 }, TRAVEL]]);
-      return t0 + .05 + SPLIT_TRAVEL;
+    /* Stage 5 -- Insights. Nothing leaves the token: the owner's bars grow
+       by what the order took, in indigo, and the figures count with them.
+       A grown bar ends a hair under scale 1 (at 1 the engine writes no
+       transform at all). */
+    function grow(name, from, t0, axis) {
+      var a = {}, b = {}; a[axis] = from; b[axis] = .99999;
+      tr(name, [[0, ext({ o: 0 }, a)], [t0, ext({ o: 0 }, a)], [t0 + .15, { o: 1 }], [t0 + .1, a], [t0 + .7, b, TRAVEL]]);
     }
-    var land0 = fly('ob1', CAPB), land1 = fly('ob2', CAPB + .15);
-    tl.push([CAPB - .05, { o: 0 }], [CAPB + .05, { o: 1 }], [land1 - .2, { o: 1 }], [land1 - .05, { o: 0 }]);   /* the token lifts as they leave */
-    COUNTS.pc1 = [[land0 - .1, capPct(CAP[1])], [land0 + .4, capPct(CAP[1], true)], [FILL4, capPct(CAP[1], true)], [FILL4 + .6, capPct(CAP[1], true, true)]];
-    COUNTS.pc2 = [[land1 - .1, capPct(CAP[2])], [land1 + .4, capPct(CAP[2], true)]];
-    var land2 = fly('ob3', LEADB);
-    tl.push([LEADB - .05, { o: 0 }], [LEADB + .05, { o: 1 }], [land2 - .2, { o: 1 }], [land2 - .05, { o: 0 }]);
-    COUNTS.tc0 = [[land2 - .1, SHIP[0][1]], [land2 + .3, SHIP[0][1] + 1]];
+    var c1 = CAP[1], c2 = CAP[2];
+    grow('oh1', c1.days[0] / (c1.days[0] + c1.add), CAPB, 'sx');
+    grow('oh2', c2.days[0] / (c2.days[0] + c2.add), CAPB + .2, 'sx');
+    COUNTS.pc1 = [[CAPB + .1, capPct(c1)], [CAPB + .7, capPct(c1, true)], [FILL4 + .1, capPct(c1, true)], [FILL4 + .7, capPct(c1, true, true)]];
+    COUNTS.pc2 = [[CAPB + .3, capPct(c2)], [CAPB + .9, capPct(c2, true)]];
+    grow('ohc', SHIP[0][1] / (SHIP[0][1] + 1), LEADB, 'sy');
+    COUNTS.tc0 = [[LEADB + .1, SHIP[0][1]], [LEADB + .6, SHIP[0][1] + 1]];
 
     /* the free slot lights up, then the insight that offers it */
-    tr('ogap', [[GAPB, { o: 0, s: 1 }], [GAPB + .25, { o: 1 }], [FILL4, { o: 1 }], [FILL4 + .3, { o: 0 }, EXIT]]);
+    tr('ogap', [[GAPB, { o: 0 }], [GAPB + .25, { o: 1 }], [FILL4 + .6, { o: 1 }], [FILL4 + .8, { o: 0 }, EXIT]]);
     tr('oins', [[GAPB + .3, { o: 0, y: 12 }], [GAPB + .3 + D_IN, { o: 1, y: 0 }]]);
-    /* a tap on Offer rush slots: the button rolls to Offered */
-    var br = rect(q('boff')), tap = q('otap');
-    tap.style.left = U(br.x + br.w / 2); tap.style.top = U(br.y + br.h / 2);
-    tr('otap', [[TAP - .35, { o: 0, s: 1.25 }], [TAP - .1, { o: 1, s: 1 }], [TAP, { s: 1 }], [TAP + .15, { s: .85 }],
-                [TAP + .25, { o: 1 }], [TAP + .5, { o: 0, s: .85 }, EXIT]]);
-    tr('boff', [[TAP, { s: 1 }], [TAP + .1, { s: .96 }], [TAP + .2, { o: 1, s: 1, y: 0 }], [TAP + .4, { o: 0, y: -10 }, EXIT]]);
-    tr('bon', [[TAP + .2, { o: 0, y: 10 }], [TAP + .4, { o: 1, y: 0 }]]);
-    /* the slot fills with the next order, and it arrives */
-    tr('onew', [[FILL4, { sx: 0, o: 1 }], [FILL4 + .5, { sx: 1 }, TRAVEL]]);
+    /* slide to offer, exactly as Drag to mark done; then Thursday grows */
+    var otravel = rect(q('oslide')).w - 12 - 44;
+    tr('oknob', [[TAP, { x: 0 }], [TAP + .7, { x: otravel }, TRAVEL]]);
+    tr('oslabel', [[TAP + .1, { o: 1 }], [TAP + .4, { o: 0 }, LIN]]);
+    tr('oknobok', [[TAP + .7, { o: 0 }], [TAP + .9, { o: 1 }]]);
+    tr('osdone', [[TAP + .7, { o: 0, x: -8 }], [TAP + .7 + D_IN, { o: 1, x: 0 }]]);
+    grow('ohg', c1.gap[0] / (c1.gap[0] + c1.gap[1]), FILL4, 'sx');
     tr('t5', M ? [[NEWB, { o: 0, y: -12 }], [NEWB + D_IN, { o: 1, y: 0 }]] : toastIn(NEWB));
 
     /* captions: out with the card, in with the next one; never together */

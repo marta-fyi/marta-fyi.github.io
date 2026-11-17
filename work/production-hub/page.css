@@ -314,9 +314,9 @@
 .pm--m .mail__labels .trk__l { font-size: calc(12 * var(--u)); }
 
 /* --- Insights: the shop's week, as the owner sees it ------------------- */
-/* Booked time is a quiet indigo tint; colour stays an order's identity:
-   #39208's parts in mint, the next order (#39241) in its own amber. */
-.pm { --booked: #C9CEFA; --o-39241: #FFC46B; }
+/* Booked time is a quiet indigo tint; what the order changed grows in full
+   indigo over it, so the change is what you see. */
+.pm { --booked: #C9CEFA; }
 .pm .own__h { display: flex; justify-content: space-between; align-items: baseline; font-size: calc(14 * var(--u)); margin-bottom: calc(10 * var(--u)); }
 .pm .own__hs { font-size: calc(12 * var(--u)); color: var(--grey); }
 .pm .own__top { display: flex; gap: calc(20 * var(--u)); align-items: stretch; padding-top: calc(14 * var(--u)); border-top: calc(1 * var(--u)) solid var(--hair); }
@@ -324,9 +324,7 @@
 .pm .own__cols { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: calc(10 * var(--u)); align-items: end; }
 .pm .own__col { display: flex; flex-direction: column; align-items: center; gap: calc(4 * var(--u)); }
 .pm .own__cn { font-size: calc(12 * var(--u)); color: var(--navy); }
-.pm .own__bar { position: relative; width: 100%; margin-top: calc(9 * var(--u));   /* room for #39208's cap under the count */
-                 max-width: calc(44 * var(--u)); background: var(--booked); border-radius: calc(4 * var(--u)); }
-.pm .own__cap { position: absolute; left: 0; right: 0; bottom: 100%; height: calc(8 * var(--u)); margin-bottom: calc(1 * var(--u)); border-radius: calc(4 * var(--u)) calc(4 * var(--u)) calc(2 * var(--u)) calc(2 * var(--u)); background: var(--o-39208); }
+.pm .own__bar { position: relative; width: 100%;  max-width: calc(44 * var(--u)); background: var(--booked); border-radius: calc(4 * var(--u)); }
 .pm .own__cl { font-size: calc(12 * var(--u)); color: var(--grey); white-space: nowrap; }
 .pm .own__capa { margin-top: calc(16 * var(--u)); padding-top: calc(14 * var(--u)); border-top: calc(1 * var(--u)) solid var(--hair); }
 .pm .own__row { display: flex; align-items: center; gap: calc(12 * var(--u)); height: calc(24 * var(--u)); }
@@ -339,26 +337,19 @@
 .pm .own__day { position: relative; height: calc(14 * var(--u)); border-radius: calc(4 * var(--u)); background: var(--well); }
 .pm .own__day > i { position: absolute; top: 0; bottom: 0; left: 0; border-radius: calc(4 * var(--u)); }
 .pm .own__bk  { background: var(--booked); }
-.pm .own__add { background: var(--o-39208); }
+.pm .own__hl  { background: var(--indigo); transform-origin: 0 50%; }   /* no CSS scale: the track owns it */
+.pm .own__hlc { position: absolute; left: 0; right: 0; bottom: 0; border-radius: calc(4 * var(--u)); background: var(--indigo); transform-origin: 50% 100%; }
 .pm .own__gap { border: calc(1.5 * var(--u)) dashed var(--indigo); background: var(--tint); }
-.pm .own__new { background: var(--o-39241); transform-origin: 0 50%; }   /* no CSS scaleX(0): at full width the engine writes no transform */
 .pm .own__ins { display: flex; align-items: center; gap: calc(12 * var(--u)); margin-top: calc(16 * var(--u)); padding-top: calc(14 * var(--u)); border-top: calc(1 * var(--u)) solid var(--hair); }
 .pm .own__it { flex: 1; min-width: 0; font-size: calc(14 * var(--u)); }
-.pm .own__btns { flex: none; justify-items: end; }
-.pm .own__btn { display: inline-flex; align-items: center; justify-content: center; gap: calc(6 * var(--u)); height: calc(36 * var(--u)); padding: 0 calc(16 * var(--u));
-                border-radius: calc(18 * var(--u)); background: var(--indigo); color: #fff; font-size: calc(13 * var(--u)); white-space: nowrap; }
-.pm .own__btn--ok { background: var(--mint); color: var(--mint-ink); }
-.pm .own__btn--ok .ic { width: calc(15 * var(--u)); height: calc(15 * var(--u)); stroke-width: 2; }
 /* narrow: the record over its chart, the offer under its text */
 .pm .own--m .own__top { flex-direction: column; gap: calc(14 * var(--u)); }
 .pm .own--m .own__n { width: calc(58 * var(--u)); }
 .pm .own--m .own__ins { flex-wrap: wrap; }
-.pm .own--m .own__btns { width: 100%; justify-items: stretch; }
-/* the tap: a fingertip ring, as in HP Build Workspace */
-.pm .ptap { position: absolute; left: 0; top: 0; width: 0; height: 0; opacity: 0; pointer-events: none; z-index: 25; }
-.pm .ptap i { position: absolute; left: calc(-15 * var(--u)); top: calc(-15 * var(--u)); width: calc(30 * var(--u)); height: calc(30 * var(--u)); border-radius: 50%;
-              background: rgba(71, 89, 245, .22);
-              box-shadow: 0 0 0 calc(2 * var(--u)) rgba(255, 255, 255, .9), 0 0 0 calc(3.5 * var(--u)) rgba(71, 89, 245, .4); }
 /* narrow: five labels don't fit 304px, so only the current stage is named;
    the others keep their names for screen readers and stay tappable */
 .pm--m .pm__node:not([aria-current]) span { opacity: 0; }
+/* the offer: Operations' slide-to-confirm, on the white card's tint */
+.pm .slide--tint { background: var(--tint); }
+.pm .own__slide { flex: none; width: calc(236 * var(--u)); margin-top: 0; }
+.pm .own--m .own__slide { width: 100%; }
