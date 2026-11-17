@@ -19,7 +19,7 @@
  */
 (function () {
   var PHONE_W = 402 + 2 * (12 + 3), PHONE_H = 874 + 2 * (12 + 3), PHONE_MAX = 760, ROOM_Y = 48;
-  var WIDE = matchMedia('(min-width: 1200px)'), SMALL = matchMedia('(max-width: 767px), (orientation: portrait) and (max-width: 1023px)');
+  var WIDE = matchMedia('(min-width: 1080px)'), SMALL = matchMedia('(max-width: 767px), (orientation: portrait) and (max-width: 1023px)');
 
   var SIGNAL = '<svg width="18" height="12" viewBox="0 0 18 12" aria-hidden="true"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>';
   var WIFI = '<svg width="16" height="12" viewBox="0 0 16 12" aria-hidden="true"><path d="M8 2.3c2.3 0 4.4.9 6 2.4l1.2-1.3A10.4 10.4 0 0 0 8 .5 10.4 10.4 0 0 0 .8 3.4L2 4.7a8.6 8.6 0 0 1 6-2.4Zm0 3.6c1.3 0 2.5.5 3.4 1.4l1.2-1.3A6.6 6.6 0 0 0 8 4.1a6.6 6.6 0 0 0-4.6 1.9l1.2 1.3c.9-.9 2.1-1.4 3.4-1.4Zm0 3.5c-.5 0-1 .2-1.3.5L8 11.5l1.3-1.6c-.3-.3-.8-.5-1.3-.5Z"/></svg>';

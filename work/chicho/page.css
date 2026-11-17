@@ -4,7 +4,7 @@
  * CSS at its real size (a 402x874 iPhone 16 Pro screen) and scaled as a whole
  * by page.js to fit the column and the window. Everything is scoped under
  * .chf so none of it reaches the site's style.css. The layout around it is
- * promo.css's .pmr: stacked, then a sticky right column from 1200px. There
+ * promo.css's .pmr: stacked, then a sticky right column from 1080px. There
  * page.js pins the phone level with the title instead of promo.css's -100vh
  * pull, which needs a page as long as the HP ones; centred in the column, it
  * stays clear of the corner mascot.
@@ -69,7 +69,7 @@
 .chf-list b { font-weight: 500; color: var(--ink); }
 .study .body p.chf-by { font-size: 0.8125rem; color: var(--ink-60); }
 @media (min-width: 900px) { .chf-list { max-width: var(--col); } }
-@media (min-width: 1200px) { .chf-list { max-width: none; } }
+@media (min-width: 1080px) { .chf-list { max-width: none; } }
 
 /* stacked, the phone follows the byline: the room the details block gives on the HP pages */
-@media (max-width: 1199px) { .chf-by { padding-bottom: 3rem; } }
+@media (max-width: 1079px) { .chf-by { padding-bottom: 3rem; } }
