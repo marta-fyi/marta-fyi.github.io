@@ -536,7 +536,7 @@ footer .copy:focus-visible {
 
 .pager span {
   display: block;
-  color: var(--ink-45);
+  color: var(--ink);   /* link text: full ink, not the pale grey */
   margin-bottom: 0.25rem;
 }
 

@@ -10,7 +10,7 @@
 # Only root-relative .css/.js in href/src are touched (not fonts, not images).
 set -e
 cd "$(dirname "$0")/.."
-for html in index.html cv.html work/*/index.html; do
+for html in index.html cv.html 404.html work/*/index.html; do
   [ -f "$html" ] || continue
   perl -i -pe '
     s{\b(href|src)="(/[^"?]+\.(?:css|js))(?:\?v=[0-9a-f]*)?"}{
@@ -23,4 +23,4 @@ for html in index.html cv.html work/*/index.html; do
     }ge;
   ' "$html"
 done
-grep -ho '\(href\|src\)="/[^"]*\.\(css\|js\)[^"]*"' index.html cv.html work/*/index.html | sort | uniq -c
+grep -ho '\(href\|src\)="/[^"]*\.\(css\|js\)[^"]*"' index.html cv.html 404.html work/*/index.html | sort | uniq -c
