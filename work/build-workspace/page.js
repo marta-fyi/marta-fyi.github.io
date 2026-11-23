@@ -90,6 +90,10 @@
   var CROSS = [WALL.x1, DUCT.y];
   var PIN = CROSS;                                   /* John's photo pin, on the crossing */
   var MK = CROSS;                                    /* the vectorized loop flies here and becomes keynote 1 */
+  /* how far past the frame's right edge the prints, the phone and Level 2's
+     sheet wait: the frame has no fill, so a shadow left inside it would show
+     on the page as a cut-off smudge */
+  var PARK = 160;
   var KN_OFF = [-24, -18];                           /* design px: the keynote sits up and left of the crossing, across the wall
                                                         from the pin and its badge, at every zoom */
   var KN_D = 22;                                     /* the keynote's diameter, design px */
@@ -578,7 +582,7 @@
        they leave the way they came, phone first. Solid all the way: no fade. */
     function slideIn(t0, dx) { return [[0, { o: 1, x: dx }], [t0, { x: dx }], [t0 + .6, { x: 0 }, ENTER]]; }
     function slideOut(t0, dx) { return [[t0, { x: 0 }], [t0 + .45, { x: dx }, EXIT]]; }
-    var offS = g.W - g.stack[0] + 40, offP = g.W - g.phone[0] + 40;   /* far enough that the shadow is out too */
+    var offS = g.W - g.stack[0] + PARK, offP = g.W - g.phone[0] + PARK;
     tr('stack', slideIn(s3 + 3.15, offS).concat(slideOut(S[4] + .05, offS)));
     tr('phone', slideIn(s3 + 3.3, offP).concat(slideOut(S[4], offP)));
     tr('brk', [[0, { o: 0, s: 1.3 }], [s3 + 3.9, { o: 0, s: 1.3 }], [s3 + 3.95, { o: 1 }, LIN], [s3 + 4.25, { s: 1 }, TRAVEL]]);
@@ -595,7 +599,7 @@
        the left as Level 2's sheet comes in from the right; on desktop the
        new sheet simply covers Level 1 and everything on it */
     tr('rep', bloom(s4 + 2.0).concat(M ? [[NEXT, { x: 0 }], [NEXT + .5, { x: -g.W }, EXIT]] : []));
-    tr('sheet2', [[0, { o: 1, x: g.W - g.card[0] + 40 }], [NEXT + .1, { x: g.W - g.card[0] + 40 }], [NEXT + .85, { x: 0 }, TRAVEL]]);
+    tr('sheet2', [[0, { o: 1, x: g.W - g.card[0] + PARK }], [NEXT + .1, { x: g.W - g.card[0] + PARK }], [NEXT + .85, { x: 0 }, TRAVEL]]);
     for (i = 0; i < REP.length; i++) tr('rr' + i, [[0, { o: 0, y: 6 }], [s4 + 2.2 + i * .1, { o: 0, y: 6 }], [s4 + 2.2 + i * .1 + D_IN, { o: 1, y: 0 }]]);
     tr('rtick', [[0, { dp: 0 }], [s4 + 2.85, { dp: 0 }], [s4 + 3.15, { dp: 1 }, TRAVEL]]);
     /* tap send: the three contractors pop in, and it's sent */

@@ -30,7 +30,7 @@
 
   --u: calc(100cqw / 600);   /* one design pixel; the frame is authored at 600x760 */
   position: relative; width: 100%; height: calc(760 * var(--u)); flex: none;
-  background: #F4F3FC; border-radius: calc(32 * var(--u));
+  /* no fill or corner of its own: the rail and the stage sit on the page */
   font-family: "SF Pro Text", "SF Pro Display", -apple-system, system-ui, "Helvetica Neue", Helvetica, sans-serif;
   font-weight: 400; color: var(--navy); line-height: 1.3;
   -webkit-font-smoothing: antialiased; text-align: left;
@@ -62,8 +62,8 @@
 /* --- stage -------------------------------------------------------------- */
 .pm__stage { position: absolute; left: calc(16 * var(--u)); top: calc(112 * var(--u)); width: calc(568 * var(--u)); height: calc(632 * var(--u));
              border-radius: calc(24 * var(--u)); overflow: hidden;
-             /* frosted, as in HP Build Workspace: the frame's lavender comes through, softened */
-             background: rgba(255, 255, 255, .6); border: calc(1 * var(--u)) solid rgba(255, 255, 255, .9);
+             /* frosted white straight on the page grey, as BW's chips */
+             background: rgba(255, 255, 255, .85); border: calc(1 * var(--u)) solid rgba(255, 255, 255, .9);
              -webkit-backdrop-filter: blur(10px) saturate(1.3); backdrop-filter: blur(10px) saturate(1.3); }
 /* the notification layer: the stage's twin without the clip, so a toast can
    overhang the stage edge and float over the frame */
@@ -236,7 +236,7 @@
 /* Below 768px the 600px frame would scale under the 11px type floor, so the
    composition is re-authored narrow instead of shrunk. Same components, same
    choreography; only positions and a few narrow variants differ. */
-.pm--m { --u: calc(100cqw / 340); height: calc(780 * var(--u)); border-radius: calc(26 * var(--u)); }
+.pm--m { --u: calc(100cqw / 340); height: calc(780 * var(--u)); }
 .pm--m .pm__rail { left: calc(18 * var(--u)); top: calc(18 * var(--u)); width: calc(304 * var(--u)); }   /* the full width: five labels, ~61px each */
 .pm--m .pm__pp { right: calc(12 * var(--u)); top: calc(62 * var(--u)); width: calc(34 * var(--u)); height: calc(34 * var(--u)); }   /* on the caption line instead */
 .pm--m .pm__cap { left: calc(18 * var(--u)); top: calc(74 * var(--u)); }
