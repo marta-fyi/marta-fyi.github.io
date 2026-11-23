@@ -361,4 +361,16 @@
 .pm--bw.pm--m .pm__pp { right: calc(12 * var(--u)); top: calc(20 * var(--u)); width: calc(32 * var(--u)); height: calc(32 * var(--u)); }
 
 /* pinned height: 760 x 560/600 = 709 tall in the 560px column */
-.pmr__vis { --pmr-half: 355px; }
+.pmr__vis { --pmr-half: 22.1875rem; }   /* 355px at 16px */
+
+
+/* Big screens: the whole case study grows with the window instead of
+   sitting as a 1280px island in the middle. Every size on this page is
+   in rem (the promo is in cqw of its 35rem column), so raising the root
+   size scales type, measure, gaps and promo together. 1vw is 16px at
+   1600px wide; 1.6vh keeps a wide-but-short window from pushing the
+   promo's foot below the fold; 150% caps it at 24px, a 840px promo.
+   Set here, not in promo.css: Chicho's phone is sized in px and would shrink beside bigger text. */
+@media (min-width: 1600px) {
+  html { font-size: clamp(100%, min(1vw, 1.6vh), 150%); }
+}
