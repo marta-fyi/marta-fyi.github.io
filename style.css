@@ -350,7 +350,7 @@ footer .copy:focus-visible {
      edges without repeating a number. */
   --col: calc((100% - var(--col-gap)) / 2);
 
-  max-width: 80rem;   /* 1280px; grows with the root size on big screens */
+  max-width: 1280px;
   margin-inline: auto;
   padding: 18vh var(--gutter) 0;
 }

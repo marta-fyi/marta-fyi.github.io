@@ -39,7 +39,7 @@
 }
 @media (min-width: 1080px) {   /* 1080, not 1200: still side by side at 110% zoom and on 1280px laptops */
   .pmr {
-    display: grid; grid-template-columns: minmax(0, 37.5rem) 35rem;
+    display: grid; grid-template-columns: minmax(0, 600px) 560px;
     justify-content: space-between; column-gap: var(--col-gap); align-items: start;
   }
   .pmr__lead { grid-column: 1; grid-row: 1; }
@@ -47,12 +47,12 @@
   .pmr__lead > h2, .pmr__lead > p, .pmr__lead > dl,
   .pmr__prose > h2, .pmr__prose > p { max-width: none; }
   .pmr__vis {
-    grid-column: 2; grid-row: 1 / span 2; width: 35rem;
+    grid-column: 2; grid-row: 1 / span 2; width: 560px;
     /* Pulled far above its row so it starts pinned: sticky pushes it back
        down to `top` at once, so the page opens with the whole promo in view
        instead of its foot below the fold until you scroll. */
     margin: -100vh 0 0;
     position: sticky;
-    top: max(24px, min(calc(6vh + 112px), calc(100vh - 2 * var(--pmr-half, 22.1875rem) - 24px)));
+    top: max(24px, min(calc(6vh + 112px), calc(100vh - 2 * var(--pmr-half, 355px) - 24px)));
   }
 }

@@ -295,7 +295,7 @@
 .pm .cour__b { font-size: calc(13 * var(--u)); line-height: 1.4; }
 
 /* pinned height: 760 x 560/600 = 709 tall in the 560px column */
-.pmr__vis { --pmr-half: 22.1875rem; }   /* 355px at 16px */
+.pmr__vis { --pmr-half: 355px; }
 
 /* --- the client's end: the automatic "on its way" email ---------------- */
 .pm .mail__h { flex: 1; min-width: 0; }
@@ -354,14 +354,17 @@
 .pm .own__slide { flex: none; width: calc(236 * var(--u)); margin-top: 0; }
 .pm .own--m .own__slide { width: 100%; }
 
-
-/* Big screens: the whole case study grows with the window instead of
-   sitting as a 1280px island in the middle. Every size on this page is
-   in rem (the promo is in cqw of its 35rem column), so raising the root
-   size scales type, measure, gaps and promo together. 1vw is 16px at
-   1600px wide; 1.6vh keeps a wide-but-short window from pushing the
-   promo's foot below the fold; 150% caps it at 24px, a 840px promo.
-   Set here, not in promo.css: Chicho's phone is sized in px and would shrink beside bigger text. */
+/* Big screens: the promo grows with the window; the type does not. --vis
+   is the promo's width: 560px until 1930px wide, then 29vw up to 840px,
+   held back on short windows so the whole frame stays above the fold
+   (pinned at 6vh + 112px, 24px foot, 1.268 tall per px of width). The
+   prose keeps its 16px and a 32rem measure; the page widens only by what
+   the promo gains. */
 @media (min-width: 1600px) {
-  html { font-size: clamp(100%, min(1vw, 1.6vh), 150%); }
+  .study {
+    --vis: max(35rem, min(29vw, 840px, calc((94vh - 136px) / 1.268)));
+    max-width: calc(32rem + var(--col-gap) + var(--vis) + 2 * var(--gutter));
+  }
+  .pmr { grid-template-columns: minmax(0, 32rem) var(--vis); }
+  .pmr__vis { width: var(--vis); --pmr-half: calc(var(--vis) * 0.634); }
 }
